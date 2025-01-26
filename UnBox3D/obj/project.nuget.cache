@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "dgSpecHash": "jQ5VWeNOp90=",
+  "success": true,
+  "projectFilePath": "E:\\git\\UnBox3D\\UnBox3D.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk\\4.9.3\\opentk.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.audio.openal\\4.9.3\\opentk.audio.openal.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.compute\\4.9.3\\opentk.compute.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.core\\4.9.3\\opentk.core.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.glcontrol\\4.0.2\\opentk.glcontrol.4.0.2.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.graphics\\4.9.3\\opentk.graphics.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.input\\4.9.3\\opentk.input.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.mathematics\\4.9.3\\opentk.mathematics.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.redist.glfw\\3.3.8.39\\opentk.redist.glfw.3.3.8.39.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.windowing.common\\4.9.3\\opentk.windowing.common.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.windowing.desktop\\4.9.3\\opentk.windowing.desktop.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.9.3\\opentk.windowing.graphicslibraryframework.4.9.3.nupkg.sha512",
+    "C:\\Users\\lemuz\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
