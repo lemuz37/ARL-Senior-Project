@@ -15,7 +15,7 @@ namespace UnBox3D.Utils
         private Dictionary<string, object> settings;
         private object dict;
 
-        public SettingsManager(IFileSystem fileSystem, ILogger logger) 
+        public SettingsManager(IFileSystem fileSystem, ILogger logger)
         {
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -209,87 +209,97 @@ namespace UnBox3D.Utils
             }
         }
 
-        // Update a setting. Thread-safe with lock. Supports up to three levels of nested dictionaries.
-        public void UpdateSetting(object value, params string[] keys)
+        // Update a setting. Thread-safe with lock. Supports two levels of nested dictionaries.
+        // Two-Level Solution (e.g., "RenderingSettings" -> "BackgroundColor")
+        // mainSettingKey The immediate parent key (e.g., "AppSettings"). The top-level category (e.g., "AppSettings" or "RenderingSettings")
+        // subSettingKey The actual setting to update (e.g., "SplashScreenDuration"). The subcategory (e.g., "SplashScreenDuration")
+        public void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey)
         {
             lock (_lock)
             {
                 try
                 {
-                    string keyToUpdateValue = keys[keys.Length - 1];  // The actual setting to update (e.g., "BackgroundColor")
-                    string keyParentSetting = keys[keys.Length - 2];  // The immediate parent key (e.g., "RenderingSettings")
-                    string mainSetting = keys[0];                     // The top-level category (e.g., "AssimpSettings" or "RenderingSettings")
-                    string subSetting = keys[1];                      // The potential subcategory (e.g., "Import")
                     LoadSettings();
+                    _logger.Info($"Attempting to update setting: {mainSettingKey} -> {subSettingKey} with value: {updateValue}");
 
-
-                    _logger.Info($"Attempting to update setting: {mainSetting} -> {keyParentSetting} -> {keyToUpdateValue} with value: {value}");
-
-                    // Two-Level Solution (e.g., "RenderingSettings" -> "BackgroundColor")
-                    if (keyToUpdateValue == subSetting)
+                    if (settings.ContainsKey(mainSettingKey))
                     {
-                        if (settings.ContainsKey(mainSetting))
+                        settings.TryGetValue(mainSettingKey, out dict);
+                        if (dict is Dictionary<string, object>)
                         {
-                            settings.TryGetValue(mainSetting, out dict);
-                            if (dict is Dictionary<string, object>)
-                            {
-                                Dictionary<string, object> mainSettings = (Dictionary<string, object>)dict;
-                                mainSettings[keyToUpdateValue] = value;
-                                settings[mainSetting] = mainSettings;
-                                _logger.Info($"Updated {mainSetting} -> {keyToUpdateValue} with value: {value}.");
-                                SaveSettings();
-                            }
-                            else
-                            {
-                                _logger.Warn($"Key {keyToUpdateValue} not found in {mainSetting}. Aborting update.");
-                            }
+                            Dictionary<string, object> mainSettings = (Dictionary<string, object>)dict;
+                            mainSettings[subSettingKey] = updateValue;
+                            settings[mainSettingKey] = mainSettings;
+                            _logger.Info($"Updated {mainSettingKey} -> {subSettingKey} with value: {updateValue}.");
+                            SaveSettings();
                         }
                         else
                         {
-                            _logger.Warn($"Major setting {mainSetting} not found. Aborting update.");
+                            _logger.Error($"Key {subSettingKey} not found in {mainSettingKey}. Aborting update.");
+                            throw new Exception();
                         }
                     }
-                    // Three-Level Solution (e.g., "AssimpSettings" -> "Import" -> "EnableTriangulation")
                     else
                     {
-                        if (settings.ContainsKey(mainSetting) && settings[mainSetting] is Dictionary<string, object> mainSettings)
-                        {
-                            // Check if the parent setting (e.g., "Import" or "Export") exists
-                            if (mainSettings.ContainsKey(keyParentSetting) && mainSettings[keyParentSetting] is Dictionary<string, object> subSettings)
-                            {
-                                if (subSettings.ContainsKey(keyToUpdateValue))
-                                {
-                                    // Update the sub-setting value
-                                    subSettings[keyToUpdateValue] = value;
-
-                                    // Update the parent setting with the modified sub-settings
-                                    mainSettings[keyParentSetting] = subSettings;
-
-                                    // Update the top-level settings with the modified main settings
-                                    settings[mainSetting] = mainSettings;
-
-                                    _logger.Info($"Updated {mainSetting} -> {keyParentSetting} -> {keyToUpdateValue} with value: {value}.");
-                                    SaveSettings();
-                                }
-                                else
-                                {
-                                    _logger.Warn($"Key {keyToUpdateValue} not found in {keyParentSetting}. Aborting update.");
-                                }
-                            }
-                            else
-                            {
-                                _logger.Warn($"Key {keyParentSetting} not found in {mainSetting}. Aborting update.");
-                            }
-                        }
-                        else
-                        {
-                            _logger.Warn($"Major setting {mainSetting} not found. Aborting update.");
-                        }
+                        _logger.Warn($"Major setting {mainSettingKey} not found. Aborting update.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"Failed to update setting for keys: {string.Join(" -> ", keys)} with value: {value}. Error: {ex.Message}");
+                    _logger.Error($"Failed to update setting for keys: {string.Join(" -> ", mainSettingKey, subSettingKey)} with value: {updateValue}. Error: {ex.Message}");
+                }
+            }
+        }
+        // Update a setting. Thread-safe with lock. Supports three levels of nested dictionaries.
+        // Three-Level Solution (e.g., "AssimpSettings" -> "Import" -> "EnableTriangulation")
+        // mainSettingKey: The immediate parent key (e.g., ""AssimpSettings""). The top-level category (e.g., ""AssimpSettings"" or "RenderingSettings")
+        // subSettingKey: The nested dictionary within the parent key (e.g., "Import"). The subcategory (e.g., "Import")
+        // settingToUpdateKey: The actual setting to update (e.g., "EnableTriangulation").
+
+        public void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey, string settingToUpdateKey)
+        {
+            lock (_lock)
+            {
+                try
+                {
+                    // Check if the parent setting (e.g., "AssimpSettings") exists
+                    if (settings.ContainsKey(mainSettingKey) && settings[mainSettingKey] is Dictionary<string, object> mainSettings)
+                    {
+                        // Check if the parent setting (e.g., "Import" or "Export") exists
+                        if (mainSettings.ContainsKey(subSettingKey) && mainSettings[subSettingKey] is Dictionary<string, object> subSettings)
+                        {
+                            if (subSettings.ContainsKey(settingToUpdateKey))
+                            {
+                                // Update the sub-setting value
+                                subSettings[settingToUpdateKey] = updateValue;
+
+                                // Update the parent setting with the modified sub-settings
+                                mainSettings[subSettingKey] = subSettings;
+
+                                // Update the top-level settings with the modified main settings
+                                settings[mainSettingKey] = mainSettings;
+
+                                _logger.Info($"Updated {mainSettingKey} -> {subSettingKey} -> {settingToUpdateKey} with value: {updateValue}.");
+                                SaveSettings();
+                            }
+                            else
+                            {
+                                _logger.Warn($"Key {settingToUpdateKey} not found in {subSettingKey}. Aborting update.");
+                            }
+                        }
+                        else
+                        {
+                            _logger.Warn($"Key {subSettingKey} not found in {mainSettings}. Aborting update.");
+                        }
+                    }
+                    else
+                    {
+                        _logger.Warn($"Major setting {mainSettingKey} not found. Aborting update.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Failed to update setting for keys: {string.Join(" -> ", mainSettingKey, subSettingKey, settingToUpdateKey)} with value: {updateValue}. Error: {ex.Message}");
                 }
             }
         }
