@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-E:\git\UnBox3D\obj\Debug\net8.0-windows\
+C:\Users\lemuz\source\repos\UnBox3D\obj\Debug\net8.0-windows\
 UnBox3D
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-E:\git\UnBox3D\App.xaml
-2-2121854466
+C:\Users\lemuz\source\repos\UnBox3D\App.xaml
+1-1644662438
 
-71261174320
-217-1229832535
-MainWindow.xaml;SettingsWindow.xaml;
+141993232274
+22280784469
+Views\MainWindow.xaml;
 
 False
 

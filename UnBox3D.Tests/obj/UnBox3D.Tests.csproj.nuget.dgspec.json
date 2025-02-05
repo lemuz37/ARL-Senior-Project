@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\git\\UnBox3D.Tests\\UnBox3D.Tests.csproj": {}
+    "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj": {}
   },
   "projects": {
-    "E:\\git\\UnBox3D.Tests\\UnBox3D.Tests.csproj": {
+    "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\git\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
         "projectName": "UnBox3D.Tests",
-        "projectPath": "E:\\git\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
+        "projectPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
         "packagesPath": "C:\\Users\\lemuz\\.nuget\\packages\\",
-        "outputPath": "E:\\git\\UnBox3D.Tests\\obj\\",
+        "outputPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0-windows7.0": {
             "targetAlias": "net8.0-windows",
             "projectReferences": {
-              "E:\\git\\UnBox3D\\UnBox3D.csproj": {
-                "projectPath": "E:\\git\\UnBox3D\\UnBox3D.csproj"
+              "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj": {
+                "projectPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj"
               }
             }
           }
@@ -54,6 +54,10 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.12.0, )"
@@ -69,6 +73,10 @@
               "version": "[6.0.4, )"
             },
             "xunit": {
+              "target": "Package",
+              "version": "[2.9.3, )"
+            },
+            "xunit.assert": {
               "target": "Package",
               "version": "[2.9.3, )"
             },
@@ -99,14 +107,14 @@
         }
       }
     },
-    "E:\\git\\UnBox3D\\UnBox3D.csproj": {
+    "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\git\\UnBox3D\\UnBox3D.csproj",
+        "projectUniqueName": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj",
         "projectName": "UnBox3D",
-        "projectPath": "E:\\git\\UnBox3D\\UnBox3D.csproj",
+        "projectPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj",
         "packagesPath": "C:\\Users\\lemuz\\.nuget\\packages\\",
-        "outputPath": "E:\\git\\UnBox3D\\obj\\",
+        "outputPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -145,6 +153,18 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "AssimpNet": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "OpenTK": {
               "target": "Package",
               "version": "[4.9.3, )"
@@ -153,9 +173,13 @@
               "target": "Package",
               "version": "[4.0.2, )"
             },
-            "OpenTK.Windowing.Desktop": {
+            "OpenTK.GLWpfControl": {
               "target": "Package",
-              "version": "[4.9.3, )"
+              "version": "[4.3.3, )"
+            },
+            "OpenTkWPFHost": {
+              "target": "Package",
+              "version": "[5.0.0.3, )"
             }
           },
           "imports": [

@@ -3,102 +3,244 @@
   "WorkspaceRootPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\utils\\settingsmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\settingsmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{78679842-FBB4-46E4-9564-541C8FD22B5F}|..\\UnBox3D.Tests\\UnBox3D.Tests.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d.tests\\settingsmanagertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\settingswindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|solutionrelative:settingswindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\utils\\filesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\filesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\settingswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|solutionrelative:settingswindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{78679842-FBB4-46E4-9564-541C8FD22B5F}|..\\UnBox3D.Tests\\UnBox3D.Tests.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d.tests\\loggertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\settingswindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{515CFAE5-48C0-4CD4-92AB-362BA1C5569C}|UnBox3D.csproj|solutionrelative:settingswindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}"
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\opengl\\glcontrolhost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:opengl\\glcontrolhost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78679842-FBB4-46E4-9564-541C8FD22B5F}|..\\UnBox3D.Tests\\UnBox3D.Tests.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d.tests\\modelloadertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\utils\\isettingkey.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\isettingkey.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\models\\modelloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:models\\modelloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|c:\\users\\lemuz\\source\\repos\\unbox3d\\utils\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
     {
-      "Orientation": 1,
+      "Orientation": 0,
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 200,
-          "SelectedChildIndex": 3,
+          "DockedWidth": 85,
+          "SelectedChildIndex": 1,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SettingsWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\SettingsWindow.xaml.cs",
-              "RelativeDocumentMoniker": "SettingsWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\SettingsWindow.xaml.cs",
-              "RelativeToolTip": "SettingsWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-25T23:38:18.321Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "SettingsWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\SettingsWindow.xaml",
-              "RelativeDocumentMoniker": "SettingsWindow.xaml",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\SettingsWindow.xaml",
-              "RelativeToolTip": "SettingsWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-01-25T23:37:18.821Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "MainWindow.xaml",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\MainWindow.xaml",
-              "RelativeToolTip": "MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-01-25T21:39:07.56Z",
+              "Title": "SettingsManagerTests.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\SettingsManagerTests.cs",
+              "RelativeDocumentMoniker": "..\\UnBox3D.Tests\\SettingsManagerTests.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\SettingsManagerTests.cs",
+              "RelativeToolTip": "..\\UnBox3D.Tests\\SettingsManagerTests.cs",
+              "ViewState": "AgIAAD0AAAAAAAAAAAAgwF4AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T03:52:29.623Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\MainWindow.xaml.cs",
-              "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAGUAAAAAAAAAAAAswG8AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "ModelLoaderTests.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\ModelLoaderTests.cs",
+              "RelativeDocumentMoniker": "..\\UnBox3D.Tests\\ModelLoaderTests.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\ModelLoaderTests.cs",
+              "RelativeToolTip": "..\\UnBox3D.Tests\\ModelLoaderTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-25T20:40:09.534Z",
+              "WhenOpened": "2025-02-05T04:51:00.038Z",
               "EditorCaption": ""
             }
           ]
         },
         {
-          "DockedHeight": 200,
-          "SelectedChildIndex": 0,
+          "DockedWidth": 57,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "SettingsWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\SettingsWindow.xaml",
-              "RelativeDocumentMoniker": "SettingsWindow.xaml",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\SettingsWindow.xaml",
-              "RelativeToolTip": "SettingsWindow.xaml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAIAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "FileSystem.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\FileSystem.cs",
+              "RelativeDocumentMoniker": "Utils\\FileSystem.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\FileSystem.cs",
+              "RelativeToolTip": "Utils\\FileSystem.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwBwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T04:01:32.053Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SettingsManager.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\SettingsManager.cs",
+              "RelativeDocumentMoniker": "Utils\\SettingsManager.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\SettingsManager.cs",
+              "RelativeToolTip": "Utils\\SettingsManager.cs",
+              "ViewState": "AgIAAA0BAAAAAAAAAAAowCYBAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T03:00:24.314Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Logger.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\Logger.cs",
+              "RelativeDocumentMoniker": "Utils\\Logger.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\Logger.cs",
+              "RelativeToolTip": "Utils\\Logger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T03:02:32.89Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\App.xaml.cs",
+              "RelativeDocumentMoniker": "App.xaml.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\App.xaml.cs",
+              "RelativeToolTip": "App.xaml.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAcwCMAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T04:31:52.514Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ModelLoader.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Models\\ModelLoader.cs",
+              "RelativeDocumentMoniker": "Models\\ModelLoader.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Models\\ModelLoader.cs",
+              "RelativeToolTip": "Models\\ModelLoader.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T06:07:42.894Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ISettingKey.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\ISettingKey.cs",
+              "RelativeDocumentMoniker": "Utils\\ISettingKey.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Utils\\ISettingKey.cs",
+              "RelativeToolTip": "Utils\\ISettingKey.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T03:04:58.947Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Views\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "Views\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Views\\MainWindow.xaml.cs",
+              "RelativeToolTip": "Views\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T01:12:46.831Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Views\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "Views\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\Views\\MainWindow.xaml",
+              "RelativeToolTip": "Views\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-01-26T00:11:26.112Z",
+              "WhenOpened": "2025-02-05T01:11:35.333Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "MainViewModel.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\ViewModels\\MainViewModel.cs",
+              "RelativeDocumentMoniker": "ViewModels\\MainViewModel.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\ViewModels\\MainViewModel.cs",
+              "RelativeToolTip": "ViewModels\\MainViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T01:04:08.536Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GLControlHost.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\OpenGL\\GLControlHost.cs",
+              "RelativeDocumentMoniker": "OpenGL\\GLControlHost.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\OpenGL\\GLControlHost.cs",
+              "RelativeToolTip": "OpenGL\\GLControlHost.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAYAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T01:01:57.001Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LoggerTests.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\LoggerTests.cs",
+              "RelativeDocumentMoniker": "..\\UnBox3D.Tests\\LoggerTests.cs",
+              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\LoggerTests.cs",
+              "RelativeToolTip": "..\\UnBox3D.Tests\\LoggerTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T03:13:34.275Z",
               "EditorCaption": ""
             }
           ]

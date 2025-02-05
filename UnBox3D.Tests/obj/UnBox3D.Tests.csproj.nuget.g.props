@@ -22,5 +22,6 @@
   </ImportGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <Pkgxunit_analyzers Condition=" '$(Pkgxunit_analyzers)' == '' ">C:\Users\lemuz\.nuget\packages\xunit.analyzers\1.18.0</Pkgxunit_analyzers>
+    <PkgFluentAssertions Condition=" '$(PkgFluentAssertions)' == '' ">C:\Users\lemuz\.nuget\packages\fluentassertions\8.0.1</PkgFluentAssertions>
   </PropertyGroup>
 </Project>
