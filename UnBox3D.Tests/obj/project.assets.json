@@ -6365,11 +6365,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
+      "projectUniqueName": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
       "projectName": "UnBox3D.Tests",
-      "projectPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
+      "projectPath": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
       "packagesPath": "C:\\Users\\lemuz\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\obj\\",
+      "outputPath": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -6390,8 +6390,8 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "projectReferences": {
-            "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj": {
-              "projectPath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D\\UnBox3D.csproj"
+            "E:\\git\\ARL-Senior-Project\\UnBox3D\\UnBox3D.csproj": {
+              "projectPath": "E:\\git\\ARL-Senior-Project\\UnBox3D\\UnBox3D.csproj"
             }
           }
         }

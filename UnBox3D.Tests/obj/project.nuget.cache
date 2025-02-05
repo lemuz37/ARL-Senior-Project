@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "shgneRaahlc=",
+  "dgSpecHash": "4WQ0Kxio/as=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
+  "projectFilePath": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\UnBox3D.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lemuz\\.nuget\\packages\\assimpnet\\4.1.0\\assimpnet.4.1.0.nupkg.sha512",
     "C:\\Users\\lemuz\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",

@@ -93,5 +93,20 @@ namespace UnBox3D.Tests
              Assert.Equal(10.0f, updatedValue);
             _loggerMock.Verify(logger => logger.Info(It.Is<string>(s => s.Contains("Updated AppSettings -> SplashScreenDuration"))), Times.Once);
         }
+
+        [Fact]
+        public void SettingsManager_ShouldUpdateThreeLevelNestedSetting_WhenUpdateSettingIsCalled()
+        {
+            // Arrange
+            var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);
+
+            // Act
+            settingsManager.UpdateSetting(false, "AssimpSettings", "Import", "EnableTriangulation");
+
+            // Assert
+            var updatedValue = settingsManager.GetSetting(true, "AssimpSettings", "Import", "EnableTriangulation");
+            Assert.False(updatedValue);
+            _loggerMock.Verify(logger => logger.Info(It.Is<string>(s => s.Contains("Updated AssimpSettings -> Import -> EnableTriangulation"))), Times.Once);
+        }
     }
 }

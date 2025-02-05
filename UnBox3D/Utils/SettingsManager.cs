@@ -252,14 +252,11 @@ namespace UnBox3D.Utils
                     // Three-Level Solution (e.g., "AssimpSettings" -> "Import" -> "EnableTriangulation")
                     else
                     {
-                        if (settings.ContainsKey(mainSetting) && settings[mainSetting] is JObject majorJObject)
+                        if (settings.ContainsKey(mainSetting) && settings[mainSetting] is Dictionary<string, object> mainSettings)
                         {
-                            Dictionary<string, object> mainSettings = majorJObject.ToObject<Dictionary<string, object>>();
-
                             // Check if the parent setting (e.g., "Import" or "Export") exists
-                            if (mainSettings.ContainsKey(keyParentSetting) && mainSettings[keyParentSetting] is JObject jObject)
+                            if (mainSettings.ContainsKey(keyParentSetting) && mainSettings[keyParentSetting] is Dictionary<string, object> subSettings)
                             {
-                                Dictionary<string, object> subSettings = jObject.ToObject<Dictionary<string, object>>();
                                 if (subSettings.ContainsKey(keyToUpdateValue))
                                 {
                                     // Update the sub-setting value
