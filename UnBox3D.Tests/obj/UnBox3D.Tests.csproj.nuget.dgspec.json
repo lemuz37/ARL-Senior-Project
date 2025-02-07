@@ -161,6 +161,10 @@
               "target": "Package",
               "version": "[8.4.0, )"
             },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
@@ -180,6 +184,10 @@
             "OpenTkWPFHost": {
               "target": "Package",
               "version": "[5.0.0.3, )"
+            },
+            "geometry3Sharp": {
+              "target": "Package",
+              "version": "[1.0.324, )"
             }
           },
           "imports": [

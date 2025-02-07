@@ -3,59 +3,136 @@
   "WorkspaceRootPath": "E:\\git\\ARL-Senior-Project\\UnBox3D\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\settingsmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\settingsmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\ProgramData\\UnBox3D\\Settings\\settings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\SettingsManagerTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{78679842-FBB4-46E4-9564-541C8FD22B5F}|..\\UnBox3D.Tests\\UnBox3D.Tests.csproj|e:\\git\\arl-senior-project\\unbox3d.tests\\settingsmanagertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\ModelLoaderTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\opengl\\glcontrolhost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:opengl\\glcontrolhost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\filesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\filesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\rendering\\opengl\\glcontrolhost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:rendering\\opengl\\glcontrolhost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:views\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\states\\movestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\states\\movestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\states\\rotatestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\states\\rotatestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\rendering\\raycaster.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:rendering\\raycaster.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\rendering\\appmesh.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:rendering\\appmesh.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\filesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\filesystem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\rotatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\rotatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\states\\defaultstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\states\\defaultstate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\mousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\mousecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\states\\istate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\states\\istate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\rendering\\camera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:rendering\\camera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\keyboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\keyboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\controls\\states\\deletestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:controls\\states\\deletestate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\rendering\\scenerenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:rendering\\scenerenderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:views\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\lemuz\\AppData\\Local\\Temp\\.vsdbgsrc\\6aa8dfe6dce7647690db27e2d44efd3bdfeed3cfaad2ff4a1195b1c962d31917\\XamlReader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\lemuz\\AppData\\Local\\SourceServer\\1dac6df273794e4ad75e3277b2b784fde4aa865d6024259b08a2d2601c25e136\\src\\libraries\\System.Private.CoreLib\\src\\System\\DefaultBinder.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\rendering\\scenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:rendering\\scenemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\models\\modelimporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:models\\modelimporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\setrotatestatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\setrotatestatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78679842-FBB4-46E4-9564-541C8FD22B5F}|..\\UnBox3D.Tests\\UnBox3D.Tests.csproj|e:\\git\\arl-senior-project\\unbox3d.tests\\utils\\settingsmanagertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{78679842-FBB4-46E4-9564-541C8FD22B5F}|..\\UnBox3D.Tests\\UnBox3D.Tests.csproj|e:\\git\\arl-senior-project\\unbox3d.tests\\utils\\loggertests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\settingsmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\settingsmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\setmovestatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\setmovestatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\setdeletestatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\setdeletestatecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\movecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\movecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\deletecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\deletecommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\commands\\icommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:commands\\icommand.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\isettingkey.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\isettingkey.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\models\\modelloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:models\\modelloader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\LoggerTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|e:\\git\\arl-senior-project\\unbox3d\\utils\\blenderintegration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8B9E6438-0DDB-41FE-BA96-F7C2625A7A9E}|UnBox3D.csproj|solutionrelative:utils\\blenderintegration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -64,71 +141,32 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 105,
-          "SelectedChildIndex": 2,
+          "DockedWidth": 103,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "SettingsManagerTests.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\SettingsManagerTests.cs",
-              "RelativeDocumentMoniker": "..\\UnBox3D.Tests\\SettingsManagerTests.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\SettingsManagerTests.cs",
-              "RelativeToolTip": "..\\UnBox3D.Tests\\SettingsManagerTests.cs",
-              "ViewState": "AgIAADgAAAAAAAAAAAAIwC0AAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T17:07:22.99Z",
-              "EditorCaption": ""
-            },
+            }
+          ]
+        },
+        {
+          "DockedWidth": 173,
+          "SelectedChildIndex": 2,
+          "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "SettingsManagerTests.cs",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\SettingsManagerTests.cs",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\SettingsManagerTests.cs",
-              "ViewState": "AgIAADwAAAAAAAAAAAAAAFcAAAASAAAAAAAAAA==",
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\App.xaml.cs",
+              "RelativeDocumentMoniker": "App.xaml.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\App.xaml.cs",
+              "RelativeToolTip": "App.xaml.cs",
+              "ViewState": "AgIAACEAAAAAAAAAAAAwwD0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T03:52:29.623Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-05T04:31:52.514Z",
+              "IsPinned": true
             },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ModelLoaderTests.cs",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\ModelLoaderTests.cs",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\ModelLoaderTests.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T04:51:00.038Z",
-              "EditorCaption": ""
-            }
-          ]
-        },
-        {
-          "DockedWidth": 54,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "settings.json",
-              "DocumentMoniker": "C:\\ProgramData\\UnBox3D\\Settings\\settings.json",
-              "ToolTip": "C:\\ProgramData\\UnBox3D\\Settings\\settings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-02-05T21:35:03.051Z",
-              "EditorCaption": ""
-            }
-          ]
-        },
-        {
-          "DockedWidth": 125,
-          "SelectedChildIndex": 1,
-          "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 7,
@@ -137,90 +175,195 @@
               "RelativeDocumentMoniker": "Utils\\FileSystem.cs",
               "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\FileSystem.cs",
               "RelativeToolTip": "Utils\\FileSystem.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAQwBwAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAACMAAAAAAAAAAAAAADMAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T04:01:32.053Z",
+              "WhenOpened": "2025-02-07T05:43:22.434Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "SettingsManager.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\SettingsManager.cs",
-              "RelativeDocumentMoniker": "Utils\\SettingsManager.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\SettingsManager.cs",
-              "RelativeToolTip": "Utils\\SettingsManager.cs",
-              "ViewState": "AgIAAM8AAAAAAAAAAADwv/gAAACNAAAAAAAAAA==",
+              "Title": "GLControlHost.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\OpenGL\\GLControlHost.cs",
+              "RelativeDocumentMoniker": "Rendering\\OpenGL\\GLControlHost.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\OpenGL\\GLControlHost.cs",
+              "RelativeToolTip": "Rendering\\OpenGL\\GLControlHost.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAIwCMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T03:00:24.314Z",
-              "IsPinned": true,
+              "WhenOpened": "2025-02-05T01:01:57.001Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Logger.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\Logger.cs",
-              "RelativeDocumentMoniker": "Utils\\Logger.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\Logger.cs",
-              "RelativeToolTip": "Utils\\Logger.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAjAAAAAAAAAA==",
+              "DocumentIndex": 6,
+              "Title": "AppMesh.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\AppMesh.cs",
+              "RelativeDocumentMoniker": "Rendering\\AppMesh.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\AppMesh.cs",
+              "RelativeToolTip": "Rendering\\AppMesh.cs",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAwwHcAAAA8AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T03:02:32.89Z",
-              "IsPinned": true
+              "WhenOpened": "2025-02-07T05:48:26.97Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "App.xaml.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\App.xaml.cs",
-              "RelativeDocumentMoniker": "App.xaml.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\App.xaml.cs",
-              "RelativeToolTip": "App.xaml.cs",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAcwCMAAAABAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "MoveState.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\MoveState.cs",
+              "RelativeDocumentMoniker": "Controls\\States\\MoveState.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\MoveState.cs",
+              "RelativeToolTip": "Controls\\States\\MoveState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAF0AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T04:31:52.514Z",
-              "IsPinned": true
+              "WhenOpened": "2025-02-07T08:11:59.196Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "ModelLoader.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Models\\ModelLoader.cs",
-              "RelativeDocumentMoniker": "Models\\ModelLoader.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Models\\ModelLoader.cs",
-              "RelativeToolTip": "Models\\ModelLoader.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T06:07:42.894Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ISettingKey.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\ISettingKey.cs",
-              "RelativeDocumentMoniker": "Utils\\ISettingKey.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\ISettingKey.cs",
-              "RelativeToolTip": "Utils\\ISettingKey.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T03:04:58.947Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Views\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "Views\\MainWindow.xaml.cs",
               "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Views\\MainWindow.xaml.cs",
               "RelativeToolTip": "Views\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T01:12:46.831Z"
+              "WhenOpened": "2025-02-05T01:12:46.831Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "RotateState.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\RotateState.cs",
+              "RelativeDocumentMoniker": "Controls\\States\\RotateState.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\RotateState.cs",
+              "RelativeToolTip": "Controls\\States\\RotateState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADAAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T08:37:34.164Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "MouseController.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\MouseController.cs",
+              "RelativeDocumentMoniker": "Controls\\MouseController.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\MouseController.cs",
+              "RelativeToolTip": "Controls\\MouseController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADUAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T05:16:16.757Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IState.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\IState.cs",
+              "RelativeDocumentMoniker": "Controls\\States\\IState.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\IState.cs",
+              "RelativeToolTip": "Controls\\States\\IState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T08:09:44.746Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "RayCaster.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\RayCaster.cs",
+              "RelativeDocumentMoniker": "Rendering\\RayCaster.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\RayCaster.cs",
+              "RelativeToolTip": "Rendering\\RayCaster.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAA1wCoAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T08:41:09.877Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Camera.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\Camera.cs",
+              "RelativeDocumentMoniker": "Rendering\\Camera.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\Camera.cs",
+              "RelativeToolTip": "Rendering\\Camera.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACkAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T07:07:25.025Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "DefaultState.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\DefaultState.cs",
+              "RelativeDocumentMoniker": "Controls\\States\\DefaultState.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\DefaultState.cs",
+              "RelativeToolTip": "Controls\\States\\DefaultState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwA0AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T08:09:25.76Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "KeyboardController.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\KeyboardController.cs",
+              "RelativeDocumentMoniker": "Controls\\KeyboardController.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\KeyboardController.cs",
+              "RelativeToolTip": "Controls\\KeyboardController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T07:30:16.256Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "DeleteState.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\DeleteState.cs",
+              "RelativeDocumentMoniker": "Controls\\States\\DeleteState.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Controls\\States\\DeleteState.cs",
+              "RelativeToolTip": "Controls\\States\\DeleteState.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T08:11:30.072Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "App.xaml",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\App.xaml",
+              "RelativeDocumentMoniker": "App.xaml",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\App.xaml",
+              "RelativeToolTip": "App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-02-07T06:45:52.703Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "RotateCommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\RotateCommand.cs",
+              "RelativeDocumentMoniker": "Commands\\RotateCommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\RotateCommand.cs",
+              "RelativeToolTip": "Commands\\RotateCommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:20:58.429Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "SceneRenderer.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\SceneRenderer.cs",
+              "RelativeDocumentMoniker": "Rendering\\SceneRenderer.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\SceneRenderer.cs",
+              "RelativeToolTip": "Rendering\\SceneRenderer.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAA6wDQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T06:55:24.131Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Views\\MainWindow.xaml",
               "RelativeDocumentMoniker": "Views\\MainWindow.xaml",
@@ -231,37 +374,194 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 18,
+              "Title": "XamlReader.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\AppData\\Local\\Temp\\.vsdbgsrc\\6aa8dfe6dce7647690db27e2d44efd3bdfeed3cfaad2ff4a1195b1c962d31917\\XamlReader.cs",
+              "ToolTip": "C:\\Users\\lemuz\\AppData\\Local\\Temp\\.vsdbgsrc\\6aa8dfe6dce7647690db27e2d44efd3bdfeed3cfaad2ff4a1195b1c962d31917\\XamlReader.cs [Read Only]",
+              "ViewState": "AgIAAHwBAAAAAAAAAAAAwJABAAACAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T06:21:07.459Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "SceneManager.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\SceneManager.cs",
+              "RelativeDocumentMoniker": "Rendering\\SceneManager.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Rendering\\SceneManager.cs",
+              "RelativeToolTip": "Rendering\\SceneManager.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T05:48:19.518Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "SettingsManagerTests.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\Utils\\SettingsManagerTests.cs",
+              "RelativeDocumentMoniker": "..\\UnBox3D.Tests\\Utils\\SettingsManagerTests.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\Utils\\SettingsManagerTests.cs",
+              "RelativeToolTip": "..\\UnBox3D.Tests\\Utils\\SettingsManagerTests.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAIwDcAAABdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T05:45:53.712Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
               "Title": "MainViewModel.cs",
               "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\ViewModels\\MainViewModel.cs",
               "RelativeDocumentMoniker": "ViewModels\\MainViewModel.cs",
               "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\ViewModels\\MainViewModel.cs",
               "RelativeToolTip": "ViewModels\\MainViewModel.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAwwCYAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-02-05T01:04:08.536Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "GLControlHost.cs",
-              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\OpenGL\\GLControlHost.cs",
-              "RelativeDocumentMoniker": "OpenGL\\GLControlHost.cs",
-              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\OpenGL\\GLControlHost.cs",
-              "RelativeToolTip": "OpenGL\\GLControlHost.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAARAAAAAAAAAA==",
+              "DocumentIndex": 23,
+              "Title": "SetRotateStateCommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\SetRotateStateCommand.cs",
+              "RelativeDocumentMoniker": "Commands\\SetRotateStateCommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\SetRotateStateCommand.cs",
+              "RelativeToolTip": "Commands\\SetRotateStateCommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T01:01:57.001Z"
+              "WhenOpened": "2025-02-06T19:23:13.651Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "LoggerTests.cs",
-              "DocumentMoniker": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\LoggerTests.cs",
-              "ToolTip": "C:\\Users\\lemuz\\source\\repos\\UnBox3D.Tests\\LoggerTests.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADMAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 20,
+              "Title": "DefaultBinder.cs",
+              "DocumentMoniker": "C:\\Users\\lemuz\\AppData\\Local\\SourceServer\\1dac6df273794e4ad75e3277b2b784fde4aa865d6024259b08a2d2601c25e136\\src\\libraries\\System.Private.CoreLib\\src\\System\\DefaultBinder.cs",
+              "ToolTip": "C:\\Users\\lemuz\\AppData\\Local\\SourceServer\\1dac6df273794e4ad75e3277b2b784fde4aa865d6024259b08a2d2601c25e136\\src\\libraries\\System.Private.CoreLib\\src\\System\\DefaultBinder.cs [Read Only]",
+              "ViewState": "AgIAABEAAAAAAAAAAAAQwDkAAAAQAAAAAQAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-05T03:13:34.275Z"
+              "WhenOpened": "2025-02-07T06:16:50.242Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "LoggerTests.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\Utils\\LoggerTests.cs",
+              "RelativeDocumentMoniker": "..\\UnBox3D.Tests\\Utils\\LoggerTests.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D.Tests\\Utils\\LoggerTests.cs",
+              "RelativeToolTip": "..\\UnBox3D.Tests\\Utils\\LoggerTests.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAgwCAAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T05:44:48.136Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "SettingsManager.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\SettingsManager.cs",
+              "RelativeDocumentMoniker": "Utils\\SettingsManager.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\SettingsManager.cs",
+              "RelativeToolTip": "Utils\\SettingsManager.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAowDIAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T05:43:07.352Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ModelImporter.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Models\\ModelImporter.cs",
+              "RelativeDocumentMoniker": "Models\\ModelImporter.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Models\\ModelImporter.cs",
+              "RelativeToolTip": "Models\\ModelImporter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADEAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T00:43:16.509Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "SetMoveStateCommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\SetMoveStateCommand.cs",
+              "RelativeDocumentMoniker": "Commands\\SetMoveStateCommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\SetMoveStateCommand.cs",
+              "RelativeToolTip": "Commands\\SetMoveStateCommand.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAowCgAAABcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:21:19.306Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "SetDeleteStateCommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\SetDeleteStateCommand.cs",
+              "RelativeDocumentMoniker": "Commands\\SetDeleteStateCommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\SetDeleteStateCommand.cs",
+              "RelativeToolTip": "Commands\\SetDeleteStateCommand.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAQwCcAAABhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:21:09.404Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "MoveCommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\MoveCommand.cs",
+              "RelativeDocumentMoniker": "Commands\\MoveCommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\MoveCommand.cs",
+              "RelativeToolTip": "Commands\\MoveCommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:20:42.752Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "DeleteCommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\DeleteCommand.cs",
+              "RelativeDocumentMoniker": "Commands\\DeleteCommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\DeleteCommand.cs",
+              "RelativeToolTip": "Commands\\DeleteCommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:18:27.357Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "ICommand.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\ICommand.cs",
+              "RelativeDocumentMoniker": "Commands\\ICommand.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Commands\\ICommand.cs",
+              "RelativeToolTip": "Commands\\ICommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:17:09.98Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "BlenderIntegration.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\BlenderIntegration.cs",
+              "RelativeDocumentMoniker": "Utils\\BlenderIntegration.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\BlenderIntegration.cs",
+              "RelativeToolTip": "Utils\\BlenderIntegration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-06T19:15:37.068Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "ISettingKey.cs",
+              "DocumentMoniker": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\ISettingKey.cs",
+              "RelativeDocumentMoniker": "Utils\\ISettingKey.cs",
+              "ToolTip": "E:\\git\\ARL-Senior-Project\\UnBox3D\\Utils\\ISettingKey.cs",
+              "RelativeToolTip": "Utils\\ISettingKey.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAuwH4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-05T03:04:58.947Z"
             }
           ]
         }

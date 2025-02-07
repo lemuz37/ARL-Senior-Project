@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace UnBox3D.Utils
 {
-    public class SettingsManager
+    public interface ISettingsManager 
+    {
+        void SaveSettings();
+        T GetSetting<T>(T defaultValue = default, params string[] keys);
+        void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey);
+        void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey, string settingToUpdateKey);
+    }
+    public class SettingsManager : ISettingsManager
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
@@ -72,76 +77,79 @@ namespace UnBox3D.Utils
         /// </summary>
         private Dictionary<string, object> GetDefaultSettings()
         {
+            var appSettings = new AppSettings();
+            var assimpSettings = new AssimpSettings();
+            var renderingSettings = new RenderingSettings();
+            var uiSettings = new UISettings();
+            var unitsSettings = new UnitsSettings();
+            var windowSettings = new WindowSettings();
+
             return new Dictionary<string, object>
+    {
+        { appSettings.GetKey(), new Dictionary<string, object>
             {
-                { new AppSettings().GetKey(), new Dictionary<string, object>
-                    {
-                        { AppSettings.SplashScreenDuration, 3.0f },
-                        { AppSettings.ExportDirectory, Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "UnBox3D", "Export") }
-                    }
-                },
+                { AppSettings.SplashScreenDuration, appSettings.DefaultSplashScreenDuration },
+                { AppSettings.ExportDirectory, appSettings.DefaultExportDirectory }
+            }
+        },
 
-                { new AssimpSettings().GetKey(), new Dictionary<string, object>
+        { assimpSettings.GetKey(), new Dictionary<string, object>
+            {
+                { AssimpSettings.Export, new Dictionary<string, object>() },
+                { AssimpSettings.Import, new Dictionary<string, object>
                     {
-                        { AssimpSettings.Export, new Dictionary<string, object>
-                            {
-
-                            }
-                        },
-                        { AssimpSettings.Import, new Dictionary<string, object>
-                            {
-                                { AssimpSettings.EnableTriangulation, true },
-                                { AssimpSettings.JoinIdenticalVertices, true },
-                                { AssimpSettings.RemoveComponents, false },
-                                { AssimpSettings.SplitLargeMeshes, true },
-                                { AssimpSettings.OptimizeMeshes, true },
-                                { AssimpSettings.FindDegenerates, true },
-                                { AssimpSettings.FindInvalidData, true },
-                                { AssimpSettings.IgnoreInvalidData, false }
-                            }
-                        }
-                    }
-                },
-
-                { new RenderingSettings().GetKey(), new Dictionary<string, object>
-                    {
-                        { RenderingSettings.BackgroundColor, "lightgrey" },
-                        { RenderingSettings.MeshColor, "red" },
-                        { RenderingSettings.MeshHighlightColor, "cyan" },
-                        { RenderingSettings.RenderMode, "wireframe" },
-                        { RenderingSettings.ShadingModel, "smooth" },
-                        { RenderingSettings.LightingEnabled, true },
-                        { RenderingSettings.ShadowsEnabled, false }
-                    }
-                },
-
-                { new UISettings().GetKey(), new Dictionary<string, object>
-                    {
-                        { UISettings.ToolStripPosition, "top" },
-                        { UISettings.CameraYawSensitivity, 0.2f },
-                        { UISettings.CameraPitchSensitivity, 0.2f },
-                        { UISettings.CameraPanSensitivity, 1000.0f },
-                        { UISettings.MeshRotationSensitivity, 0.2f },
-                        { UISettings.MeshMoveSensitivity, 0.2f },
-                        { UISettings.ZoomSensitivity, 1.0f }
-                    }
-                },
-
-                { new UnitsSettings().GetKey(), new Dictionary<string, object>
-                    {
-                        { UnitsSettings.DefaultUnit, "Feet" },
-                        { UnitsSettings.UseMetricSystem, false }
-                    }
-                },
-
-                { new WindowSettings().GetKey(), new Dictionary<string, object>
-                    {
-                        { WindowSettings.Fullscreen, false },
-                        { WindowSettings.Height, 720 },
-                        { WindowSettings.Width, 1280 }
+                        { AssimpSettings.EnableTriangulation, assimpSettings.DefaultEnableTriangulation },
+                        { AssimpSettings.JoinIdenticalVertices, assimpSettings.DefaultJoinIdenticalVertices },
+                        { AssimpSettings.RemoveComponents, assimpSettings.DefaultRemoveComponents },
+                        { AssimpSettings.SplitLargeMeshes, assimpSettings.DefaultSplitLargeMeshes },
+                        { AssimpSettings.OptimizeMeshes, assimpSettings.DefaultOptimizeMeshes },
+                        { AssimpSettings.FindDegenerates, assimpSettings.DefaultFindDegenerates },
+                        { AssimpSettings.FindInvalidData, assimpSettings.DefaultFindInvalidData },
+                        { AssimpSettings.IgnoreInvalidData, assimpSettings.DefaultIgnoreInvalidData }
                     }
                 }
-            };
+            }
+        },
+
+        { renderingSettings.GetKey(), new Dictionary<string, object>
+            {
+                { RenderingSettings.BackgroundColor, renderingSettings.DefaultBackgroundColor },
+                { RenderingSettings.MeshColor, renderingSettings.DefaultMeshColor },
+                { RenderingSettings.MeshHighlightColor, renderingSettings.DefaultMeshHighlightColor },
+                { RenderingSettings.RenderMode, renderingSettings.DefaultRenderMode },
+                { RenderingSettings.ShadingModel, renderingSettings.DefaultShadingModel },
+                { RenderingSettings.LightingEnabled, renderingSettings.DefaultLightingEnabled },
+                { RenderingSettings.ShadowsEnabled, renderingSettings.DefaultShadowsEnabled }
+            }
+        },
+
+        { uiSettings.GetKey(), new Dictionary<string, object>
+            {
+                { UISettings.ToolStripPosition, uiSettings.DefaultToolStripPosition },
+                { UISettings.CameraYawSensitivity, uiSettings.DefaultCameraYawSensitivity },
+                { UISettings.CameraPitchSensitivity, uiSettings.DefaultCameraPitchSensitivity },
+                { UISettings.CameraPanSensitivity, uiSettings.DefaultCameraPanSensitivity },
+                { UISettings.MeshRotationSensitivity, uiSettings.DefaultMeshRotationSensitivity },
+                { UISettings.MeshMoveSensitivity, uiSettings.DefaultMeshMoveSensitivity },
+                { UISettings.ZoomSensitivity, uiSettings.DefaultZoomSensitivity }
+            }
+        },
+
+        { unitsSettings.GetKey(), new Dictionary<string, object>
+            {
+                { UnitsSettings.DefaultUnit, unitsSettings.DefaultDefaultUnit },
+                { UnitsSettings.UseMetricSystem, unitsSettings.DefaultUseMetricSystem }
+            }
+        },
+
+        { windowSettings.GetKey(), new Dictionary<string, object>
+            {
+                { WindowSettings.Fullscreen, windowSettings.DefaultFullscreen },
+                { WindowSettings.Height, windowSettings.DefaultHeight },
+                { WindowSettings.Width, windowSettings.DefaultWidth }
+            }
+        }
+    };
         }
 
         public void SaveSettings()

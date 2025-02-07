@@ -33,4 +33,10 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="Controls\" />
+    <Folder Include="Rendering\" />
+  </ItemGroup>
+
 </Project>

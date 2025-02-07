@@ -140,9 +140,9 @@ E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\UnBox3D.runtime
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\UnBox3D.exe
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\testhost.exe
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\xunit.runner.visualstudio.testadapter.dll
-E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\OpenGL\Shaders\lighting.frag
-E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\OpenGL\Shaders\shader.frag
-E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\OpenGL\Shaders\shader.vert
+E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Rendering\OpenGL\Shaders\lighting.frag
+E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Rendering\OpenGL\Shaders\shader.frag
+E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Rendering\OpenGL\Shaders\shader.vert
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\UnBox3D.Tests.deps.json
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\UnBox3D.Tests.runtimeconfig.json
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\UnBox3D.Tests.dll
@@ -151,7 +151,10 @@ E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\AssimpNet.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Castle.Core.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\CommunityToolkit.Mvvm.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\FluentAssertions.dll
+E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\geometry3Sharp.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Microsoft.VisualStudio.CodeCoverage.Shim.dll
+E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.dll
+E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Microsoft.TestPlatform.CoreUtilities.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Microsoft.TestPlatform.PlatformAbstractions.dll
 E:\git\ARL-Senior-Project\UnBox3D.Tests\bin\Debug\net8.0-windows\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll

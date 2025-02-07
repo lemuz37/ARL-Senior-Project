@@ -7,7 +7,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="OpenGL\GLControlHost.cs">
+    <Compile Update="Rendering\OpenGL\GLControlHost.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="Views\MainWindow.xaml.cs">

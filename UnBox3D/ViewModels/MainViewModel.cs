@@ -3,38 +3,31 @@ using CommunityToolkit.Mvvm.Input;
 using OpenTK.Mathematics;
 using System.Collections.ObjectModel;
 using UnBox3D.Models;
+using UnBox3D.Rendering;
 
 namespace UnBox3D.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly ModelLoader _modelLoader;
-
-        public ObservableCollection<Vector3> Vertices { get; } = new();
-
-        public MainViewModel()
-        {
-            _modelLoader = new ModelLoader();
-        }
-
         [RelayCommand]
-        private void LoadModel()
+        private void ImportObjModel()
         {
             var openFileDialog = new Microsoft.Win32.OpenFileDialog
             {
-                Filter = "3D Models (*.obj;*.fbx;*.dae)|*.obj;*.fbx;*.dae"
+                Filter = "3D Models (*.obj;)|*.obj;"
             };
 
-            if (openFileDialog.ShowDialog() == true)
+            // Show the dialog and check if the result is true
+            bool? result = openFileDialog.ShowDialog();
+            if (result == true)
             {
-                Vertices.Clear();
-                if (_modelLoader.LoadModel(openFileDialog.FileName))
-                {
-                    foreach (var vertex in _modelLoader.Vertices)
-                    {
-                        Vertices.Add(vertex);
-                    }
-                }
+                string filePath = openFileDialog.FileName;
+                //_sceneManager.AddMeshes(ModelImporter.ImportModel(filePath));
+
+                //foreach (var mesh in _sceneManager.GetMeshes())
+                //{
+                //    Meshes.Add(mesh);
+                //}
             }
         }
 

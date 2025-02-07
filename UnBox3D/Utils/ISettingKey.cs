@@ -9,6 +9,9 @@
         public static readonly string SplashScreenDuration = "SplashScreenDuration";
         public static readonly string ExportDirectory = "ExportDirectory";
 
+        public double DefaultSplashScreenDuration { get; set; } = 3.0;
+        public string DefaultExportDirectory { get; set; } = "C:\\ProgramData\\UnBox3D\\Export";
+
         public string GetKey()
         {
             return "AppSettings";
@@ -28,6 +31,15 @@
         public static readonly string FindInvalidData = "FindInvalidData";
         public static readonly string IgnoreInvalidData = "IgnoreInvalidData";
 
+        public bool DefaultEnableTriangulation { get; set; } = true;
+        public bool DefaultJoinIdenticalVertices { get; set; } = true;
+        public bool DefaultRemoveComponents { get; set; } = false;
+        public bool DefaultSplitLargeMeshes { get; set; } = true;
+        public bool DefaultOptimizeMeshes { get; set; } = true;
+        public bool DefaultFindDegenerates { get; set; } = true;
+        public bool DefaultFindInvalidData { get; set; } = true;
+        public bool DefaultIgnoreInvalidData { get; set; } = false;
+
         public string GetKey()
         {
             return "AssimpSettings";
@@ -43,7 +55,14 @@
         public static readonly string ShadingModel = "ShadingModel";
         public static readonly string LightingEnabled = "LightingEnabled";
         public static readonly string ShadowsEnabled = "ShadowsEnabled";
-        public static readonly string CameraFOV = "CameraFOV";
+
+        public string DefaultBackgroundColor { get; set; } = "lightgrey";
+        public string DefaultMeshColor { get; set; } = "red";
+        public string DefaultMeshHighlightColor { get; set; } = "cyan";
+        public string DefaultRenderMode { get; set; } = "wireframe";
+        public string DefaultShadingModel { get; set; } = "smooth";
+        public bool DefaultLightingEnabled { get; set; } = true;
+        public bool DefaultShadowsEnabled { get; set; } = false;
 
         public string GetKey()
         {
@@ -61,6 +80,14 @@
         public static readonly string MeshMoveSensitivity = "MeshMoveSensitivity";
         public static readonly string ZoomSensitivity = "ZoomSensitivity";
 
+        public string DefaultToolStripPosition { get; set; } = "top";
+        public double DefaultCameraYawSensitivity { get; set; } = 0.2;
+        public double DefaultCameraPitchSensitivity { get; set; } = 0.2;
+        public double DefaultCameraPanSensitivity { get; set; } = 1000.0;
+        public double DefaultMeshRotationSensitivity { get; set; } = 0.2;
+        public double DefaultMeshMoveSensitivity { get; set; } = 0.2;
+        public double DefaultZoomSensitivity { get; set; } = 1.0;
+
         public string GetKey()
         {
             return "UISettings";
@@ -71,6 +98,9 @@
     {
         public static readonly string DefaultUnit = "DefaultUnit";
         public static readonly string UseMetricSystem = "UseMetricSystem";
+
+        public string DefaultDefaultUnit { get; set; } = "Feet";
+        public bool DefaultUseMetricSystem { get; set; } = false;
 
         public string GetKey()
         {
@@ -83,6 +113,10 @@
         public static readonly string Fullscreen = "Fullscreen";
         public static readonly string Height = "Height";
         public static readonly string Width = "Width";
+
+        public bool DefaultFullscreen { get; set; } = false;
+        public int DefaultHeight { get; set; } = 720;
+        public int DefaultWidth { get; set; } = 1280;
 
         public string GetKey()
         {
