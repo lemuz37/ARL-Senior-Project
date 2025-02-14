@@ -1,15 +1,19 @@
-﻿using System.IO;
+﻿using System.Diagnostics.Eventing.Reader;
+using System.IO;
+using System.Windows.Controls;
+using gs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace UnBox3D.Utils
 {
-    public interface ISettingsManager 
+    public interface ISettingsManager
     {
         void SaveSettings();
-        T GetSetting<T>(T defaultValue = default, params string[] keys);
-        void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey);
-        void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey, string settingToUpdateKey);
+        T? GetSetting<T>(string mainSettingKey, string subSettingKey);
+        T? GetSetting<T>(string parentSettingKey, string mainSettingKey, string subSettingKey);
+        void SetSetting(string mainSettingKey, string subSettingKey, object newValue);
+        void SetSetting(string parentSettingKey, string mainSettingKey, string subSettingKey, object newValue);
     }
     public class SettingsManager : ISettingsManager
     {
@@ -17,8 +21,7 @@ namespace UnBox3D.Utils
         private readonly ILogger _logger;
         private readonly string _settingsFilePath;
         private readonly object _lock = new object();
-        private Dictionary<string, object> settings;
-        private object dict;
+        private JObject _settings;
 
         public SettingsManager(IFileSystem fileSystem, ILogger logger)
         {
@@ -49,13 +52,13 @@ namespace UnBox3D.Utils
                         _logger.Info($"Settings file found. Loading settings from: {_settingsFilePath}");
                         // Load existing settings from file.
                         var json = _fileSystem.ReadFile(_settingsFilePath);
-                        settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                        _settings = JsonConvert.DeserializeObject<JObject>(json);
                         _logger.Info("Settings loaded successfully.");
                     }
                     else
                     {
                         _logger.Warn("Settings file not found. Initializing with default settings.");
-                        settings = GetDefaultSettings();
+                        _settings = GetDefaultSettings();
                         SaveSettings();
                         _logger.Info("Default settings initialized and saved.");
                     }
@@ -75,7 +78,7 @@ namespace UnBox3D.Utils
         /// Each setting is organized into categories that match the structure of the settings.json file.
         /// To change a default value, simply modify the corresponding entry in this dictionary.
         /// </summary>
-        private Dictionary<string, object> GetDefaultSettings()
+        private JObject GetDefaultSettings()
         {
             var appSettings = new AppSettings();
             var assimpSettings = new AssimpSettings();
@@ -84,136 +87,138 @@ namespace UnBox3D.Utils
             var unitsSettings = new UnitsSettings();
             var windowSettings = new WindowSettings();
 
-            return new Dictionary<string, object>
-    {
-        { appSettings.GetKey(), new Dictionary<string, object>
+            return new JObject
             {
-                { AppSettings.SplashScreenDuration, appSettings.DefaultSplashScreenDuration },
-                { AppSettings.ExportDirectory, appSettings.DefaultExportDirectory }
-            }
-        },
+                [appSettings.GetKey()] = new JObject
+                {
+                    [AppSettings.SplashScreenDuration] = appSettings.DefaultSplashScreenDuration,
+                    [AppSettings.ExportDirectory] = appSettings.DefaultExportDirectory
+                },
 
-        { assimpSettings.GetKey(), new Dictionary<string, object>
-            {
-                { AssimpSettings.Export, new Dictionary<string, object>() },
-                { AssimpSettings.Import, new Dictionary<string, object>
+                [assimpSettings.GetKey()] = new JObject
+                {
+                    [AssimpSettings.Export] = new JObject(), // Empty object to match the structure
+                    [AssimpSettings.Import] = new JObject
                     {
-                        { AssimpSettings.EnableTriangulation, assimpSettings.DefaultEnableTriangulation },
-                        { AssimpSettings.JoinIdenticalVertices, assimpSettings.DefaultJoinIdenticalVertices },
-                        { AssimpSettings.RemoveComponents, assimpSettings.DefaultRemoveComponents },
-                        { AssimpSettings.SplitLargeMeshes, assimpSettings.DefaultSplitLargeMeshes },
-                        { AssimpSettings.OptimizeMeshes, assimpSettings.DefaultOptimizeMeshes },
-                        { AssimpSettings.FindDegenerates, assimpSettings.DefaultFindDegenerates },
-                        { AssimpSettings.FindInvalidData, assimpSettings.DefaultFindInvalidData },
-                        { AssimpSettings.IgnoreInvalidData, assimpSettings.DefaultIgnoreInvalidData }
+                        [AssimpSettings.EnableTriangulation] = assimpSettings.DefaultEnableTriangulation,
+                        [AssimpSettings.JoinIdenticalVertices] = assimpSettings.DefaultJoinIdenticalVertices,
+                        [AssimpSettings.RemoveComponents] = assimpSettings.DefaultRemoveComponents,
+                        [AssimpSettings.SplitLargeMeshes] = assimpSettings.DefaultSplitLargeMeshes,
+                        [AssimpSettings.OptimizeMeshes] = assimpSettings.DefaultOptimizeMeshes,
+                        [AssimpSettings.FindDegenerates] = assimpSettings.DefaultFindDegenerates,
+                        [AssimpSettings.FindInvalidData] = assimpSettings.DefaultFindInvalidData,
+                        [AssimpSettings.IgnoreInvalidData] = assimpSettings.DefaultIgnoreInvalidData
                     }
+                },
+
+                [renderingSettings.GetKey()] = new JObject
+                {
+                    [RenderingSettings.BackgroundColor] = renderingSettings.DefaultBackgroundColor,
+                    [RenderingSettings.MeshColor] = renderingSettings.DefaultMeshColor,
+                    [RenderingSettings.MeshHighlightColor] = renderingSettings.DefaultMeshHighlightColor,
+                    [RenderingSettings.RenderMode] = renderingSettings.DefaultRenderMode,
+                    [RenderingSettings.ShadingModel] = renderingSettings.DefaultShadingModel,
+                    [RenderingSettings.LightingEnabled] = renderingSettings.DefaultLightingEnabled,
+                    [RenderingSettings.ShadowsEnabled] = renderingSettings.DefaultShadowsEnabled
+                },
+
+                [uiSettings.GetKey()] = new JObject
+                {
+                    [UISettings.ToolStripPosition] = uiSettings.DefaultToolStripPosition,
+                    [UISettings.CameraYawSensitivity] = uiSettings.DefaultCameraYawSensitivity,
+                    [UISettings.CameraPitchSensitivity] = uiSettings.DefaultCameraPitchSensitivity,
+                    [UISettings.CameraPanSensitivity] = uiSettings.DefaultCameraPanSensitivity,
+                    [UISettings.MeshRotationSensitivity] = uiSettings.DefaultMeshRotationSensitivity,
+                    [UISettings.MeshMoveSensitivity] = uiSettings.DefaultMeshMoveSensitivity,
+                    [UISettings.ZoomSensitivity] = uiSettings.DefaultZoomSensitivity
+                },
+
+                [unitsSettings.GetKey()] = new JObject
+                {
+                    [UnitsSettings.DefaultUnit] = unitsSettings.DefaultDefaultUnit,
+                    [UnitsSettings.UseMetricSystem] = unitsSettings.DefaultUseMetricSystem
+                },
+
+                [windowSettings.GetKey()] = new JObject
+                {
+                    [WindowSettings.Fullscreen] = windowSettings.DefaultFullscreen,
+                    [WindowSettings.Height] = windowSettings.DefaultHeight,
+                    [WindowSettings.Width] = windowSettings.DefaultWidth
                 }
-            }
-        },
-
-        { renderingSettings.GetKey(), new Dictionary<string, object>
-            {
-                { RenderingSettings.BackgroundColor, renderingSettings.DefaultBackgroundColor },
-                { RenderingSettings.MeshColor, renderingSettings.DefaultMeshColor },
-                { RenderingSettings.MeshHighlightColor, renderingSettings.DefaultMeshHighlightColor },
-                { RenderingSettings.RenderMode, renderingSettings.DefaultRenderMode },
-                { RenderingSettings.ShadingModel, renderingSettings.DefaultShadingModel },
-                { RenderingSettings.LightingEnabled, renderingSettings.DefaultLightingEnabled },
-                { RenderingSettings.ShadowsEnabled, renderingSettings.DefaultShadowsEnabled }
-            }
-        },
-
-        { uiSettings.GetKey(), new Dictionary<string, object>
-            {
-                { UISettings.ToolStripPosition, uiSettings.DefaultToolStripPosition },
-                { UISettings.CameraYawSensitivity, uiSettings.DefaultCameraYawSensitivity },
-                { UISettings.CameraPitchSensitivity, uiSettings.DefaultCameraPitchSensitivity },
-                { UISettings.CameraPanSensitivity, uiSettings.DefaultCameraPanSensitivity },
-                { UISettings.MeshRotationSensitivity, uiSettings.DefaultMeshRotationSensitivity },
-                { UISettings.MeshMoveSensitivity, uiSettings.DefaultMeshMoveSensitivity },
-                { UISettings.ZoomSensitivity, uiSettings.DefaultZoomSensitivity }
-            }
-        },
-
-        { unitsSettings.GetKey(), new Dictionary<string, object>
-            {
-                { UnitsSettings.DefaultUnit, unitsSettings.DefaultDefaultUnit },
-                { UnitsSettings.UseMetricSystem, unitsSettings.DefaultUseMetricSystem }
-            }
-        },
-
-        { windowSettings.GetKey(), new Dictionary<string, object>
-            {
-                { WindowSettings.Fullscreen, windowSettings.DefaultFullscreen },
-                { WindowSettings.Height, windowSettings.DefaultHeight },
-                { WindowSettings.Width, windowSettings.DefaultWidth }
-            }
-        }
-    };
+            };
         }
 
         public void SaveSettings()
         {
             lock (_lock)
             {
-                var json = JsonConvert.SerializeObject(settings, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(_settings, Formatting.Indented);
                 _fileSystem.WriteToFile(_settingsFilePath, json);
             }
         }
 
-        public T GetSetting<T>(T defaultValue = default, params string[] keys)
+        public T? GetSetting<T>(string parentKey, string subSetting)
         {
             lock (_lock)
             {
-                _logger.Info($"Attempting to retrieve setting for keys: {string.Join(" -> ", keys)}");
-
-                object currentSetting = settings;
-
-                // Traverse the nested dictionaries based on the provided keys
-                foreach (var key in keys)
+                JObject parentDict;
+                if (_settings.ContainsKey(parentKey))
                 {
-                    if (currentSetting is Dictionary<string, object> dict && dict.ContainsKey(key))
+                    parentDict = (JObject)_settings[parentKey];
+
+                    if (parentDict.ContainsKey(subSetting))
                     {
-                        _logger.Info($"Found key '{key}' in Dictionary.");
-                        currentSetting = dict[key];
+                        return parentDict[subSetting].ToObject<T>();
                     }
-                    else if (currentSetting is JObject jObject)
+                    else
                     {
-                        var settingDict = jObject.ToObject<Dictionary<string, object>>();
-                        if (settingDict != null && settingDict.ContainsKey(key))
+                        _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
+                    }
+                }
+                else 
+                {
+                    _logger.Warn($"Parent key { parentKey } not present in Settings Dictionary.");
+                }
+
+                return default;
+            }
+        }
+
+        public T? GetSetting<T>(string parentKey, string mainSetting, string subSetting)
+        {
+            lock (_lock)
+            {
+                JObject parentDict;
+                JObject mainDict;
+                if (_settings.ContainsKey(parentKey))
+                {
+                    parentDict = (JObject)_settings[parentKey];
+
+                    if (parentDict.ContainsKey(mainSetting))
+                    {
+
+                        mainDict = (JObject)parentDict[mainSetting];
+
+                        if (mainDict.ContainsKey(subSetting)) 
                         {
-                            _logger.Info($"Found key '{key}' in JObject.");
-                            currentSetting = settingDict[key];
+                            return mainDict[subSetting].ToObject<T>();
                         }
                         else
                         {
-                            _logger.Warn($"Key '{key}' not found in JObject. Returning default value.");
-                            return defaultValue;
+                            _logger.Warn($"Sub-setting '{subSetting}' not found under '{mainSetting}'.");
                         }
                     }
                     else
                     {
-                        _logger.Warn($"Key '{key}' not found. Returning default value.");
-                        return defaultValue;
+                        _logger.Warn($"Main-setting '{mainSetting}' not found under '{parentKey}'.");
                     }
                 }
-
-                if (currentSetting is T value)
+                else
                 {
-                    _logger.Info($"Successfully retrieved setting for keys: {string.Join(" -> ", keys)}. Value: {value}");
-                    return value;
+                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
                 }
 
-                try
-                {
-                    _logger.Info($"Attempting to deserialize setting for keys: {string.Join(" -> ", keys)}.");
-                    return JsonConvert.DeserializeObject<T>(currentSetting.ToString());
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error($"Failed to deserialize setting for keys: {string.Join(" -> ", keys)}. Returning default value. Error: {ex.Message}");
-                    return defaultValue;
-                }
+                return default;
             }
         }
 
@@ -221,94 +226,81 @@ namespace UnBox3D.Utils
         // Two-Level Solution (e.g., "RenderingSettings" -> "BackgroundColor")
         // mainSettingKey The immediate parent key (e.g., "AppSettings"). The top-level category (e.g., "AppSettings" or "RenderingSettings")
         // subSettingKey The actual setting to update (e.g., "SplashScreenDuration"). The subcategory (e.g., "SplashScreenDuration")
-        public void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey)
+        public void SetSetting(string parentKey, string subSetting, object newValue)
         {
             lock (_lock)
             {
-                try
-                {
-                    LoadSettings();
-                    _logger.Info($"Attempting to update setting: {mainSettingKey} -> {subSettingKey} with value: {updateValue}");
-
-                    if (settings.ContainsKey(mainSettingKey))
+                LoadSettings();
+                JObject parentDict;
+                if (_settings.ContainsKey(parentKey))
                     {
-                        settings.TryGetValue(mainSettingKey, out dict);
-                        if (dict is Dictionary<string, object>)
+                        parentDict = (JObject)_settings[parentKey];
+
+                        if (parentDict.ContainsKey(subSetting))
                         {
-                            Dictionary<string, object> mainSettings = (Dictionary<string, object>)dict;
-                            mainSettings[subSettingKey] = updateValue;
-                            settings[mainSettingKey] = mainSettings;
-                            _logger.Info($"Updated {mainSettingKey} -> {subSettingKey} with value: {updateValue}.");
-                            SaveSettings();
+                            parentDict[subSetting] = JToken.FromObject(newValue);
+                        _logger.Info($"Updated { parentKey} -> { subSetting }");
                         }
                         else
                         {
-                            _logger.Error($"Key {subSettingKey} not found in {mainSettingKey}. Aborting update.");
-                            throw new Exception();
+                            _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
                         }
                     }
                     else
                     {
-                        _logger.Warn($"Major setting {mainSettingKey} not found. Aborting update.");
+                        _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
                     }
+
+                    SaveSettings();
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error($"Failed to update setting for keys: {string.Join(" -> ", mainSettingKey, subSettingKey)} with value: {updateValue}. Error: {ex.Message}");
-                }
-            }
+        
         }
+
         // Update a setting. Thread-safe with lock. Supports three levels of nested dictionaries.
         // Three-Level Solution (e.g., "AssimpSettings" -> "Import" -> "EnableTriangulation")
         // mainSettingKey: The immediate parent key (e.g., ""AssimpSettings""). The top-level category (e.g., ""AssimpSettings"" or "RenderingSettings")
         // subSettingKey: The nested dictionary within the parent key (e.g., "Import"). The subcategory (e.g., "Import")
         // settingToUpdateKey: The actual setting to update (e.g., "EnableTriangulation").
-
-        public void UpdateSetting(object updateValue, string mainSettingKey, string subSettingKey, string settingToUpdateKey)
+        public void SetSetting(string parentKey, string mainSetting, string subSetting, object newValue)
         {
+
             lock (_lock)
             {
-                try
+                LoadSettings();
+
+
+                JObject parentDict;
+                JObject mainDict;
+                if (_settings.ContainsKey(parentKey))
                 {
-                    // Check if the parent setting (e.g., "AssimpSettings") exists
-                    if (settings.ContainsKey(mainSettingKey) && settings[mainSettingKey] is Dictionary<string, object> mainSettings)
+                    parentDict = (JObject)_settings[parentKey];
+
+                    if (parentDict.ContainsKey(mainSetting))
                     {
-                        // Check if the parent setting (e.g., "Import" or "Export") exists
-                        if (mainSettings.ContainsKey(subSettingKey) && mainSettings[subSettingKey] is Dictionary<string, object> subSettings)
+
+                        mainDict = (JObject)parentDict[mainSetting];
+
+                        if (mainDict.ContainsKey(subSetting))
                         {
-                            if (subSettings.ContainsKey(settingToUpdateKey))
-                            {
-                                // Update the sub-setting value
-                                subSettings[settingToUpdateKey] = updateValue;
-
-                                // Update the parent setting with the modified sub-settings
-                                mainSettings[subSettingKey] = subSettings;
-
-                                // Update the top-level settings with the modified main settings
-                                settings[mainSettingKey] = mainSettings;
-
-                                _logger.Info($"Updated {mainSettingKey} -> {subSettingKey} -> {settingToUpdateKey} with value: {updateValue}.");
-                                SaveSettings();
-                            }
-                            else
-                            {
-                                _logger.Warn($"Key {settingToUpdateKey} not found in {subSettingKey}. Aborting update.");
-                            }
+                             mainDict[subSetting] = JToken.FromObject(newValue);
+                            _logger.Info($"Updated { parentKey } -> { mainSetting } -> { subSetting }");
                         }
                         else
                         {
-                            _logger.Warn($"Key {subSettingKey} not found in {mainSettings}. Aborting update.");
+                            _logger.Warn($"Sub-setting '{subSetting}' not found under '{mainSetting}'.");
                         }
                     }
                     else
                     {
-                        _logger.Warn($"Major setting {mainSettingKey} not found. Aborting update.");
+                        _logger.Warn($"Main-setting '{mainSetting}' not found under '{parentKey}'.");
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    _logger.Error($"Failed to update setting for keys: {string.Join(" -> ", mainSettingKey, subSettingKey, settingToUpdateKey)} with value: {updateValue}. Error: {ex.Message}");
+                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
                 }
+
+                SaveSettings();
             }
         }
     }

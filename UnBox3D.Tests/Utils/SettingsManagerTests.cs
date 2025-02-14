@@ -44,7 +44,7 @@ namespace UnBox3D.Tests.Utils
             var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);
 
             // Assert
-            var splashScreenDuration = settingsManager.GetSetting(3.0f, "AppSettings", "SplashScreenDuration");
+            var splashScreenDuration = settingsManager.GetSetting<float>("AppSettings", "SplashScreenDuration");
             Assert.Equal(5.0f, splashScreenDuration);
             _loggerMock.Verify(logger => logger.Info(It.Is<string>(s => s.Contains("Settings loaded successfully"))), Times.Once);
         }
@@ -73,7 +73,7 @@ namespace UnBox3D.Tests.Utils
             var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);
 
             // Act
-            var splashScreenDuration = settingsManager.GetSetting(3.0f, "AppSettings", "SplashScreenDuration");
+            var splashScreenDuration = settingsManager.GetSetting<float>("AppSettings", "SplashScreenDuration");
 
             // Assert
             Assert.Equal(5.0f, splashScreenDuration);
@@ -86,10 +86,10 @@ namespace UnBox3D.Tests.Utils
             var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);
 
             // Act
-            settingsManager.UpdateSetting(10.0f, "AppSettings", "SplashScreenDuration");
+            settingsManager.SetSetting("AppSettings", "SplashScreenDuration", 10.0f);
 
             // Assert
-            var updatedValue = settingsManager.GetSetting(3.0f, "AppSettings", "SplashScreenDuration");
+            var updatedValue = settingsManager.GetSetting<float>("AppSettings", "SplashScreenDuration");
             Assert.Equal(10.0f, updatedValue);
             _loggerMock.Verify(logger => logger.Info(It.Is<string>(s => s.Contains("Updated AppSettings -> SplashScreenDuration"))), Times.Once);
         }
@@ -101,10 +101,10 @@ namespace UnBox3D.Tests.Utils
             var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);
 
             // Act
-            settingsManager.UpdateSetting(false, "AssimpSettings", "Import", "EnableTriangulation");
+            settingsManager.SetSetting("AssimpSettings", "Import", "EnableTriangulation", false);
 
             // Assert
-            var updatedValue = settingsManager.GetSetting(true, "AssimpSettings", "Import", "EnableTriangulation");
+            var updatedValue = settingsManager.GetSetting<bool>("AssimpSettings", "Import", "EnableTriangulation");
             Assert.False(updatedValue);
             _loggerMock.Verify(logger => logger.Info(It.Is<string>(s => s.Contains("Updated AssimpSettings -> Import -> EnableTriangulation"))), Times.Once);
         }
