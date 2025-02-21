@@ -8,6 +8,14 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="Import Model" Command="{Binding ImportObjModelCommand}" />
+                <!-- Dropdown for Mesh Simplification -->
+                <MenuItem Header="Simplify Model">
+                    <MenuItem Header="QEM Simplification" Command="{Binding SimplifyQEMCommand}" />
+                    <MenuItem Header="Edge Collapse" Command="{Binding SimplifyEdgeCollapseCommand}" />
+                    <MenuItem Header="Decimation" Command="{Binding SimplifyDecimationCommand}" />
+                    <MenuItem Header="Adaptive Decimation" Command="{Binding SimplifyAdaptiveDecimationCommand}" />
+                </MenuItem>
+                <MenuItem Header="Export Model" />
                 <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
             <MenuItem Header="View">
@@ -32,13 +40,46 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ListBox Grid.Column="0" Padding="10" />
+            <!-- TreeView: Displays meshes as parents and vertices as child items -->
+            <TreeView Grid.Column="0" Padding="10" ItemsSource="{Binding Meshes}">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Vertices}">
+                        <!-- Mesh Name (Root Node) -->
+                        <TextBlock Text="{Binding Name}" FontWeight="Bold">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Rename" Command="{Binding DataContext.RenameMeshCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                    <MenuItem Header="Replace with...">
+                                        <MenuItem Header="Cube" Command="{Binding SimplifyQEMCommand}" />
+                                        <MenuItem Header="Rectangle" Command="{Binding SimplifyQEMCommand}" />
+                                        <MenuItem Header="Cylinder" Command="{Binding SimplifyEdgeCollapseCommand}" />
+                                    </MenuItem>
+                                    <MenuItem Header="Simplify Mesh">
+                                        <MenuItem Header="QEM Simplification" Command="{Binding SimplifyQEMCommand}" />
+                                        <MenuItem Header="Edge Collapse" Command="{Binding SimplifyEdgeCollapseCommand}" />
+                                        <MenuItem Header="Decimation" Command="{Binding SimplifyDecimationCommand}" />
+                                        <MenuItem Header="Adaptive Decimation" Command="{Binding SimplifyAdaptiveDecimationCommand}" />
+                                    </MenuItem>
+                                    <MenuItem Header="Delete" Command="{Binding DataContext.DeleteMeshCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
+
+                        <!-- Child Items (Vertices) -->
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" FontStyle="Italic"/>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
 
             <GridSplitter Grid.Column="1"
-                  Width="5"
-                  HorizontalAlignment="Stretch"
-                  Background="Gray"
-                  ShowsPreview="True"/>
+                          Width="5"
+                          HorizontalAlignment="Stretch"
+                          Background="Gray"
+                          ShowsPreview="True"/>
 
             <WindowsFormsHost Grid.Column="2" Name="openGLHost"/>
         </Grid>

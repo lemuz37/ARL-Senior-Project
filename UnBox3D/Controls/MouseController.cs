@@ -30,10 +30,10 @@ namespace UnBox3D.Controls
             _currentState = neutralState ?? throw new ArgumentNullException(nameof(neutralState));
 
             // Apply settings
-            _cameraYawSensitivity = _settingsManager.GetSetting(0.2f, new UISettings().GetKey(), UISettings.CameraYawSensitivity);
-            _cameraPitchSensitivity = _settingsManager.GetSetting(0.2f, new UISettings().GetKey(), UISettings.CameraPitchSensitivity);
-            _cameraPanSensitivity = _settingsManager.GetSetting(1000.0f, new UISettings().GetKey(), UISettings.CameraPanSensitivity);
-            _zoomSensitivity = _settingsManager.GetSetting(1.0f, new UISettings().GetKey(), UISettings.ZoomSensitivity);
+            _cameraYawSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.CameraYawSensitivity);
+            _cameraPitchSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.CameraPitchSensitivity);
+            _cameraPanSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.CameraPanSensitivity);
+            _zoomSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.ZoomSensitivity);
 
             // Attach mouse event handlers to the main WPF window
             var mainWindow = System.Windows.Application.Current.MainWindow;

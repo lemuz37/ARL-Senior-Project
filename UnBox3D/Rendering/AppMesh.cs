@@ -35,6 +35,18 @@ namespace UnBox3D.Rendering
         private bool _disposed = false;
         private Quaternion _transform = Quaternion.Identity;
 
+        public string Name => GetName();
+
+        public List<string> Vertices
+        {
+            get
+            {
+                return _g3Mesh.Vertices()
+                    .Select(v => $"({v.x:F2}, {v.y:F2}, {v.z:F2})")
+                    .ToList();
+            }
+        }
+
         public AppMesh(DMesh3 g3mesh, Mesh assimpMesh)
         {
             SetMesh(g3mesh, assimpMesh);

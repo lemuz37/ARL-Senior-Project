@@ -41,7 +41,7 @@ namespace UnBox3D.Controls.States
             _rayCaster = rayCaster ?? throw new ArgumentNullException(nameof(rayCaster));
             _commandHistory = commandHistory ?? throw new ArgumentNullException(nameof(commandHistory));
 
-            _rotationSensitivity = _settingsManager.GetSetting(0.2f, new UISettings().GetKey(), UISettings.MeshRotationSensitivity);
+            _rotationSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.MeshRotationSensitivity);
         }
 
         public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)

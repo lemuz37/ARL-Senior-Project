@@ -56,17 +56,12 @@ namespace UnBox3D
 
             // Register OpenGL and rendering services
             serviceCollection.AddSingleton<IGLControlHost, GLControlHost>();
-            serviceCollection.AddSingleton<IRenderer, SceneRenderer>();
             serviceCollection.AddSingleton<ISceneManager, SceneManager>();
-            serviceCollection.AddSingleton<IRayCaster, RayCaster>();
-            serviceCollection.AddSingleton<ICamera, Camera>(provider =>
+            serviceCollection.AddSingleton<IRenderer, SceneRenderer>(provider => 
             {
-                var settingsManager = provider.GetRequiredService<ISettingsManager>();
-                var glControlHost = provider.GetRequiredService<IGLControlHost>();
-                return new Camera(new Vector3(0, 0, 3), glControlHost.GetWidth() / glControlHost.GetHeight());
+                var logger = provider.GetRequiredService<ILogger>();
+                return new SceneRenderer(logger);
             });
-
-
 
             return serviceCollection.BuildServiceProvider();
         }

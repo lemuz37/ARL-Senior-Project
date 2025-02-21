@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 using OpenTK.GLControl;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace UnBox3D.Rendering.OpenGL
 {
@@ -23,13 +23,14 @@ namespace UnBox3D.Rendering.OpenGL
 
     public class GLControlHost : GLControl, IGLControlHost
     {
+
+
         private readonly float[] _vertices = {
             // Position          Normal
             -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
              0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
              0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
             -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-            // Add other faces similarly...
         };
 
         private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
@@ -40,23 +41,34 @@ namespace UnBox3D.Rendering.OpenGL
 
         private Shader _lampShader;
         private Shader _lightingShader;
-        private Camera _camera;
+        private ICamera _camera;
 
         private bool _firstMove = true;
         private Vector2 _lastMousePos;
 
-        public GLControlHost()
+        private readonly ISceneManager _sceneManager;
+        private readonly IRenderer _sceneRenderer;
+
+        public GLControlHost(ISceneManager sceneManager, IRenderer sceneRenderer)
         {
+            _sceneManager = sceneManager;
+            _sceneRenderer = sceneRenderer;
+
             Dock = DockStyle.Fill;
             Load += OnLoad;
             Paint += OnRender;
             Resize += OnResize;
 
-            System.Windows.Application.Current.Dispatcher.Hooks.DispatcherInactive += (s, e) => OnUpdate();
+            CompositionTarget.Rendering += OnRenderFrame;
         }
 
         public int GetWidth() => Width;
         public int GetHeight() => Height;
+
+        private void OnRenderFrame(object sender, EventArgs e)
+        {
+            Invalidate();
+        }
 
         public void Invalidate()
         {
@@ -111,6 +123,9 @@ namespace UnBox3D.Rendering.OpenGL
         private void OnRender(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            HandleInput();
+
+            _sceneRenderer.RenderScene(_sceneManager.GetMeshes());
 
             RenderModel();
             RenderLamp();
@@ -156,7 +171,6 @@ namespace UnBox3D.Rendering.OpenGL
 
         private void OnUpdate()
         {
-            HandleInput();
             Invalidate();
         }
 

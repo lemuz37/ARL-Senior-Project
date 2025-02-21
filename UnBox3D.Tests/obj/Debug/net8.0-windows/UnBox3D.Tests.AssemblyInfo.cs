@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UnBox3D.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b04e99fd8072b8f4e2256c09e29f5af9563ee0c1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+23dcf522a04d50f021f0d7560a8ff5352c68211e")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnBox3D.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnBox3D.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
