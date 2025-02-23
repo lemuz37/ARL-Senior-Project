@@ -7,10 +7,11 @@ using UnBox3D.Rendering.OpenGL;
 using UnBox3D.Utils;
 using UnBox3D.ViewModels;
 using UnBox3D.Views;
+using Application = System.Windows.Application;
 
 namespace UnBox3D
 {
-    public partial class App : System.Windows.Application
+    public partial class App : Application
     {
         private ServiceProvider? _serviceProvider;
 
@@ -24,11 +25,9 @@ namespace UnBox3D
             // Resolve MainWindow and MainViewModel
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-
-            // Assign DataContext to MainWindow
             mainWindow.DataContext = mainViewModel;
 
-            // Resolve MainWindow and Show
+            // Initialize and show MainWindow
             mainWindow.Initialize(
                 _serviceProvider.GetRequiredService<IGLControlHost>(),
                 _serviceProvider.GetRequiredService<ILogger>()
@@ -38,32 +37,43 @@ namespace UnBox3D
 
         private ServiceProvider ConfigureServices()
         {
-            var serviceCollection = new ServiceCollection();
+            var services = new ServiceCollection();
 
-            // Register MainWindow and MainViewModel
-            serviceCollection.AddSingleton<MainWindow>();
-            serviceCollection.AddSingleton<MainViewModel>();
-
-            // Register other services
-            serviceCollection.AddSingleton<IFileSystem, FileSystem>();
-            serviceCollection.AddSingleton<ILogger, Logger>(provider =>
+            // Register core utilities
+            services.AddSingleton<IFileSystem, FileSystem>();
+            services.AddSingleton<ILogger, Logger>(provider =>
             {
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
-                return new Logger(fileSystem, logDirectory: @"C:\ProgramData\UnBox3D\Logs", logFileName: "UnBox3D.log");
+                return new Logger(fileSystem,
+                    logDirectory: @"C:\\ProgramData\\UnBox3D\\Logs",
+                    logFileName: "UnBox3D.log");
             });
-            serviceCollection.AddSingleton<ISettingsManager, SettingsManager>();
-            serviceCollection.AddSingleton<ICommandHistory, CommandHistory>();
+            services.AddSingleton<ISettingsManager, SettingsManager>();
 
             // Register OpenGL and rendering services
-            serviceCollection.AddSingleton<IGLControlHost, GLControlHost>();
-            serviceCollection.AddSingleton<ISceneManager, SceneManager>();
-            serviceCollection.AddSingleton<IRenderer, SceneRenderer>(provider => 
+            services.AddSingleton<ISceneManager, SceneManager>();
+            services.AddSingleton<IRenderer, SceneRenderer>(provider =>
             {
                 var logger = provider.GetRequiredService<ILogger>();
                 return new SceneRenderer(logger);
             });
+            services.AddSingleton<IGLControlHost, GLControlHost>(provider =>
+            {
+                var sceneManager = provider.GetRequiredService<ISceneManager>();
+                var sceneRenderer = provider.GetRequiredService<IRenderer>();
+                return new GLControlHost(sceneManager, sceneRenderer);
+            });
 
-            return serviceCollection.BuildServiceProvider();
+            // Register MainWindow and MainViewModel
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<MainViewModel>(provider =>
+            {
+                var settings = provider.GetRequiredService<ISettingsManager>();
+                var sceneManager = provider.GetRequiredService<ISceneManager>();
+                return new MainViewModel(settings, sceneManager);
+            });
+
+            return services.BuildServiceProvider();
         }
 
         protected override void OnExit(ExitEventArgs e)

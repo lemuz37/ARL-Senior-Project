@@ -102,3 +102,4 @@ E:\git\ARL-Senior-Project\UnBox3D\obj\Debug\net8.0-windows\refint\UnBox3D.dll
 E:\git\ARL-Senior-Project\UnBox3D\obj\Debug\net8.0-windows\UnBox3D.pdb
 E:\git\ARL-Senior-Project\UnBox3D\obj\Debug\net8.0-windows\UnBox3D.genruntimeconfig.cache
 E:\git\ARL-Senior-Project\UnBox3D\obj\Debug\net8.0-windows\ref\UnBox3D.dll
+E:\git\ARL-Senior-Project\UnBox3D\obj\Debug\net8.0-windows\UnBox3D_MarkupCompile.lref

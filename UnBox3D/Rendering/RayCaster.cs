@@ -1,5 +1,6 @@
 ﻿using g3;
 using OpenTK.Mathematics;
+using System.Collections.ObjectModel;
 using UnBox3D.Rendering.OpenGL;
 
 // Following these tutorials:
@@ -11,7 +12,7 @@ namespace UnBox3D.Rendering
     public interface IRayCaster
     {
         Vector3 GetRay();
-        bool RayIntersectsMesh(List<IAppMesh> scene, Vector3 rayOrigin, Vector3 rayDirection, out float intersectionDistance, out IAppMesh clickedMesh);
+        bool RayIntersectsMesh(ObservableCollection<IAppMesh> scene, Vector3 rayOrigin, Vector3 rayDirection, out float intersectionDistance, out IAppMesh clickedMesh);
         bool RayIntersectsTriangle(Vector3 rayOrigin, Vector3 rayDirection, Vector3 v0, Vector3 v1, Vector3 v2, out float distance);
     }
     public class RayCaster : IRayCaster
@@ -94,7 +95,7 @@ namespace UnBox3D.Rendering
             return rayWorldDirection;
         }
 
-        public bool RayIntersectsMesh(List<IAppMesh> scene, Vector3 rayOrigin, Vector3 rayDirection, out float intersectionDistance, out IAppMesh clickedMesh)
+        public bool RayIntersectsMesh(ObservableCollection<IAppMesh> scene, Vector3 rayOrigin, Vector3 rayDirection, out float intersectionDistance, out IAppMesh clickedMesh)
         {
             intersectionDistance = float.MaxValue;
             clickedMesh = null;

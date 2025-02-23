@@ -3,22 +3,30 @@ using CommunityToolkit.Mvvm.Input;
 using OpenTK.Mathematics;
 using System.Collections.ObjectModel;
 using UnBox3D.Models;
+using UnBox3D.Utils;
 using UnBox3D.Rendering;
 
 namespace UnBox3D.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
+        private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
+        private readonly ModelImporter _modelImporter;
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
+        [ObservableProperty]
+        private bool hierarchyVisible = true;
 
-        public ObservableCollection<IAppMesh> Meshes { get; } = new();
+        public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
-        public MainViewModel(ISceneManager sceneManager)
+
+        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager)
         {
+            _settingsManager = settingsManager;
             _sceneManager = sceneManager;
+            _modelImporter = new ModelImporter(_settingsManager);
         }
 
         [RelayCommand]
@@ -34,11 +42,11 @@ namespace UnBox3D.ViewModels
             if (result == true)
             {
                 string filePath = openFileDialog.FileName;
-                List<IAppMesh> importedMeshes = ModelImporter.ImportModel(filePath);
+                List<IAppMesh> importedMeshes = _modelImporter.ImportModel(filePath);
 
                 foreach (var mesh in importedMeshes)
                 {
-                    Meshes.Add(mesh);
+                    _sceneManager.AddMesh(mesh);
                 }
             }
         }
@@ -51,11 +59,11 @@ namespace UnBox3D.ViewModels
             MessageBox.Show("Resetting the view!");
         }
 
-        // Command for application preferences
+        // Command for hierarchy visibility
         [RelayCommand]
-        private void Preferences()
+        private void ToggleHierarchy()
         {
-            MessageBox.Show("Opening Preferences!");
+            HierarchyVisible = !HierarchyVisible;
         }
 
         // Command to show About dialog
@@ -75,7 +83,7 @@ namespace UnBox3D.ViewModels
         [RelayCommand]
         private void DeleteMesh(IAppMesh mesh)
         {
-            Meshes.Remove(mesh);
+            _sceneManager.DeleteMesh(mesh);
         }
 
         [RelayCommand]

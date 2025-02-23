@@ -1,12 +1,14 @@
-﻿using OpenTK.Graphics.OpenGL;
-using UnBox3D.Utils;
+﻿using UnBox3D.Utils;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using UnBox3D.Rendering.OpenGL;
+using System.Collections.ObjectModel;
 
 namespace UnBox3D.Rendering
 {
     public interface IRenderer
     {
-        void RenderScene(List<IAppMesh> meshes);
+        void RenderScene(ObservableCollection<IAppMesh> meshes, Shader lightningShader, ICamera camera);
     }
 
     public class SceneRenderer : IRenderer
@@ -19,7 +21,7 @@ namespace UnBox3D.Rendering
             _logger.Info("Initializing SceneRenderer");
         }
 
-        public void RenderScene(List<IAppMesh> meshes)
+        public void RenderScene(ObservableCollection<IAppMesh> meshes, Shader lightingShader, ICamera camera)
         {
             if (meshes == null || meshes.Count == 0)
             {
@@ -27,26 +29,23 @@ namespace UnBox3D.Rendering
                 return;
             }
 
+            Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
+
+            lightingShader.Use();
+            lightingShader.SetMatrix4("view", camera.GetViewMatrix());
+            lightingShader.SetMatrix4("projection", camera.GetProjectionMatrix());
+
             foreach (var appMesh in meshes)
             {
-                Vector3 color = appMesh.GetColor();
-                RenderMesh(appMesh, color);
+                _logger.Info($"Rendering mesh '{appMesh.GetName()}'.");
+                lightingShader.SetVector3("objectColor", appMesh.GetColor());
+                lightingShader.SetVector3("lightColor", Vector3.One);
+                lightingShader.SetVector3("lightPos", lightPos);
+                lightingShader.SetVector3("viewPos", camera.Position);
+                GL.BindVertexArray(appMesh.GetVAO());
+                GL.DrawArrays(PrimitiveType.Triangles, 0, appMesh.VertexCount);
             }
-        }
-
-        private void RenderMesh(IAppMesh appMesh, Vector3 color)
-        {
-            _logger.Info($"Rendering mesh '{appMesh.GetName()}'.");
-
-            GL.Color3(color.X, color.Y, color.Z);
-            GL.Begin(PrimitiveType.Triangles);
-
-            foreach (Vector3 vertex in appMesh.GetVertices())
-            {
-                GL.Vertex3(vertex.X, vertex.Z, vertex.Y);
-            }
-
-            GL.End();
+            GL.BindVertexArray(0);
         }
     }
 }

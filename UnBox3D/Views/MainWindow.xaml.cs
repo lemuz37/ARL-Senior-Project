@@ -33,8 +33,6 @@ namespace UnBox3D.Views
                 // Attach GLControlHost to WindowsFormsHost
                  openGLHost.Child = (Control)_controlHost;
 
-                _controlHost.Initialize();
-
                 _logger?.Info("GLControlHost successfully attached to WindowsFormsHost.");
             }
             catch (Exception ex)

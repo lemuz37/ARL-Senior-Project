@@ -3,12 +3,12 @@ using OpenTK.Mathematics;
 using OpenTK.GLControl;
 using System.Windows.Input;
 using System.Windows.Media;
+using Assimp.Unmanaged;
 
 namespace UnBox3D.Rendering.OpenGL
 {
     public interface IGLControlHost : IDisposable
     {
-        void Initialize();
         void Invalidate();
         int GetWidth();
         int GetHeight();
@@ -25,12 +25,50 @@ namespace UnBox3D.Rendering.OpenGL
     {
 
 
-        private readonly float[] _vertices = {
-            // Position          Normal
-            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        private readonly float[] _vertices =
+        {
+             // Position          Normal
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, // Front face
              0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
              0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
             -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, // Back face
+             0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, // Left face
+            -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, // Right face
+             0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f, // Bottom face
+             0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f, // Top face
+             0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+             0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
         };
 
         private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
@@ -80,30 +118,9 @@ namespace UnBox3D.Rendering.OpenGL
         public event EventHandler<System.Windows.Input.MouseEventArgs> MouseUp;
         public event EventHandler<System.Windows.Input.MouseWheelEventArgs> MouseWheel;
 
-        public void Initialize()
-        {
-            _camera = new Camera(Vector3.UnitZ * 3, GetWidth() / (float)GetHeight());
-        }
-
-        private void SetupVAO(int vao, Shader shader, bool includeNormals)
-        {
-            GL.BindVertexArray(vao);
-
-            var positionLocation = shader.GetAttribLocation("aPos");
-            GL.EnableVertexAttribArray(positionLocation);
-            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-
-            if (includeNormals)
-            {
-                var normalLocation = shader.GetAttribLocation("aNormal");
-                GL.EnableVertexAttribArray(normalLocation);
-                GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            }
-        }
-
         private void OnLoad(object sender, EventArgs e) 
         {
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            GL.ClearColor(1.0f, .9f, 1.0f, .80f);
             GL.Enable(EnableCap.DepthTest);
 
             _vertexBufferObject = GL.GenBuffer();
@@ -113,40 +130,41 @@ namespace UnBox3D.Rendering.OpenGL
             _lightingShader = new Shader("Rendering/OpenGL/Shaders/shader.vert", "Rendering/OpenGL/Shaders/lighting.frag");
             _lampShader = new Shader("Rendering/OpenGL/Shaders/shader.vert", "Rendering/OpenGL/Shaders/shader.frag");
 
-            _vaoModel = GL.GenVertexArray();
-            SetupVAO(_vaoModel, _lightingShader, true);
+            {
+                _vaoModel = GL.GenVertexArray();
+                GL.BindVertexArray(_vaoModel);
 
-            _vaoLamp = GL.GenVertexArray();
-            SetupVAO(_vaoLamp, _lampShader, false);
+                var positionLocation = _lightingShader.GetAttribLocation("aPos");
+                GL.EnableVertexAttribArray(positionLocation);
+                // Remember to change the stride as we now have 6 floats per vertex
+                GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+
+                // We now need to define the layout of the normal so the shader can use it
+                var normalLocation = _lightingShader.GetAttribLocation("aNormal");
+                GL.EnableVertexAttribArray(normalLocation);
+                GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            }
+
+            {
+                _vaoLamp = GL.GenVertexArray();
+                GL.BindVertexArray(_vaoLamp);
+
+                var positionLocation = _lampShader.GetAttribLocation("aPos");
+                GL.EnableVertexAttribArray(positionLocation);
+                GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+            }
+
+            _camera = new Camera(Vector3.UnitZ * 5, GetWidth() / (float)GetHeight());
         }
 
-        private void OnRender(object sender, System.Windows.Forms.PaintEventArgs e)
+        private void OnRender(object sender, PaintEventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             HandleInput();
+            _sceneRenderer.RenderScene(_sceneManager.GetMeshes(), _lightingShader, _camera);
 
-            _sceneRenderer.RenderScene(_sceneManager.GetMeshes());
-
-            RenderModel();
             RenderLamp();
             SwapBuffers();
-        }
-
-        private void RenderModel()
-        {
-            GL.BindVertexArray(_vaoModel);
-            _lightingShader.Use();
-
-            _lightingShader.SetMatrix4("model", Matrix4.Identity);
-            _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
-            _lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-
-            _lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
-            _lightingShader.SetVector3("lightColor", Vector3.One);
-            _lightingShader.SetVector3("lightPos", _lightPos);
-            _lightingShader.SetVector3("viewPos", _camera.Position);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
         }
 
         private void RenderLamp()
@@ -158,7 +176,6 @@ namespace UnBox3D.Rendering.OpenGL
             _lampShader.SetMatrix4("model", lampMatrix);
             _lampShader.SetMatrix4("view", _camera.GetViewMatrix());
             _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
         }
 
@@ -167,11 +184,6 @@ namespace UnBox3D.Rendering.OpenGL
             GL.Viewport(0, 0, Width, Height);
             if(_camera != null)
                 _camera.AspectRatio = (float)Width / Height;
-        }
-
-        private void OnUpdate()
-        {
-            Invalidate();
         }
 
         private void HandleInput()

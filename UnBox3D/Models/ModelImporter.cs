@@ -1,13 +1,27 @@
 ﻿using Assimp;
 using g3;
+using OpenTK.Mathematics;
 using UnBox3D.Rendering;
+using UnBox3D.Utils;
+
 
 namespace UnBox3D.Models
 {
     public class ModelImporter
     {
-        public static List<IAppMesh> ImportModel(string path)
+        private readonly ISettingsManager _settingsManager;
+        Vector3 defaultMeshColor;
+        
+
+        public ModelImporter(ISettingsManager settingsManager) 
         {
+            _settingsManager = settingsManager;
+        }
+
+        public List<IAppMesh> ImportModel(string path)
+        {
+            Colors.colorMap.TryGetValue(_settingsManager.GetSetting<string>("RenderingSettings", "DefaultMeshColor"), out defaultMeshColor);
+
             List<IAppMesh> appMeshes = new List<IAppMesh>();
 
             try
@@ -48,6 +62,8 @@ namespace UnBox3D.Models
 
                         // Wrap the DMesh3 into an AppMesh
                         IAppMesh appMesh = new AppMesh(dmesh, assimpMesh);
+                        appMesh.SetColor(defaultMeshColor);
+                        appMesh.SetupMesh();
                         appMeshes.Add(appMesh);
                     }
                 }

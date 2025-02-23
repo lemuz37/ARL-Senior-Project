@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;
 using g3;
+using System.Collections.ObjectModel;
 
 
 namespace UnBox3D.Rendering
@@ -7,35 +8,26 @@ namespace UnBox3D.Rendering
 
     public interface ISceneManager
     {
-        List<IAppMesh> GetMeshes();
-        void AddMeshes(List<IAppMesh> meshes);
+        ObservableCollection<IAppMesh> GetMeshes();
         void AddMesh(IAppMesh mesh);
         void DeleteMesh(IAppMesh mesh);
         void RemoveSmallMeshes(float threshold);
     }
     public class SceneManager: ISceneManager
     {
-        public List<IAppMesh> _sceneMeshes;
+        private ObservableCollection<IAppMesh> _sceneMeshes = new();
+
+        public ObservableCollection<IAppMesh> GetMeshes() => _sceneMeshes;
 
         public SceneManager()
         {
-            _sceneMeshes = new List<IAppMesh>();
-        }
-
-        // Get the current list of meshes
-        public List<IAppMesh> GetMeshes()
-        {
-            return new List<IAppMesh>(_sceneMeshes);
-        }
-
-        public void AddMeshes(List<IAppMesh> meshes)
-        {
-            _sceneMeshes.AddRange(meshes);
+            _sceneMeshes = new();
         }
 
         public void AddMesh(IAppMesh mesh) 
         {
-            _sceneMeshes.Add(mesh);
+            if (mesh != null)
+                _sceneMeshes.Add(mesh);
         }
 
         public void RemoveMeshes() 
@@ -50,26 +42,37 @@ namespace UnBox3D.Rendering
 
         public void RemoveSmallMeshes(float threshold)
         {
-            _sceneMeshes = _sceneMeshes
-                .Where(mesh => GetMeshSize(mesh.GetG3Mesh()) >= threshold)
+            // Use a list to track meshes to remove
+            var meshesToRemove = _sceneMeshes
+                .Where(mesh => GetMeshSize(mesh.GetG3Mesh()) < threshold)
                 .ToList();
+
+            // Remove each mesh individually (triggers UI update)
+            foreach (var mesh in meshesToRemove)
+            {
+                _sceneMeshes.Remove(mesh);
+            }
         }
+
 
         private float GetMeshSize(DMesh3 mesh)
         {
             if (mesh.VertexCount == 0) return 0;
 
-            Vector3 min = new Vector3(float.MaxValue);
-            Vector3 max = new Vector3(float.MinValue);
+            Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
-            for (int i = 0; i < mesh.VertexCount; i++)
+            foreach (int i in mesh.VertexIndices())
             {
                 var vertex = mesh.GetVertex(i);
-                min = Vector3.ComponentMin(min, new Vector3((float)vertex.x, (float)vertex.y, (float)vertex.z));
-                max = Vector3.ComponentMax(max, new Vector3((float)vertex.x, (float)vertex.y, (float)vertex.z));
+                Vector3 vertexVec = new Vector3((float)vertex.x, (float)vertex.y, (float)vertex.z);
+
+                min = Vector3.ComponentMin(min, vertexVec);
+                max = Vector3.ComponentMax(max, vertexVec);
             }
 
             return (max - min).Length;
         }
+
     }
 }
