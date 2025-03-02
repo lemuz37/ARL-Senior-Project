@@ -1,0 +1,33 @@
+# Ignore Visual Studio specific folders
+.vs/
+
+# Ignore build outputs and intermediate files
+bin/
+obj/
+
+# Ignore NuGet related files
+project.assets.json
+*.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+
+# Ignore debug files
+*.cache
+*.g.i.cs
+*.AssemblyInfo.cs
+
+# Ignore Visual Studio indexing files
+*.vsidx
+*.v9.bin
+
+# Ignore temporary files
+*.tmp
+*.user
+*.suo
+
+# Ignore all auto-generated files inside obj/
+**/obj/**
+
+# Ignore all auto-generated files inside .vs/
+**/.vs/**
+
