@@ -31,3 +31,4 @@ project.assets.json
 # Ignore all auto-generated files inside .vs/
 **/.vs/**
 
+/UnBox3D/Blender/blender4.2
