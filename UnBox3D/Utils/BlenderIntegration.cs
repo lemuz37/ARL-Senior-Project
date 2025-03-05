@@ -22,7 +22,7 @@ namespace UnBox3D.Utils
             Debug.WriteLine("baseDirectory: " + baseDirectory);
 
             // Fix Blender path construction for publishing
-            string blenderExePath = Path.Combine(baseDirectory, "Blender", "blender4.2", "blender.exe");
+            string blenderExePath = Path.Combine(baseDirectory, "Blender", "blender-4.2.0-windows-x64", "blender.exe");
             Debug.WriteLine("blenderExePath: " + blenderExePath);
 
             _logger.Info($"Base Directory: {baseDirectory}");

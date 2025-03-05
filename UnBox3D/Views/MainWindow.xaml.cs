@@ -10,7 +10,7 @@ using UnBox3D.Utils;
 
 namespace UnBox3D.Views
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IBlenderInstaller
     {
         private static readonly string BlenderFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Blender");
         private static readonly string BlenderZipPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blender.zip");
@@ -24,14 +24,14 @@ namespace UnBox3D.Views
         {
             InitializeComponent();
 
-
-
+            
+            
             Loaded += async (s, e) => await CheckAndInstallBlender();
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
         }
 
-        private async Task CheckAndInstallBlender()
+        public async Task CheckAndInstallBlender()
         {
             if (!Directory.Exists(BlenderFolder))
             {
@@ -54,7 +54,14 @@ namespace UnBox3D.Views
             await File.WriteAllBytesAsync(BlenderZipPath, data);
 
             Debug.WriteLine("Download complete. Extracting Blender...");
-            ZipFile.ExtractToDirectory(BlenderZipPath, BlenderFolder);
+
+            // Ensure the target directory exists
+            if (!Directory.Exists(BlenderFolder))
+            {
+                Directory.CreateDirectory(BlenderFolder);
+            }
+
+            ZipFile.ExtractToDirectory(BlenderZipPath, BlenderFolder, overwriteFiles: true);
             File.Delete(BlenderZipPath);
 
             Debug.WriteLine("Blender installation completed.");
@@ -74,7 +81,7 @@ namespace UnBox3D.Views
                 _logger?.Info("MainWindow loaded. Initializing OpenGL...");
 
                 // Attach GLControlHost to WindowsFormsHost
-                 openGLHost.Child = (Control)_controlHost;
+                openGLHost.Child = (Control)_controlHost;
 
                 _logger?.Info("GLControlHost successfully attached to WindowsFormsHost.");
             }

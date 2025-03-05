@@ -17,6 +17,7 @@ namespace UnBox3D.ViewModels
         private readonly ModelImporter _modelImporter;
         private readonly IFileSystem _fileSystem;
         private readonly BlenderIntegration _blenderIntegration;
+        private readonly IBlenderInstaller _blenderInstaller;
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
@@ -25,13 +26,15 @@ namespace UnBox3D.ViewModels
 
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
-
-        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager, IFileSystem fileSystem, BlenderIntegration blenderIntegration)
+        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager, 
+            IFileSystem fileSystem, BlenderIntegration blenderIntegration, 
+            IBlenderInstaller blenderInstaller)
         {
             _settingsManager = settingsManager;
             _sceneManager = sceneManager;
             _fileSystem = fileSystem;
             _blenderIntegration = blenderIntegration;
+            _blenderInstaller = blenderInstaller;
             _modelImporter = new ModelImporter(_settingsManager);
         }
 
@@ -59,13 +62,17 @@ namespace UnBox3D.ViewModels
             }
         }
 
-        private void ProcessUnfolding(string inputModelPath)
+        private async Task ProcessUnfolding(string inputModelPath)
         {
+            // Ensure Blender is installed before continuing
+            await _blenderInstaller.CheckAndInstallBlender();
+
             if (_fileSystem == null || _blenderIntegration == null)
             {
                 MessageBox.Show("Internal error: dependencies not initialized.");
                 return;
             }
+
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             Debug.WriteLine("baseDir: " + baseDir);
             string outputDirectory = _fileSystem.CombinePaths(baseDir, "UnfoldedOutputs");
@@ -75,6 +82,7 @@ namespace UnBox3D.ViewModels
             {
                 _fileSystem.CreateDirectory(outputDirectory);
             }
+
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
             string fileName = "HardCodedTestingSVG25mx25m";
             Debug.WriteLine("scriptPath:" + scriptPath);
