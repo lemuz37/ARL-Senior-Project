@@ -67,13 +67,15 @@ namespace UnBox3D
             // Register MainWindow and MainViewModel
             services.AddSingleton<BlenderIntegration>();
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<IBlenderInstaller>(provider => provider.GetRequiredService<MainWindow>());
             services.AddSingleton<MainViewModel>(provider =>
             {
                 var settings = provider.GetRequiredService<ISettingsManager>();
                 var sceneManager = provider.GetRequiredService<ISceneManager>();
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
                 var blenderIntegration = provider.GetRequiredService<BlenderIntegration>();
-                return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration);
+                var blenderInstaller = provider.GetRequiredService<IBlenderInstaller>();
+                return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller);
             });
 
             return services.BuildServiceProvider();
