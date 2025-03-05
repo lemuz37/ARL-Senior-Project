@@ -43,4 +43,16 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+	<None Update="Blender\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
+  <ItemGroup>
+	<None Update="Scripts\unfolding_script.py">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+
 </Project>
