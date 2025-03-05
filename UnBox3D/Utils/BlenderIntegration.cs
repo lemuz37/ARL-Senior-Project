@@ -15,14 +15,32 @@ namespace UnBox3D.Utils
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public bool RunBlenderScript(string inputModelPath, string outputModelPath, string scriptPath,
+        public bool RunBlenderScript(string inputModelPath, string outputModelPath, string scriptPath, 
             string filename, double doc_width, double doc_height, string ext, out string errorMessage)
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string blenderExePath = Path.Combine(baseDirectory, @"..\..\Blender\blender4.2\blender.exe");
+            Debug.WriteLine("baseDirectory: " + baseDirectory);
+
+            // Fix Blender path construction for publishing
+            string blenderExePath = Path.Combine(baseDirectory, "Blender", "blender4.2", "blender.exe");
+            Debug.WriteLine("blenderExePath: " + blenderExePath);
 
             _logger.Info($"Base Directory: {baseDirectory}");
             _logger.Info($"Blender Path: {blenderExePath}");
+
+            if (!File.Exists(blenderExePath))
+            {
+                errorMessage = $"Blender executable not found at path: {blenderExePath}";
+                _logger.Error(errorMessage);
+                return false;
+            }
+
+            if (!File.Exists(scriptPath))
+            {
+                _logger.Error($"Script file not found: {scriptPath}");
+                errorMessage = "The script file was not found.";
+                return false;
+            }
 
             Process process = new Process
             {
@@ -39,7 +57,8 @@ namespace UnBox3D.Utils
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    CreateNoWindow = true
+                    CreateNoWindow = true,
+                    WorkingDirectory = baseDirectory
                 }
             };
 

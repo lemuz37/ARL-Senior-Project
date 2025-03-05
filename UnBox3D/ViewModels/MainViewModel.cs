@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using UnBox3D.Models;
 using UnBox3D.Utils;
 using UnBox3D.Rendering;
+using System.Diagnostics;
+using System.IO;
 
 namespace UnBox3D.ViewModels
 {
@@ -13,6 +15,8 @@ namespace UnBox3D.ViewModels
         private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
         private readonly ModelImporter _modelImporter;
+        private readonly IFileSystem _fileSystem;
+        private readonly BlenderIntegration _blenderIntegration;
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
@@ -22,10 +26,12 @@ namespace UnBox3D.ViewModels
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
 
-        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager)
+        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager, IFileSystem fileSystem, BlenderIntegration blenderIntegration)
         {
             _settingsManager = settingsManager;
             _sceneManager = sceneManager;
+            _fileSystem = fileSystem;
+            _blenderIntegration = blenderIntegration;
             _modelImporter = new ModelImporter(_settingsManager);
         }
 
@@ -48,9 +54,96 @@ namespace UnBox3D.ViewModels
                 {
                     _sceneManager.AddMesh(mesh);
                 }
+
+                ProcessUnfolding(filePath);
             }
         }
 
+        private void ProcessUnfolding(string inputModelPath)
+        {
+            if (_fileSystem == null || _blenderIntegration == null)
+            {
+                MessageBox.Show("Internal error: dependencies not initialized.");
+                return;
+            }
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            Debug.WriteLine("baseDir: " + baseDir);
+            string outputDirectory = _fileSystem.CombinePaths(baseDir, "UnfoldedOutputs");
+            Debug.WriteLine("outputDir: " + outputDirectory);
+
+            if (!_fileSystem.DoesDirectoryExists(outputDirectory))
+            {
+                _fileSystem.CreateDirectory(outputDirectory);
+            }
+            string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
+            string fileName = "HardCodedTestingSVG25mx25m";
+            Debug.WriteLine("scriptPath:" + scriptPath);
+
+            // TODO: Eventually set up the page increment shenanigans
+            // TODO: Output files depending on user dir
+            // TODO: SVG stuff (correcting scale)
+            // TODO: UI so its not hardcoded
+            // TODO: Publish i could publish now, and if it can't find blender, then gg
+            bool success = _blenderIntegration.RunBlenderScript(
+                inputModelPath, outputDirectory, scriptPath,
+                fileName, 25.0, 25.0, "SVG", out string errorMessage);
+
+            if (success)
+            {
+                MessageBox.Show($"Unfolding successful! Output saved to: {outputDirectory}", "Success");
+            }
+            else
+            {
+                MessageBox.Show($"Unfolding failed: {errorMessage}");
+            }
+
+            // Let the user select a directory for saving the files
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            {
+                folderBrowserDialog.Description = "Select a location to save the exported files";
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string userSelectedPath = folderBrowserDialog.SelectedPath;
+
+                    try
+                    {
+                        // Copy all SVG files from the temp directory to the user's selected path
+                        string[] svgFiles = Directory.GetFiles(outputDirectory, $"{fileName}*.svg");
+
+                        foreach (string svgFile in svgFiles)
+                        {
+                            string destinationFilePath = Path.Combine(userSelectedPath, Path.GetFileName(svgFile));
+                            File.Copy(svgFile, destinationFilePath, overwrite: true);
+                        }
+
+                        MessageBox.Show("Files have been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        CleanupUnfoldedFolder(outputDirectory);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"An error occurred while exporting files: {ex.Message}", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        private void CleanupUnfoldedFolder(string folderPath)
+        {
+            try
+            {
+                string[] files = Directory.GetFiles(folderPath);
+
+                foreach (string file in files)
+                {
+                    File.Delete(file);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred during cleanup: {ex.Message}", "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         // Command to reset the view
         [RelayCommand]
