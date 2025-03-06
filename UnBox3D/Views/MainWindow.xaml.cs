@@ -16,7 +16,8 @@ namespace UnBox3D.Views
         private static readonly string BlenderZipPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blender.zip");
         private static readonly string BlenderDownloadUrl = "https://download.blender.org/release/Blender4.2/blender-4.2.0-windows-x64.zip";
 
-
+        // Cache the installation task, so multiple calls will await the first call
+        private Task? _blenderInstallTask;
         private IGLControlHost? _controlHost;
         private ILogger? _logger;
 
@@ -31,7 +32,17 @@ namespace UnBox3D.Views
             Closed += MainWindow_Closed;
         }
 
-        public async Task CheckAndInstallBlender()
+        public Task CheckAndInstallBlender()
+        {
+            // If theres no blender task start installation
+            if (_blenderInstallTask == null)
+            {
+                _blenderInstallTask = CheckAndInstallBlenderInternal();
+            }
+            return _blenderInstallTask;
+        }
+
+        private async Task CheckAndInstallBlenderInternal()
         {
             if (!Directory.Exists(BlenderFolder))
             {

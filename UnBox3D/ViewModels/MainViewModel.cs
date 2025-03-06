@@ -66,7 +66,7 @@ namespace UnBox3D.ViewModels
         {
             // Ensure Blender is installed before continuing
             await _blenderInstaller.CheckAndInstallBlender();
-
+            
             if (_fileSystem == null || _blenderIntegration == null)
             {
                 MessageBox.Show("Internal error: dependencies not initialized.");
