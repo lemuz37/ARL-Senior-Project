@@ -13,6 +13,7 @@ namespace UnBox3D.Views
     public partial class MainWindow : Window, IBlenderInstaller
     {
         private static readonly string BlenderFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Blender");
+        private static readonly string BlenderExecutable = Path.Combine(BlenderFolder, "blender-4.2.0-windows-x64", "blender.exe");
         private static readonly string BlenderZipPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "blender.zip");
         private static readonly string BlenderDownloadUrl = "https://download.blender.org/release/Blender4.2/blender-4.2.0-windows-x64.zip";
 
@@ -44,7 +45,7 @@ namespace UnBox3D.Views
 
         private async Task CheckAndInstallBlenderInternal()
         {
-            if (!Directory.Exists(BlenderFolder))
+            if (!Directory.Exists(BlenderFolder) || !File.Exists(BlenderExecutable))
             {
                 Debug.WriteLine("Blender 4.2 is not installed. Downloading now...");
                 await DownloadAndExtractBlender();
