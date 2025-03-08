@@ -66,17 +66,38 @@ namespace UnBox3D.ViewModels
         {
             // Ensure Blender is installed before continuing
             await _blenderInstaller.CheckAndInstallBlender();
-            
+
             if (_fileSystem == null || _blenderIntegration == null)
             {
                 MessageBox.Show("Internal error: dependencies not initialized.");
                 return;
             }
 
+            // Let the user select a directory for saving the files
+            using SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Save your unfolded file";
+            saveFileDialog.Filter = "SVG Files|*.svg|PDF Files|*.pdf";
+            saveFileDialog.FileName = "MyUnfoldedFile";
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+            
+            // Extract user selection
+            string filePath = saveFileDialog.FileName;
+            string ext = Path.GetExtension(filePath).ToLowerInvariant();
+            string? userSelectedPath = Path.GetDirectoryName(filePath);
+
+            if (string.IsNullOrEmpty(userSelectedPath))
+            {
+                MessageBox.Show("Unable to determine the selected directory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string newFileName = Path.GetFileNameWithoutExtension(filePath);
+            string format = ext == ".pdf" ? "PDF" : "SVG";
+
+            // Set up output directories
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            Debug.WriteLine("baseDir: " + baseDir);
             string outputDirectory = _fileSystem.CombinePaths(baseDir, "UnfoldedOutputs");
-            Debug.WriteLine("outputDir: " + outputDirectory);
 
             if (!_fileSystem.DoesDirectoryExists(outputDirectory))
             {
@@ -84,8 +105,6 @@ namespace UnBox3D.ViewModels
             }
 
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
-            string tempFileName = "HardCodedTestingSVG25mx25m";
-            Debug.WriteLine("scriptPath:" + scriptPath);
 
             // TODO: Eventually set up the page increment shenanigans
             // TODO: SVG stuff (correcting scale)
@@ -95,56 +114,37 @@ namespace UnBox3D.ViewModels
 
             bool success = _blenderIntegration.RunBlenderScript(
                 inputModelPath, outputDirectory, scriptPath,
-                tempFileName, 25.0, 25.0, "SVG", out string errorMessage);
+                newFileName, 25.0, 25.0, format, out string errorMessage);
 
-            if (success)
-            {
-                MessageBox.Show($"Unfolding successful! Output saved to: {outputDirectory}", "Success");
-            }
-            else
+            if (!success)
             {
                 MessageBox.Show($"Unfolding failed: {errorMessage}");
+                return;
             }
 
-            // Let the user select a directory for saving the files
-            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            if (format == "SVG")
             {
-                saveFileDialog.Title = "Save your SVG file";
-                saveFileDialog.Filter = "SVG Files|*.svg";
-                saveFileDialog.FileName = "MyUnfoldedFile.svg";
+                string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}*.svg");
 
-                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                foreach (string svgFile in svgFiles)
                 {
-                    string? userSelectedPath = Path.GetDirectoryName(saveFileDialog.FileName);
-                    if (string.IsNullOrEmpty(userSelectedPath))
-                    {
-                        MessageBox.Show("Unable to determine the selected directory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    string newFileName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
-                    
-                    // Copy all SVG files from the temp directory to the user's selected path
-                    string[] svgFiles = Directory.GetFiles(outputDirectory, $"{tempFileName}*.svg");
-
-                    foreach (string svgFile in svgFiles)
-                    {
-                        // Determine suffix of temp file
-                        int index = svgFile.IndexOf(tempFileName) + tempFileName.Length;
-                        string fileSuffix = svgFile.Substring(index);
-
-                        string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
-                        File.Move(svgFile, destinationFilePath, overwrite:true);
-                    }
-
-                    MessageBox.Show("Files have been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                }
-                else
-                {
-                    CleanupUnfoldedFolder(outputDirectory);
+                    string fileSuffix = svgFile.Substring(svgFile.IndexOf(newFileName) + newFileName.Length);
+                    string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
+                    File.Move(svgFile, destinationFilePath, overwrite: true);
                 }
             }
+            else if (format == "PDF")
+            {
+                string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
+
+                string destinationFilePath = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
+                File.Move(pdfFile, destinationFilePath, overwrite: true);
+            }
+
+            MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            CleanupUnfoldedFolder(outputDirectory);
         }
+
         private void CleanupUnfoldedFolder(string folderPath)
         {
             try
