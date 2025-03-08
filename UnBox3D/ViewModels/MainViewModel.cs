@@ -133,7 +133,7 @@ namespace UnBox3D.ViewModels
                         string fileSuffix = svgFile.Substring(index);
 
                         string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
-                        File.Move(svgFile, destinationFilePath);
+                        File.Move(svgFile, destinationFilePath, overwrite:true);
                     }
 
                     MessageBox.Show("Files have been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
