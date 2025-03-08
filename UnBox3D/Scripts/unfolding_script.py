@@ -24,6 +24,7 @@ def clear_scene():
 
 def install_addon(addon_name: str):
     bpy.ops.extensions.userpref_allow_online()
+    bpy.ops.extensions.repo_sync_all() # <-- this missing line caused me 10 years of suffering
     bpy.data.window_managers["WinMan"].extension_search = addon_name
     bpy.ops.extensions.package_install(repo_index=0, pkg_id=addon_name)
 
