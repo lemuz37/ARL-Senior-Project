@@ -84,17 +84,18 @@ namespace UnBox3D.ViewModels
             }
 
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
-            string fileName = "HardCodedTestingSVG25mx25m";
+            string tempFileName = "HardCodedTestingSVG25mx25m";
             Debug.WriteLine("scriptPath:" + scriptPath);
 
             // TODO: Eventually set up the page increment shenanigans
-            // TODO: Output files depending on user dir
             // TODO: SVG stuff (correcting scale)
             // TODO: UI so its not hardcoded
-            // TODO: Publish i could publish now, and if it can't find blender, then gg
+            // TODO: Create import dir to store global inputModelPath (obj)
+            // TODO: Create export/unfold button separately and read from import dir obj
+
             bool success = _blenderIntegration.RunBlenderScript(
                 inputModelPath, outputDirectory, scriptPath,
-                fileName, 25.0, 25.0, "SVG", out string errorMessage);
+                tempFileName, 25.0, 25.0, "SVG", out string errorMessage);
 
             if (success)
             {
@@ -106,32 +107,41 @@ namespace UnBox3D.ViewModels
             }
 
             // Let the user select a directory for saving the files
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
-                folderBrowserDialog.Description = "Select a location to save the exported files";
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                saveFileDialog.Title = "Save your SVG file";
+                saveFileDialog.Filter = "SVG Files|*.svg";
+                saveFileDialog.FileName = "MyUnfoldedFile.svg";
+
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    string userSelectedPath = folderBrowserDialog.SelectedPath;
-
-                    try
+                    string? userSelectedPath = Path.GetDirectoryName(saveFileDialog.FileName);
+                    if (string.IsNullOrEmpty(userSelectedPath))
                     {
-                        // Copy all SVG files from the temp directory to the user's selected path
-                        string[] svgFiles = Directory.GetFiles(outputDirectory, $"{fileName}*.svg");
-
-                        foreach (string svgFile in svgFiles)
-                        {
-                            string destinationFilePath = Path.Combine(userSelectedPath, Path.GetFileName(svgFile));
-                            File.Copy(svgFile, destinationFilePath, overwrite: true);
-                        }
-
-                        MessageBox.Show("Files have been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        CleanupUnfoldedFolder(outputDirectory);
+                        MessageBox.Show("Unable to determine the selected directory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
-                    catch (Exception ex)
+                    string newFileName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
+                    
+                    // Copy all SVG files from the temp directory to the user's selected path
+                    string[] svgFiles = Directory.GetFiles(outputDirectory, $"{tempFileName}*.svg");
+
+                    foreach (string svgFile in svgFiles)
                     {
-                        MessageBox.Show($"An error occurred while exporting files: {ex.Message}", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Determine suffix of temp file
+                        int index = svgFile.IndexOf(tempFileName) + tempFileName.Length;
+                        string fileSuffix = svgFile.Substring(index);
+
+                        string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
+                        File.Move(svgFile, destinationFilePath);
                     }
+
+                    MessageBox.Show("Files have been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                }
+                else
+                {
+                    CleanupUnfoldedFolder(outputDirectory);
                 }
             }
         }
