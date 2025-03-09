@@ -29,6 +29,9 @@
             <MenuItem Header="About Us">
                 <MenuItem Header="About" Command="{Binding AboutCommand}" />
             </MenuItem>
+            <MenuItem Header="Unfold">
+                <MenuItem Header="Export Unfolded Model" Command="{Binding ExportUnfoldModelCommand}" />
+            </MenuItem>
         </Menu>
 
         <!-- Main Content -->

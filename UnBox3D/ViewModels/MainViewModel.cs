@@ -18,6 +18,7 @@ namespace UnBox3D.ViewModels
         private readonly IFileSystem _fileSystem;
         private readonly BlenderIntegration _blenderIntegration;
         private readonly IBlenderInstaller _blenderInstaller;
+        private string _importedFilePath; // Global filepath that should be referenced when simplifying
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
@@ -51,19 +52,41 @@ namespace UnBox3D.ViewModels
             if (result == true)
             {
                 string filePath = openFileDialog.FileName;
-                List<IAppMesh> importedMeshes = _modelImporter.ImportModel(filePath);
+                _importedFilePath = EnsureImportDirectory(filePath);
+                List<IAppMesh> importedMeshes = _modelImporter.ImportModel(_importedFilePath);
 
                 foreach (var mesh in importedMeshes)
                 {
                     _sceneManager.AddMesh(mesh);
                 }
-
-                ProcessUnfolding(filePath);
             }
+        }
+
+        /* IMPORTANT:
+         * When you begin simplifying the model, EXPORT that simplified version to
+         * the ImportedModels dir and OVERWRITE the file because the unfolding script will use
+         * the ImportedModels dir and is not responsible for keeping track if its been simplified or not.
+        */
+
+        // Don't call this function. Reference the _importedFilePath if you want to get access to the ImportedModels dir
+        private string EnsureImportDirectory(string filePath)
+        {
+            string importDirectory = _fileSystem.CombinePaths(AppDomain.CurrentDomain.BaseDirectory, "ImportedModels");
+
+            if (!_fileSystem.DoesDirectoryExists(importDirectory))
+            {
+                _fileSystem.CreateDirectory(importDirectory);
+            }
+
+            string destinationPath = _fileSystem.CombinePaths(importDirectory, Path.GetFileName(filePath));
+            File.Copy(filePath, destinationPath, overwrite:true);
+
+            return destinationPath;
         }
 
         private async Task ProcessUnfolding(string inputModelPath)
         {
+            Debug.WriteLine("Input model is coming from: " + inputModelPath);
             // Ensure Blender is installed before continuing
             await _blenderInstaller.CheckAndInstallBlender();
 
@@ -109,8 +132,6 @@ namespace UnBox3D.ViewModels
             // TODO: Eventually set up the page increment shenanigans
             // TODO: SVG stuff (correcting scale)
             // TODO: UI so its not hardcoded
-            // TODO: Create import dir to store global inputModelPath (obj)
-            // TODO: Create export/unfold button separately and read from import dir obj
 
             bool success = _blenderIntegration.RunBlenderScript(
                 inputModelPath, outputDirectory, scriptPath,
@@ -161,6 +182,18 @@ namespace UnBox3D.ViewModels
             {
                 MessageBox.Show($"An error occurred during cleanup: {ex.Message}", "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        [RelayCommand]
+        private void ExportUnfoldModel()
+        {
+            if (string.IsNullOrEmpty(_importedFilePath))
+            {
+                MessageBox.Show("No model imported to unfold.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ProcessUnfolding(_importedFilePath);
         }
 
         // Command to reset the view
