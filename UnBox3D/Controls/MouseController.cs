@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input; // For WPF input handling
+using System.Windows.Forms; // For WPF input handling
 using OpenTK.Mathematics;
 using UnBox3D.Rendering;
 using UnBox3D.Controls.States;
 using UnBox3D.Utils;
+using UnBox3D.Rendering.OpenGL;
+using OpenTK.GLControl;
 
 namespace UnBox3D.Controls
 {
@@ -12,10 +14,12 @@ namespace UnBox3D.Controls
     {
         private bool _isPanning;
         private bool _isYawingAndPitching;
-        private System.Windows.Point _lastMousePosition;
+        private System.Drawing.Point _lastMousePosition;
 
+        private GLControlHost _glControlHost;
         private readonly ISettingsManager _settingsManager;
         private readonly ICamera _camera;
+        private readonly IRayCaster _rayCaster;
         private IState _currentState;
 
         private readonly float _cameraYawSensitivity;
@@ -23,11 +27,18 @@ namespace UnBox3D.Controls
         private readonly float _cameraPanSensitivity;
         private readonly float _zoomSensitivity;
 
-        public MouseController(ISettingsManager settingsManager, ICamera camera, IState neutralState)
+        public MouseController(
+            ISettingsManager settingsManager, 
+            ICamera camera, 
+            IState neutralState, 
+            IRayCaster rayCaster,
+            GLControlHost glControlHost)
         {
             _settingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
             _camera = camera ?? throw new ArgumentNullException(nameof(camera));
             _currentState = neutralState ?? throw new ArgumentNullException(nameof(neutralState));
+            _rayCaster = rayCaster ?? throw new ArgumentNullException(nameof(rayCaster));
+            _glControlHost = glControlHost ?? throw new ArgumentNullException(nameof(glControlHost));
 
             // Apply settings
             _cameraYawSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.CameraYawSensitivity);
@@ -35,41 +46,37 @@ namespace UnBox3D.Controls
             _cameraPanSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.CameraPanSensitivity);
             _zoomSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.ZoomSensitivity);
 
-            // Attach mouse event handlers to the main WPF window
-            var mainWindow = System.Windows.Application.Current.MainWindow;
-            if (mainWindow != null)
-            {
-                mainWindow.MouseDown += OnMouseDown;
-                mainWindow.MouseMove += OnMouseMove;
-                mainWindow.MouseUp += OnMouseUp;
-                mainWindow.MouseWheel += OnMouseWheel;
-            }
+            // Attach mouse event handlers to WinForms host
+            glControlHost.MouseDown += OnMouseDown;
+            glControlHost.MouseMove += OnMouseMove;
+            glControlHost.MouseUp += OnMouseUp;
+            glControlHost.MouseWheel += OnMouseWheel;
         }
 
         public void SetState(IState newState) => _currentState = newState;
         public IState GetState() => _currentState;
 
-        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        public void OnMouseDown(object sender, MouseEventArgs e)
         {
-            _lastMousePosition = e.GetPosition(System.Windows.Application.Current.MainWindow);
+            _lastMousePosition = e.Location;
 
-            switch (e.ChangedButton)
+            switch (e.Button)
             {
-                case MouseButton.Left:
+                case MouseButtons.Left:
                     _currentState?.OnMouseDown(e);
                     break;
-                case MouseButton.Right:
+                case MouseButtons.Right:
                     _isPanning = true;
                     break;
-                case MouseButton.Middle:
+                case MouseButtons.Middle:
                     _isYawingAndPitching = true;
                     break;
             }
         }
 
-        private void OnMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        public void OnMouseMove(object sender, MouseEventArgs e)
         {
-            var currentMousePosition = e.GetPosition(System.Windows.Application.Current.MainWindow);
+            var currentMousePosition = e.Location;
             Vector2 delta = CalculateMouseDelta(currentMousePosition);
 
             if (_isPanning)
@@ -88,31 +95,31 @@ namespace UnBox3D.Controls
             _lastMousePosition = currentMousePosition;
         }
 
-        private void OnMouseUp(object sender, MouseButtonEventArgs e)
+        public void OnMouseUp(object sender, MouseEventArgs e)
         {
-            switch (e.ChangedButton)
+            switch (e.Button)
             {
-                case MouseButton.Left:
+                case MouseButtons.Left:
                     _currentState?.OnMouseUp(e);
                     break;
-                case MouseButton.Right:
+                case MouseButtons.Right:
                     _isPanning = false;
                     break;
-                case MouseButton.Middle:
+                case MouseButtons.Middle:
                     _isYawingAndPitching = false;
                     break;
             }
         }
 
-        private void OnMouseWheel(object sender, MouseWheelEventArgs e)
+        public void OnMouseWheel(object sender, MouseEventArgs e)
         {
-            AdjustCameraZoom(e.Delta / 120.0f); // Normalize wheel delta
+            AdjustCameraZoom(e.Delta / 120.0f);
         }
 
         private void PanCamera(Vector2 delta)
         {
-            float deltaX = delta.X / (float)System.Windows.Application.Current.MainWindow.Width;
-            float deltaY = delta.Y / (float)System.Windows.Application.Current.MainWindow.Height;
+            float deltaX = delta.X / _glControlHost.Width;
+            float deltaY = delta.Y / _glControlHost.Height;
 
             _camera.Position -= _camera.Right * deltaX * _cameraPanSensitivity;
             _camera.Position += _camera.Up * deltaY * _cameraPanSensitivity;
@@ -129,10 +136,10 @@ namespace UnBox3D.Controls
             _camera.Position += _camera.Front * delta * _zoomSensitivity;
         }
 
-        private Vector2 CalculateMouseDelta(System.Windows.Point currentMousePosition)
+        private Vector2 CalculateMouseDelta(System.Drawing.Point currentMousePosition)
         {
-            float deltaX = (float)(currentMousePosition.X - _lastMousePosition.X);
-            float deltaY = (float)(currentMousePosition.Y - _lastMousePosition.Y);
+            float deltaX = currentMousePosition.X - _lastMousePosition.X;
+            float deltaY = currentMousePosition.Y - _lastMousePosition.Y;
             return new Vector2(deltaX, deltaY);
         }
     }

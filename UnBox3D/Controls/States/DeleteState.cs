@@ -1,7 +1,4 @@
-﻿using g3;
-using OpenTK.Mathematics;
-using UnBox3D.Utils;
-using UnBox3D.Models;
+﻿using UnBox3D.Models;
 using UnBox3D.Commands;
 using UnBox3D.Rendering;
 using UnBox3D.Rendering.OpenGL;
@@ -27,19 +24,19 @@ namespace UnBox3D.Controls.States
             _commandHistory = commandHistory;
         }
 
-        public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseDown(MouseEventArgs e)
         {
             ICommand deleteCommand = new DeleteCommand(_glControlHost, _sceneManager, _rayCaster, _camera);
             _commandHistory.PushCommand(deleteCommand);
             deleteCommand.Execute();
         }
 
-        public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        public void OnMouseMove(MouseEventArgs e)
         {
 
         }
 
-        public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseUp(MouseEventArgs e)
         {
 
         }

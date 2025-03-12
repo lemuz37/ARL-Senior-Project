@@ -1,6 +1,4 @@
 ﻿using OpenTK.Mathematics;
-using UnBox3D.Rendering.OpenGL;
-using UnBox3D.Utils;
 
 // Borrowed from https://github.com/opentk/LearnOpenTK/blob/master/Common/Camera.cs
 namespace UnBox3D.Rendering
@@ -38,12 +36,9 @@ namespace UnBox3D.Rendering
 
         public Vector3 Position { get; set; }
         public float AspectRatio { get; set; }
-
         public Vector3 Front => _front;
         public Vector3 Up => _up;
         public Vector3 Right => _right;
-
-
 
         // We convert from degrees to radians as soon as the property is set to improve performance.
         public float Pitch

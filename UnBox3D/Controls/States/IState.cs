@@ -2,8 +2,8 @@
 {
     public interface IState
     {
-        void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e);
-        void OnMouseMove(System.Windows.Input.MouseEventArgs e);
-        void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e);
+        void OnMouseDown(MouseEventArgs e);
+        void OnMouseMove(MouseEventArgs e);
+        void OnMouseUp(MouseEventArgs e);
     }
 }

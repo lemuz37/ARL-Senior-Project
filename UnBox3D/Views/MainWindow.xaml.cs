@@ -25,8 +25,6 @@ namespace UnBox3D.Views
         public MainWindow()
         {
             InitializeComponent();
-
-            
             
             Loaded += async (s, e) => await CheckAndInstallBlender();
             Loaded += MainWindow_Loaded;
@@ -96,6 +94,8 @@ namespace UnBox3D.Views
                 openGLHost.Child = (Control)_controlHost;
 
                 _logger?.Info("GLControlHost successfully attached to WindowsFormsHost.");
+
+                StartUpdateLoop();
             }
             catch (Exception ex)
             {
@@ -117,6 +117,20 @@ namespace UnBox3D.Views
             catch (Exception ex)
             {
                 _logger?.Error($"Error during cleanup: {ex.Message}");
+            }
+        }
+
+        private async void StartUpdateLoop() 
+        {
+            bool _isRunning = true;
+
+            while (_isRunning) 
+            {
+                Debug.WriteLine("Updating...");
+
+                _controlHost.Render();
+
+                await Task.Delay(16); // 60 FPS
             }
         }
     }

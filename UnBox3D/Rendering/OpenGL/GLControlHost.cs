@@ -1,30 +1,36 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.GLControl;
-using System.Windows.Input;
-using System.Windows.Media;
-using Assimp.Unmanaged;
+using UnBox3D.Utils;
+using UnBox3D.Controls.States;
+using UnBox3D.Controls;
+using System.Diagnostics;
 
 namespace UnBox3D.Rendering.OpenGL
 {
+    // Interface for GLControl host
     public interface IGLControlHost : IDisposable
     {
         void Invalidate();
         int GetWidth();
         int GetHeight();
+        void Render();
         void Cleanup();
-        System.Drawing.Point PointToScreen(System.Drawing.Point point);
 
-        event EventHandler<System.Windows.Input.MouseEventArgs> MouseDown;
-        event EventHandler<System.Windows.Input.MouseEventArgs> MouseMove;
-        event EventHandler<System.Windows.Input.MouseEventArgs> MouseUp;
-        event EventHandler<System.Windows.Input.MouseWheelEventArgs> MouseWheel;
+    }
+
+    // Enumeration for rendering modes
+    public enum RenderMode
+    {
+        Wireframe,
+        Solid,
+        Point
     }
 
     public class GLControlHost : GLControl, IGLControlHost
     {
-
-
+        // Here we now have added the normals of the vertices
+        // Remember to define the layouts to the VAO's
         private readonly float[] _vertices =
         {
              // Position          Normal
@@ -74,53 +80,138 @@ namespace UnBox3D.Rendering.OpenGL
         private readonly Vector3 _lightPos = new Vector3(1.2f, 1.0f, 2.0f);
 
         private int _vertexBufferObject;
+
         private int _vaoModel;
+
         private int _vaoLamp;
 
         private Shader _lampShader;
+
         private Shader _lightingShader;
-        private ICamera _camera;
 
-        private bool _firstMove = true;
-        private Vector2 _lastMousePos;
 
+
+
+        // Private Fields
         private readonly ISceneManager _sceneManager;
         private readonly IRenderer _sceneRenderer;
+        private readonly ISettingsManager _settingsManager;
+        private ICamera _camera;
+        private MouseController _mouseController;
+        private KeyboardController _keyboardController;
+        private RayCaster _rayCaster;
 
-        public GLControlHost(ISceneManager sceneManager, IRenderer sceneRenderer)
+        private RenderMode currentRenderMode;
+        private ShadingModel currentShadingModel;
+        private Vector4 backgroundColor;
+        private float angle = 0f;
+
+        // Constructor
+        public GLControlHost(ISceneManager sceneManager, IRenderer sceneRenderer, ISettingsManager settingsManager)
         {
+            Dock = DockStyle.Fill;
+
             _sceneManager = sceneManager;
             _sceneRenderer = sceneRenderer;
+            _settingsManager = settingsManager;
 
-            Dock = DockStyle.Fill;
-            Load += OnLoad;
-            Paint += OnRender;
-            Resize += OnResize;
+            // Attach event handlers
+            Load += GlControl_Load;
+            Paint += GlControl_Paint;
+            Resize += GlControl_Resize;
 
-            CompositionTarget.Rendering += OnRenderFrame;
+            // Attach mouse event handlers
+            MouseDown += OnMouseDown;
+            MouseMove += OnMouseMove;
+            MouseUp += OnMouseUp;
+            MouseWheel += OnMouseWheel;
+        }
+
+        // Public Methods
+        public void Render() 
+        {
+            Invalidate();
+        }
+        public void SetRenderMode(RenderMode mode)
+        {
+            currentRenderMode = mode;
+        }
+
+        public void SetShadingMode(ShadingModel shadingModel)
+        {
+            currentShadingModel = shadingModel;
         }
 
         public int GetWidth() => Width;
         public int GetHeight() => Height;
-
-        private void OnRenderFrame(object sender, EventArgs e)
-        {
-            Invalidate();
-        }
 
         public void Invalidate()
         {
             base.Invalidate();
         }
 
-        public event EventHandler<System.Windows.Input.MouseEventArgs> MouseDown;
-        public event EventHandler<System.Windows.Input.MouseEventArgs> MouseMove;
-        public event EventHandler<System.Windows.Input.MouseEventArgs> MouseUp;
-        public event EventHandler<System.Windows.Input.MouseWheelEventArgs> MouseWheel;
-
-        private void OnLoad(object sender, EventArgs e) 
+        public void Cleanup()
         {
-            GL.ClearColor(1.0f, .9f, 1.0f, .80f);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindVertexArray(0);
+            GL.UseProgram(0);
+        }
+
+        // Private Methods
+        private void LoadSettingsFromJson()
+        {
+            // Get settings
+            string backgroundColorName = _settingsManager.GetSetting<string>(new RenderingSettings().GetKey(), RenderingSettings.BackgroundColor);
+            string renderMode = _settingsManager.GetSetting<string>(new RenderingSettings().GetKey(), RenderingSettings.RenderMode).ToLower();
+            string shadingModel = _settingsManager.GetSetting<string>(new RenderingSettings().GetKey(), RenderingSettings.ShadingModel).ToLower();
+
+            // Apply settings
+            switch (renderMode)
+            {
+                case "wireframe":
+                    SetRenderMode(RenderMode.Wireframe);
+                    break;
+                case "solid":
+                    SetRenderMode(RenderMode.Solid);
+                    break;
+                case "point":
+                    SetRenderMode(RenderMode.Point);
+                    break;
+                default:
+                    Console.WriteLine("Error occurred when loading settings for render mode.");
+                    SetRenderMode(RenderMode.Wireframe);
+                    break;
+            }
+
+            //switch (shadingModel)
+            //{
+            //    case "smooth":
+            //        SetShadingMode(ShadingModel.Smooth);
+            //        break;
+            //    case "flat":
+            //        SetShadingMode(ShadingModel.Flat);
+            //        break;
+            //    default:
+            //        Console.WriteLine("Error occurred when loading settings for shading mode.");
+            //        SetShadingMode(ShadingModel.Smooth);
+            //        break;
+            //}
+
+            SetBackgroundColor(backgroundColorName);
+        }
+
+        private void SetBackgroundColor(string color)
+        {
+            color = color.ToLower().Replace(" ", "");
+            BackgroundColors.backgroundColorMap.TryGetValue(color, out backgroundColor);
+        }
+
+        // Event Handlers
+        private void GlControl_Load(object sender, EventArgs e)
+        {
+            LoadSettingsFromJson();
+            GL.ClearColor(backgroundColor.X,backgroundColor.Y, backgroundColor.Z,  1.0f);
+
             GL.Enable(EnableCap.DepthTest);
 
             _vertexBufferObject = GL.GenBuffer();
@@ -151,66 +242,138 @@ namespace UnBox3D.Rendering.OpenGL
 
                 var positionLocation = _lampShader.GetAttribLocation("aPos");
                 GL.EnableVertexAttribArray(positionLocation);
+                // Also change the stride here as we now have 6 floats per vertex. Now we don't define the normal for the lamp VAO
+                // this is because it isn't used, it might seem like a waste to use the same VBO if they dont have the same data
+                // The two cubes still use the same position, and since the position is already in the graphics memory it is actually
+                // better to do it this way. Look through the web version for a much better understanding of this.
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
             }
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
 
-            _camera = new Camera(Vector3.UnitZ * 5, GetWidth() / (float)GetHeight());
+            _camera = new Camera(new Vector3(0, 0, 0), GetWidth() / (float)GetHeight());
+
+            // Initialize RayCaster
+            _rayCaster = new RayCaster(this, _camera);
+
+            // Initialize MouseController with RayCaster and Default State
+            _mouseController = new MouseController(
+                _settingsManager,
+                _camera,
+                new DefaultState(_sceneManager, this, _camera, _rayCaster), 
+                _rayCaster,
+                this
+            );
+
+            _keyboardController = new KeyboardController(_camera);
         }
 
-        private void OnRender(object sender, PaintEventArgs e)
+        private void GlControl_Paint(object sender, PaintEventArgs e)
         {
+            Debug.WriteLine("I am rendering now.");
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            HandleInput();
-            _sceneRenderer.RenderScene(_sceneManager.GetMeshes(), _lightingShader, _camera);
 
-            RenderLamp();
-            SwapBuffers();
-        }
+            GL.BindVertexArray(_vaoModel);
 
-        private void RenderLamp()
-        {
+            _lightingShader.Use();
+
+            _lightingShader.SetMatrix4("model", Matrix4.Identity);
+            _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
+            _lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+
+            _lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
+            _lightingShader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
+            _lightingShader.SetVector3("lightPos", _lightPos);
+            _lightingShader.SetVector3("viewPos", _camera.Position);
+
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
             GL.BindVertexArray(_vaoLamp);
+
             _lampShader.Use();
 
-            var lampMatrix = Matrix4.CreateScale(0.2f) * Matrix4.CreateTranslation(_lightPos);
+            Matrix4 lampMatrix = Matrix4.CreateScale(0.2f);
+            lampMatrix = lampMatrix * Matrix4.CreateTranslation(_lightPos);
+
             _lampShader.SetMatrix4("model", lampMatrix);
             _lampShader.SetMatrix4("view", _camera.GetViewMatrix());
             _lampShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
+            SwapBuffers();
+
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            //// Fix Projection Matrix Setup
+            //GL.MatrixMode(MatrixMode.Projection);
+            //GL.LoadIdentity();
+            //Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(
+            //    MathHelper.DegreesToRadians(45f),
+            //    Width / (float)Height,
+            //    0.1f,
+            //    1000f // Increase far plane
+            //);
+            //GL.LoadMatrix(ref perspective);
+
+            //// Fix Model-View Matrix
+            //GL.MatrixMode(MatrixMode.Modelview);
+            //GL.LoadIdentity();
+            //GL.Translate(0f, 0f, -2f); // Move it back instead of forward
+            //GL.Rotate(angle, 0f, 1f, 0f); // Rotate slightly
+
+            //// Ensure shading model is correct
+            //GL.ShadeModel(ShadingModel.Smooth);
+
+            //// Draw the triangle
+            //GL.Disable(EnableCap.Lighting);
+            //GL.Begin(PrimitiveType.Triangles);
+            //GL.Color3(1.0, 0.0, 0.0);
+            //GL.Vertex3(-0.5f, -0.5f, 0f);
+            //GL.Color3(0.0, 1.0, 0.0);
+            //GL.Vertex3(0.5f, -0.5f, 0f);
+            //GL.Color3(0.0, 0.0, 1.0);
+            //GL.Vertex3(0.0f, 0.5f, 0f);
+            //GL.End();
+            //GL.Enable(EnableCap.Lighting);
+
+            //// Ensure all OpenGL commands are executed
+            //GL.Flush();
+
+            //// Swap buffers to display frame
+            //SwapBuffers();
+
+            //// Rotate the triangle slightly each frame
+            //angle += 1f;
         }
 
-        private void OnResize(object sender, EventArgs e)
+
+        private void GlControl_Resize(object sender, EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
-            if(_camera != null)
+            if (_camera != null)
                 _camera.AspectRatio = (float)Width / Height;
         }
 
-        private void HandleInput()
+        private void OnMouseDown(object sender, MouseEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.Escape))
-            {
-                System.Windows.Application.Current.Shutdown();
-            }
-
-            const float cameraSpeed = 1.5f;
-            const float sensitivity = 0.2f;
-
-            if (Keyboard.IsKeyDown(Key.W)) _camera.Position += _camera.Front * cameraSpeed;
-            if (Keyboard.IsKeyDown(Key.S)) _camera.Position -= _camera.Front * cameraSpeed;
-            if (Keyboard.IsKeyDown(Key.A)) _camera.Position -= _camera.Right * cameraSpeed;
-            if (Keyboard.IsKeyDown(Key.D)) _camera.Position += _camera.Right * cameraSpeed;
+            _mouseController?.OnMouseDown(sender, e);
         }
 
-        public void Cleanup()
+        private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindVertexArray(0);
-            GL.UseProgram(0);
+            _mouseController?.OnMouseMove(sender, e);
+        }
 
-            GL.DeleteBuffer(_vertexBufferObject);
-            GL.DeleteVertexArray(_vaoModel);
-            GL.DeleteVertexArray(_vaoLamp);
+        private void OnMouseUp(object sender, MouseEventArgs e)
+        {
+            _mouseController?.OnMouseUp(sender, e);
+        }
+
+        private void OnMouseWheel(object sender, MouseEventArgs e)
+        {
+            _mouseController?.OnMouseWheel(sender, e);
         }
     }
 }

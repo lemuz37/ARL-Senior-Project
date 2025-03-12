@@ -1,6 +1,7 @@
 ﻿using g3;
 using OpenTK.Mathematics;
 using System.Collections.ObjectModel;
+using System.Windows.Forms;
 using UnBox3D.Rendering.OpenGL;
 
 // Following these tutorials:
@@ -41,17 +42,10 @@ namespace UnBox3D.Rendering
         private Vector2 GetMousePosition()
         {
             // Get the screen coordinates of the mouse
-            var screenMousePosition = Control.MousePosition;
-
-            // Get the location of the GLControlHost relative to the screen
-            var controlLocation = _glControlHost.PointToScreen(Point.Empty);
-
-            // Calculate the mouse position relative to the GLControlHost
-            int clientX = screenMousePosition.X - controlLocation.X;
-            int clientY = screenMousePosition.Y - controlLocation.Y;
+            var mousePosition = Control.MousePosition;
 
             // Return the client-relative mouse position as a Vector2
-            return new Vector2(clientX, clientY);
+            return new Vector2(mousePosition.X, mousePosition.Y);
         }
 
         // Step 1:
