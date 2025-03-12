@@ -7,6 +7,7 @@ using UnBox3D.Utils;
 using UnBox3D.Rendering;
 using System.Diagnostics;
 using System.IO;
+using UnBox3D.Views;
 
 namespace UnBox3D.ViewModels
 {
@@ -247,6 +248,15 @@ namespace UnBox3D.ViewModels
         {
             MessageBox.Show("Adaptive Decimation Simplification triggered!");
             // Call Adaptive Decimation logic here
+        }
+        
+        [RelayCommand]
+        private void OpenStructureSupportWindow()
+        {
+   
+            MessageBox.Show("SS window opened");
+            StructureSupportWindow window = new StructureSupportWindow();
+            window.Show();
         }
 
         // Command to exit the application

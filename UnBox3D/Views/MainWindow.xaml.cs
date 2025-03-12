@@ -119,6 +119,7 @@ namespace UnBox3D.Views
                 _logger?.Error($"Error during cleanup: {ex.Message}");
             }
         }
+        
 
         private async void StartUpdateLoop() 
         {

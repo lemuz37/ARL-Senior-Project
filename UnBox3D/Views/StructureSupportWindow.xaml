@@ -1,0 +1,32 @@
+﻿<Window x:Class="UnBox3D.Views.StructureSupportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnBox3D.Views"
+        mc:Ignorable="d"
+        Title="StructureSupportWindow" Height="450" Width="800">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Structure Support" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Short Edge (in): " Width="120"/>
+                <TextBox Width="100" Text="{Binding ShortEdgeValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PreviewTextInput="NumberValidationTextBox"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Medium Edge (in): " Width="120"/>
+                <TextBox Width="100" Text="{Binding MediumEdgeValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,5">
+                <TextBlock Text="Long Edge (in): " Width="120"/>
+                <TextBox Width="100" Text="{Binding LongEdgeValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <Button Content="Apply" Command="{Binding ApplyDimensionsCommand}" Margin="10,20,0,0" Width="100" HorizontalAlignment="Center"/>
+        </StackPanel>
+		
+    </Grid>
+</Window>

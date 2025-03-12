@@ -22,6 +22,7 @@
             <MenuItem Header="View">
                 <MenuItem Header="Reset View" Command="{Binding ResetViewCommand}" />
             </MenuItem>
+            <MenuItem Header="Structure Support" Command="{Binding OpenStructureSupportWindowCommand}" />
             <MenuItem Header="Settings"/>
             <MenuItem Header="Tools">
                 <MenuItem Header="Hierarchy Panel"/>
