@@ -24,6 +24,10 @@ namespace UnBox3D.ViewModels
         private IAppMesh selectedMesh;
         [ObservableProperty]
         private bool hierarchyVisible = true;
+        [ObservableProperty]
+        private double pageWidth = 25.0;
+        [ObservableProperty]
+        private double pageHeight = 25.0;
 
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
@@ -131,11 +135,10 @@ namespace UnBox3D.ViewModels
 
             // TODO: Eventually set up the page increment shenanigans
             // TODO: SVG stuff (correcting scale)
-            // TODO: UI so its not hardcoded
 
             bool success = _blenderIntegration.RunBlenderScript(
                 inputModelPath, outputDirectory, scriptPath,
-                newFileName, 25.0, 25.0, format, out string errorMessage);
+                newFileName, PageWidth, PageHeight, format, out string errorMessage);
 
             if (!success)
             {
@@ -192,7 +195,7 @@ namespace UnBox3D.ViewModels
                 MessageBox.Show("No model imported to unfold.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
+            //MessageBox.Show($"WidthCall:  {PageWidth}, HeightCall:  {PageHeight}");
             ProcessUnfolding(_importedFilePath);
         }
 
