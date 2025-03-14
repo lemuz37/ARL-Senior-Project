@@ -100,6 +100,12 @@ namespace UnBox3D.ViewModels
                 return;
             }
 
+            if (PageWidth == 0 || PageHeight == 0)
+            {
+                MessageBox.Show($"Page Dimensions cannot be 0.");
+                return;
+            }
+
             // Let the user select a directory for saving the files
             using SaveFileDialog saveFileDialog = new SaveFileDialog();
             saveFileDialog.Title = "Save your unfolded file";
@@ -133,20 +139,7 @@ namespace UnBox3D.ViewModels
 
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
 
-            // TODO: Eventually set up the page increment shenanigans
-            //         UPDATE: don't allow 0 input for either textboxes
             // TODO: SVG stuff (correcting scale)
-
-
-            double prevDocWidth = PageWidth;
-            double prevDocHeight = PageHeight;
-
-            if (PageWidth == 0 || PageHeight == 0)
-            {
-                PageWidth++;
-                PageHeight++;
-                Debug.WriteLine($"DW: {PageWidth} DH: {PageHeight}");
-            }
 
             double incrementWidth = PageWidth;
             double incrementHeight = PageHeight;
@@ -178,13 +171,6 @@ namespace UnBox3D.ViewModels
 
             }
             Debug.WriteLine($"incW: {incrementWidth} incH {incrementHeight}");
-            // need better safeguard for when one is 0 but the other isn't
-            // or alternatively don't allow 0 input value
-            if (prevDocWidth == 0 || prevDocHeight == 0) 
-            {
-                PageWidth = (float)incrementWidth;
-                PageHeight = (float)incrementHeight;
-            }
             Debug.WriteLine($"PW: {PageWidth} PH: {PageHeight}");
 
             if (format == "SVG")
