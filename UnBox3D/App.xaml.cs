@@ -27,11 +27,18 @@ namespace UnBox3D
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
             mainWindow.DataContext = mainViewModel;
 
+            var downloadWindow = new Form1();
+
             // Initialize and show MainWindow
+
+            //Initialize the Form1 window and wait for it to finish downloading the file, then initialize the main window
+
             mainWindow.Initialize(
                 _serviceProvider.GetRequiredService<IGLControlHost>(),
                 _serviceProvider.GetRequiredService<ILogger>()
             );
+
+            downloadWindow.Show();
             mainWindow.Show();
         }
 
