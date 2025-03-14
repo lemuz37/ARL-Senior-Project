@@ -134,17 +134,58 @@ namespace UnBox3D.ViewModels
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
 
             // TODO: Eventually set up the page increment shenanigans
+            //         UPDATE: don't allow 0 input for either textboxes
             // TODO: SVG stuff (correcting scale)
 
-            bool success = _blenderIntegration.RunBlenderScript(
-                inputModelPath, outputDirectory, scriptPath,
-                newFileName, PageWidth, PageHeight, format, out string errorMessage);
 
-            if (!success)
+            double prevDocWidth = PageWidth;
+            double prevDocHeight = PageHeight;
+
+            if (PageWidth == 0 || PageHeight == 0)
             {
-                MessageBox.Show($"Unfolding failed: {errorMessage}");
-                return;
+                PageWidth++;
+                PageHeight++;
+                Debug.WriteLine($"DW: {PageWidth} DH: {PageHeight}");
             }
+
+            double incrementWidth = PageWidth;
+            double incrementHeight = PageHeight;
+
+            bool success = false;
+            string errorMessage = "";
+
+            while (!success)
+            {
+                success = _blenderIntegration.RunBlenderScript(
+                    inputModelPath, outputDirectory, scriptPath,
+                    newFileName, incrementWidth, incrementHeight, format, out errorMessage);
+
+                if (!success)
+                {
+                    if (errorMessage.Contains("continue"))
+                    {
+                        incrementWidth++;
+                        incrementHeight++;
+                        Debug.WriteLine($"errorME: {errorMessage} {incrementWidth} {incrementHeight}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"break: {errorMessage} {incrementWidth} {incrementHeight}");
+                        break;
+                    }
+                }
+                Debug.WriteLine($"script executed successfully: {errorMessage} {incrementWidth} {incrementHeight}");
+
+            }
+            Debug.WriteLine($"incW: {incrementWidth} incH {incrementHeight}");
+            // need better safeguard for when one is 0 but the other isn't
+            // or alternatively don't allow 0 input value
+            if (prevDocWidth == 0 || prevDocHeight == 0) 
+            {
+                PageWidth = (float)incrementWidth;
+                PageHeight = (float)incrementHeight;
+            }
+            Debug.WriteLine($"PW: {PageWidth} PH: {PageHeight}");
 
             if (format == "SVG")
             {
