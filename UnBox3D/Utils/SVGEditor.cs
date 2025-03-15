@@ -27,6 +27,19 @@ namespace UnBox3D.Utils
             Debug.WriteLine($"Processing Page: {pageIndex} - Filename: {inputSvgPath}");
             SvgDocument svgDocument = SvgDocument.Open(inputSvgPath);
 
+            try
+            {
+                if (File.Exists(inputSvgPath))
+                {
+                    File.Delete(inputSvgPath);
+                    Debug.WriteLine($"Deleted SVG file: {inputSvgPath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to delete {inputSvgPath}: {ex.Message}");
+            }
+
             float panelWidth = panelWidthMm * MmToPx;
             float panelHeight = panelHeightMm * MmToPx;
             float margin = marginMm * MmToPx;
