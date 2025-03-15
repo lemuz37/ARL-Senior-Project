@@ -25,9 +25,9 @@ namespace UnBox3D.ViewModels
         [ObservableProperty]
         private bool hierarchyVisible = true;
         [ObservableProperty]
-        private double pageWidth = 25.0;
+        private float pageWidth = 25.0f;
         [ObservableProperty]
-        private double pageHeight = 25.0;
+        private float pageHeight = 25.0f;
 
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
@@ -172,28 +172,44 @@ namespace UnBox3D.ViewModels
             }
             Debug.WriteLine($"incW: {incrementWidth} incH {incrementHeight}");
             Debug.WriteLine($"PW: {PageWidth} PH: {PageHeight}");
-
-            if (format == "SVG")
+            
+            if (success)
             {
-                string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}*.svg");
+                string[] svgPanelFiles = Directory.GetFiles(outputDirectory, "*.svg");
+                int pageIndex = 0;
 
-                foreach (string svgFile in svgFiles)
+                foreach(string svgFile in svgPanelFiles)
                 {
-                    string fileSuffix = svgFile.Substring(svgFile.IndexOf(newFileName) + newFileName.Length);
-                    string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
-                    File.Move(svgFile, destinationFilePath, overwrite: true);
+                    SVGEditor.ExportSvgPanels(svgFile, outputDirectory, newFileName, pageIndex++, 
+                        PageWidth * 1000f, PageHeight * 1000f);
                 }
+
+                if (format == "SVG")
+                {
+                    string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}*.svg");
+
+                    foreach (string svgFile in svgFiles)
+                    {
+                        string fileSuffix = svgFile.Substring(svgFile.IndexOf(newFileName) + newFileName.Length);
+                        string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
+                        File.Move(svgFile, destinationFilePath, overwrite: true);
+                    }
+                }
+                else if (format == "PDF")
+                {
+                    string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
+
+                    string destinationFilePath = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
+                    File.Move(pdfFile, destinationFilePath, overwrite: true);
+                }
+
+                MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                CleanupUnfoldedFolder(outputDirectory);
             }
-            else if (format == "PDF")
+            else
             {
-                string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
-
-                string destinationFilePath = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
-                File.Move(pdfFile, destinationFilePath, overwrite: true);
+                MessageBox.Show(errorMessage, "Error Processing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-            MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            CleanupUnfoldedFolder(outputDirectory);
         }
 
         private void CleanupUnfoldedFolder(string folderPath)

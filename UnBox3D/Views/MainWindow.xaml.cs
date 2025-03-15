@@ -123,7 +123,7 @@ namespace UnBox3D.Views
             if (string.IsNullOrEmpty(textBox.Text) || textBox.Text == ".")
                 return;
 
-            if (double.TryParse(textBox.Text, out double value) &&
+            if (float.TryParse(textBox.Text, out float value) &&
                 textBox.DataContext is ViewModels.MainViewModel viewModel)
             {
                 if (textBox.Name.Contains("Width"))
