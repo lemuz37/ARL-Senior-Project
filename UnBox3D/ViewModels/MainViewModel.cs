@@ -32,7 +32,7 @@ namespace UnBox3D.ViewModels
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
         public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager, 
-            IFileSystem fileSystem, BlenderIntegration blenderIntegration, 
+            IFileSystem fileSystem, BlenderIntegration blenderIntegration,
             IBlenderInstaller blenderInstaller)
         {
             _settingsManager = settingsManager;
@@ -91,7 +91,9 @@ namespace UnBox3D.ViewModels
         private async Task ProcessUnfolding(string inputModelPath)
         {
             Debug.WriteLine("Input model is coming from: " + inputModelPath);
-            // Ensure Blender is installed before continuing
+            var loadingWindow = new Views.LoadingWindow();
+
+            // Ensure Blender is installed before continuin
             await _blenderInstaller.CheckAndInstallBlender();
 
             if (_fileSystem == null || _blenderIntegration == null)
@@ -113,7 +115,7 @@ namespace UnBox3D.ViewModels
             saveFileDialog.FileName = "MyUnfoldedFile";
 
             if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
-            
+
             // Extract user selection
             string filePath = saveFileDialog.FileName;
             string ext = Path.GetExtension(filePath).ToLowerInvariant();
@@ -128,7 +130,7 @@ namespace UnBox3D.ViewModels
             string newFileName = Path.GetFileNameWithoutExtension(filePath);
             string format = ext == ".pdf" ? "PDF" : "SVG";
 
-            // Set up output directories
+            // Set up output directories                
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             string outputDirectory = _fileSystem.CombinePaths(baseDir, "UnfoldedOutputs");
 
@@ -136,22 +138,36 @@ namespace UnBox3D.ViewModels
             {
                 _fileSystem.CreateDirectory(outputDirectory);
             }
+            // In case of a crash, or force exit, some files remain inside and will cause incrorrect manipulation
+            CleanupUnfoldedFolder(outputDirectory);
 
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
-
-            // TODO: SVG stuff (correcting scale)
-
             double incrementWidth = PageWidth;
             double incrementHeight = PageHeight;
 
             bool success = false;
             string errorMessage = "";
+            int iteration = 0;
+
+            loadingWindow.Show();
+
+            loadingWindow.UpdateStatus("Checking Blender installation...");
+            await DispatcherHelper.DoEvents();
+            loadingWindow.UpdateStatus("Preparing for file export...");
+            await DispatcherHelper.DoEvents();
+            loadingWindow.UpdateStatus("Setting up processing environment...");
+            await DispatcherHelper.DoEvents();
 
             while (!success)
             {
-                success = _blenderIntegration.RunBlenderScript(
+                iteration++;
+                loadingWindow.UpdateStatus($"Processing with Blender (Attempt {iteration})...");
+                loadingWindow.UpdateProgress((double)iteration / 100 * 50);
+                await DispatcherHelper.DoEvents();
+
+                success = await Task.Run(() => _blenderIntegration.RunBlenderScript(
                     inputModelPath, outputDirectory, scriptPath,
-                    newFileName, incrementWidth, incrementHeight, format, out errorMessage);
+                    newFileName, incrementWidth, incrementHeight, format, out errorMessage));
 
                 if (!success)
                 {
@@ -159,6 +175,8 @@ namespace UnBox3D.ViewModels
                     {
                         incrementWidth++;
                         incrementHeight++;
+                        loadingWindow.UpdateStatus($"Adjusting dimensions and retrying ({incrementWidth}x{incrementHeight})...");
+                        await DispatcherHelper.DoEvents();
                         Debug.WriteLine($"errorME: {errorMessage} {incrementWidth} {incrementHeight}");
                     }
                     else
@@ -168,46 +186,75 @@ namespace UnBox3D.ViewModels
                     }
                 }
                 Debug.WriteLine($"script executed successfully: {errorMessage} {incrementWidth} {incrementHeight}");
-
             }
             Debug.WriteLine($"incW: {incrementWidth} incH {incrementHeight}");
             Debug.WriteLine($"PW: {PageWidth} PH: {PageHeight}");
-            
+
             if (success)
             {
+                loadingWindow.UpdateStatus("Processing SVG panels...");
+                await DispatcherHelper.DoEvents();
                 string[] svgPanelFiles = Directory.GetFiles(outputDirectory, "*.svg");
-                int pageIndex = 0;
+                int totalPanels = svgPanelFiles.Length;
+                int processedPanels = 0;
 
-                foreach(string svgFile in svgPanelFiles)
+                foreach (string svgFile in svgPanelFiles)
                 {
-                    SVGEditor.ExportSvgPanels(svgFile, outputDirectory, newFileName, pageIndex++, 
-                        PageWidth * 1000f, PageHeight * 1000f);
+                    loadingWindow.UpdateStatus($"Processing panel {processedPanels + 1} of {totalPanels}");
+                    loadingWindow.UpdateProgress(50 + ((double)processedPanels / totalPanels * 30));
+                    await DispatcherHelper.DoEvents();
+
+                    await Task.Run(() => SVGEditor.ExportSvgPanels(svgFile, outputDirectory, newFileName, processedPanels,
+                        PageWidth * 1000f, PageHeight * 1000f));
+
+                    processedPanels++;
                 }
+
+                loadingWindow.UpdateStatus("Exporting final files...");
+                loadingWindow.UpdateProgress(80);
+                await DispatcherHelper.DoEvents();
 
                 if (format == "SVG")
                 {
                     string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}*.svg");
+                    int fileCount = svgFiles.Length;
+                    int filesMoved = 0;
 
                     foreach (string svgFile in svgFiles)
                     {
+                        loadingWindow.UpdateStatus($"Exporting file {filesMoved + 1} of {fileCount}");
+                        loadingWindow.UpdateProgress(80 + ((double)filesMoved / fileCount * 20));
+                        await DispatcherHelper.DoEvents();
+
                         string fileSuffix = svgFile.Substring(svgFile.IndexOf(newFileName) + newFileName.Length);
                         string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
                         File.Move(svgFile, destinationFilePath, overwrite: true);
+
+                        filesMoved++;
                     }
                 }
                 else if (format == "PDF")
                 {
-                    string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
+                    loadingWindow.UpdateStatus ("Exporting PDF file...");
+                    loadingWindow.UpdateProgress(95);
+                    await DispatcherHelper.DoEvents();
 
+                    string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
                     string destinationFilePath = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
                     File.Move(pdfFile, destinationFilePath, overwrite: true);
                 }
 
-                MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                loadingWindow.UpdateStatus("Cleaning up temporary files...");
+                loadingWindow.UpdateProgress(100);
+                await DispatcherHelper.DoEvents();
                 CleanupUnfoldedFolder(outputDirectory);
+
+                loadingWindow.Close();
+                MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
+                loadingWindow.Close();
                 MessageBox.Show(errorMessage, "Error Processing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
