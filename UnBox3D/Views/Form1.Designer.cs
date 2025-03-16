@@ -38,6 +38,7 @@
             label2 = new Label();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             progressLabel = new Label();
+            continueButton = new Button();
             SuspendLayout();
             // 
             // button1
@@ -80,7 +81,6 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(424, 23);
             textBox1.TabIndex = 4;
-            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // label1
             // 
@@ -121,11 +121,23 @@
             progressLabel.TabIndex = 8;
             progressLabel.Text = "0";
             // 
+            // continueButton
+            // 
+            continueButton.Location = new Point(461, 155);
+            continueButton.Name = "continueButton";
+            continueButton.Size = new Size(75, 23);
+            continueButton.TabIndex = 9;
+            continueButton.Text = "Continue";
+            continueButton.UseVisualStyleBackColor = true;
+            continueButton.Click += continueButton_Click;
+            // 
             // Form1
+            // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ControlLight;
             ClientSize = new Size(725, 316);
+            Controls.Add(continueButton);
             Controls.Add(progressLabel);
             Controls.Add(label2);
             Controls.Add(textBox2);
@@ -154,5 +166,6 @@
         private Label label2;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Label progressLabel;
+        private Button continueButton;
     }
 }

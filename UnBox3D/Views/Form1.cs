@@ -15,12 +15,12 @@ namespace UnBox3D.Views
     public partial class Form1 : Form
     {
 
-        private const string testURL = "https://images.unsplash.com/photo-1726221439759-7e7c446a2e63?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-
+        // test string for download-https://images.unsplash.com/photo-1726221439759-7e7c446a2e63?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
 
         public Form1()
         {
             InitializeComponent();
+            this.continueButton.Enabled = false;
         }
 
 
@@ -33,12 +33,10 @@ namespace UnBox3D.Views
         {
             button1.Enabled = true;
             MessageBox.Show("Done!");
-
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            MessageBox.Show("downloding");
             DownloadFile(textBox1.Text, textBox2.Text, blenderDlProgress, progressLabel);
         }
         private void DownloadFile(string link, string targetPath, ProgressBar P, Label label)
@@ -105,6 +103,14 @@ namespace UnBox3D.Views
                             {
                                 label.Text = int.Parse(Math.Truncate(percentge).ToString()).ToString();
                             }
+                            if (continueButton.InvokeRequired)
+                            {
+                                continueButton.Invoke(new Action(() => continueButton.Enabled = true));
+                            }
+                            else
+                            {
+                                continueButton.Enabled = true;
+                            }
 
                         } while (bytesRead > 0);
                     }
@@ -121,12 +127,12 @@ namespace UnBox3D.Views
                 remoteSteam?.Close();
                 localSteam?.Close();
             }
-
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
+        private void continueButton_Click(object sender, EventArgs e)
         {
-
+            this.DialogResult = DialogResult.OK;
+            this.Close();
         }
     }
 }

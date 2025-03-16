@@ -19,27 +19,33 @@ namespace UnBox3D
         {
             base.OnStartup(e);
 
-            // Configure the service provider (DI container)
-            _serviceProvider = ConfigureServices();
-
-            // Resolve MainWindow and MainViewModel
-            var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-            var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
-            mainWindow.DataContext = mainViewModel;
-
             var downloadWindow = new Form1();
+            downloadWindow.ShowDialog();
 
-            // Initialize and show MainWindow
 
-            //Initialize the Form1 window and wait for it to finish downloading the file, then initialize the main window
+            if (downloadWindow.DialogResult == DialogResult.OK)
+            {
+                // Configure the service provider (DI container)
+                _serviceProvider = ConfigureServices();
 
-            mainWindow.Initialize(
-                _serviceProvider.GetRequiredService<IGLControlHost>(),
-                _serviceProvider.GetRequiredService<ILogger>()
-            );
+                // Resolve MainWindow and MainViewModel
+                var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+                var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
+                mainWindow.DataContext = mainViewModel;
 
-            downloadWindow.Show();
-            mainWindow.Show();
+
+                // Initialize and show MainWindow
+
+                //Initialize the Form1 window and wait for it to finish downloading the file, then initialize the main window
+
+                mainWindow.Initialize(
+                    _serviceProvider.GetRequiredService<IGLControlHost>(),
+                    _serviceProvider.GetRequiredService<ILogger>()
+                );
+
+
+                mainWindow.Show();
+            }
         }
 
         private ServiceProvider ConfigureServices()
