@@ -61,7 +61,8 @@ namespace UnBox3D
             {
                 var sceneManager = provider.GetRequiredService<ISceneManager>();
                 var sceneRenderer = provider.GetRequiredService<IRenderer>();
-                return new GLControlHost(sceneManager, sceneRenderer);
+                var settingsManager = provider.GetRequiredService<ISettingsManager>();
+                return new GLControlHost(sceneManager, sceneRenderer, settingsManager);
             });
 
             // Register MainWindow and MainViewModel

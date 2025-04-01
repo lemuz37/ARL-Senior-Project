@@ -185,10 +185,5 @@ namespace UnBox3D.Rendering
             }
             _disposed = true;
         }
-
-        ~AppMesh()
-        {
-            Dispose(false);
-        }
     }
 }

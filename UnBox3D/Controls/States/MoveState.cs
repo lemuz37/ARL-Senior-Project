@@ -39,7 +39,7 @@ namespace UnBox3D.Controls.States
             _meshMoveSensitivity = meshMoveSensitivity;
         }
 
-        public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseDown(MouseEventArgs e)
         {
             // Record mouse position
             _lastMousePosition = Control.MousePosition;
@@ -55,7 +55,7 @@ namespace UnBox3D.Controls.States
             }
         }
 
-        public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        public void OnMouseMove(MouseEventArgs e)
         {
             if (!_isDragging || _selectedMesh == null)
                 return;
@@ -75,7 +75,7 @@ namespace UnBox3D.Controls.States
             _lastMousePosition = currentMousePosition;
         }
 
-        public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseUp(MouseEventArgs e)
         {
             _lastClickedMesh = _selectedMesh;
 

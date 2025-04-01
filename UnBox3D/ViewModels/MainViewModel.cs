@@ -18,16 +18,21 @@ namespace UnBox3D.ViewModels
         private readonly IFileSystem _fileSystem;
         private readonly BlenderIntegration _blenderIntegration;
         private readonly IBlenderInstaller _blenderInstaller;
+        private string _importedFilePath; // Global filepath that should be referenced when simplifying
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
         [ObservableProperty]
         private bool hierarchyVisible = true;
+        [ObservableProperty]
+        private float pageWidth = 25.0f;
+        [ObservableProperty]
+        private float pageHeight = 25.0f;
 
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
         public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager, 
-            IFileSystem fileSystem, BlenderIntegration blenderIntegration, 
+            IFileSystem fileSystem, BlenderIntegration blenderIntegration,
             IBlenderInstaller blenderInstaller)
         {
             _settingsManager = settingsManager;
@@ -51,90 +56,209 @@ namespace UnBox3D.ViewModels
             if (result == true)
             {
                 string filePath = openFileDialog.FileName;
-                List<IAppMesh> importedMeshes = _modelImporter.ImportModel(filePath);
+                _importedFilePath = EnsureImportDirectory(filePath);
+                List<IAppMesh> importedMeshes = _modelImporter.ImportModel(_importedFilePath);
 
                 foreach (var mesh in importedMeshes)
                 {
                     _sceneManager.AddMesh(mesh);
                 }
-
-                ProcessUnfolding(filePath);
             }
+        }
+
+        /* IMPORTANT:
+         * When you begin simplifying the model, EXPORT that simplified version to
+         * the ImportedModels dir and OVERWRITE the file because the unfolding script will use
+         * the ImportedModels dir and is not responsible for keeping track if its been simplified or not.
+        */
+
+        // Don't call this function. Reference the _importedFilePath if you want to get access to the ImportedModels dir
+        private string EnsureImportDirectory(string filePath)
+        {
+            string importDirectory = _fileSystem.CombinePaths(AppDomain.CurrentDomain.BaseDirectory, "ImportedModels");
+
+            if (!_fileSystem.DoesDirectoryExists(importDirectory))
+            {
+                _fileSystem.CreateDirectory(importDirectory);
+            }
+
+            string destinationPath = _fileSystem.CombinePaths(importDirectory, Path.GetFileName(filePath));
+            File.Copy(filePath, destinationPath, overwrite:true);
+
+            return destinationPath;
         }
 
         private async Task ProcessUnfolding(string inputModelPath)
         {
-            // Ensure Blender is installed before continuing
+            Debug.WriteLine("Input model is coming from: " + inputModelPath);
+            var loadingWindow = new Views.LoadingWindow();
+
+            // Ensure Blender is installed before continuin
             await _blenderInstaller.CheckAndInstallBlender();
-            
+
             if (_fileSystem == null || _blenderIntegration == null)
             {
                 MessageBox.Show("Internal error: dependencies not initialized.");
                 return;
             }
 
+            if (PageWidth == 0 || PageHeight == 0)
+            {
+                MessageBox.Show($"Page Dimensions cannot be 0.");
+                return;
+            }
+
+            // Let the user select a directory for saving the files
+            using SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Title = "Save your unfolded file";
+            saveFileDialog.Filter = "SVG Files|*.svg|PDF Files|*.pdf";
+            saveFileDialog.FileName = "MyUnfoldedFile";
+
+            if (saveFileDialog.ShowDialog() != DialogResult.OK) return;
+
+            // Extract user selection
+            string filePath = saveFileDialog.FileName;
+            string ext = Path.GetExtension(filePath).ToLowerInvariant();
+            string? userSelectedPath = Path.GetDirectoryName(filePath);
+
+            if (string.IsNullOrEmpty(userSelectedPath))
+            {
+                MessageBox.Show("Unable to determine the selected directory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string newFileName = Path.GetFileNameWithoutExtension(filePath);
+            string format = ext == ".pdf" ? "PDF" : "SVG";
+
+            // Set up output directories                
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            Debug.WriteLine("baseDir: " + baseDir);
             string outputDirectory = _fileSystem.CombinePaths(baseDir, "UnfoldedOutputs");
-            Debug.WriteLine("outputDir: " + outputDirectory);
 
             if (!_fileSystem.DoesDirectoryExists(outputDirectory))
             {
                 _fileSystem.CreateDirectory(outputDirectory);
             }
+            // In case of a crash, or force exit, some files remain inside and will cause incrorrect manipulation
+            CleanupUnfoldedFolder(outputDirectory);
 
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
-            string fileName = "HardCodedTestingSVG25mx25m";
-            Debug.WriteLine("scriptPath:" + scriptPath);
+            double incrementWidth = PageWidth;
+            double incrementHeight = PageHeight;
 
-            // TODO: Eventually set up the page increment shenanigans
-            // TODO: Output files depending on user dir
-            // TODO: SVG stuff (correcting scale)
-            // TODO: UI so its not hardcoded
-            // TODO: Publish i could publish now, and if it can't find blender, then gg
-            bool success = _blenderIntegration.RunBlenderScript(
-                inputModelPath, outputDirectory, scriptPath,
-                fileName, 25.0, 25.0, "SVG", out string errorMessage);
+            bool success = false;
+            string errorMessage = "";
+            int iteration = 0;
+
+            loadingWindow.Show();
+
+            loadingWindow.UpdateStatus("Checking Blender installation...");
+            await DispatcherHelper.DoEvents();
+            loadingWindow.UpdateStatus("Preparing for file export...");
+            await DispatcherHelper.DoEvents();
+            loadingWindow.UpdateStatus("Setting up processing environment...");
+            await DispatcherHelper.DoEvents();
+
+            while (!success)
+            {
+                iteration++;
+                loadingWindow.UpdateStatus($"Processing with Blender (Attempt {iteration})...");
+                loadingWindow.UpdateProgress((double)iteration / 100 * 50);
+                await DispatcherHelper.DoEvents();
+
+                success = await Task.Run(() => _blenderIntegration.RunBlenderScript(
+                    inputModelPath, outputDirectory, scriptPath,
+                    newFileName, incrementWidth, incrementHeight, format, out errorMessage));
+
+                if (!success)
+                {
+                    if (errorMessage.Contains("continue"))
+                    {
+                        incrementWidth++;
+                        incrementHeight++;
+                        loadingWindow.UpdateStatus($"Adjusting dimensions and retrying ({incrementWidth}x{incrementHeight})...");
+                        await DispatcherHelper.DoEvents();
+                        Debug.WriteLine($"errorME: {errorMessage} {incrementWidth} {incrementHeight}");
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"break: {errorMessage} {incrementWidth} {incrementHeight}");
+                        break;
+                    }
+                }
+                Debug.WriteLine($"script executed successfully: {errorMessage} {incrementWidth} {incrementHeight}");
+            }
+            Debug.WriteLine($"incW: {incrementWidth} incH {incrementHeight}");
+            Debug.WriteLine($"PW: {PageWidth} PH: {PageHeight}");
 
             if (success)
             {
-                MessageBox.Show($"Unfolding successful! Output saved to: {outputDirectory}", "Success");
+                loadingWindow.UpdateStatus("Processing SVG panels...");
+                await DispatcherHelper.DoEvents();
+                string[] svgPanelFiles = Directory.GetFiles(outputDirectory, "*.svg");
+                int totalPanels = svgPanelFiles.Length;
+                int processedPanels = 0;
+
+                foreach (string svgFile in svgPanelFiles)
+                {
+                    loadingWindow.UpdateStatus($"Processing panel {processedPanels + 1} of {totalPanels}");
+                    loadingWindow.UpdateProgress(50 + ((double)processedPanels / totalPanels * 30));
+                    await DispatcherHelper.DoEvents();
+
+                    await Task.Run(() => SVGEditor.ExportSvgPanels(svgFile, outputDirectory, newFileName, processedPanels,
+                        PageWidth * 1000f, PageHeight * 1000f));
+
+                    processedPanels++;
+                }
+
+                loadingWindow.UpdateStatus("Exporting final files...");
+                loadingWindow.UpdateProgress(80);
+                await DispatcherHelper.DoEvents();
+
+                if (format == "SVG")
+                {
+                    string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}*.svg");
+                    int fileCount = svgFiles.Length;
+                    int filesMoved = 0;
+
+                    foreach (string svgFile in svgFiles)
+                    {
+                        loadingWindow.UpdateStatus($"Exporting file {filesMoved + 1} of {fileCount}");
+                        loadingWindow.UpdateProgress(80 + ((double)filesMoved / fileCount * 20));
+                        await DispatcherHelper.DoEvents();
+
+                        string fileSuffix = svgFile.Substring(svgFile.IndexOf(newFileName) + newFileName.Length);
+                        string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
+                        File.Move(svgFile, destinationFilePath, overwrite: true);
+
+                        filesMoved++;
+                    }
+                }
+                else if (format == "PDF")
+                {
+                    loadingWindow.UpdateStatus ("Exporting PDF file...");
+                    loadingWindow.UpdateProgress(95);
+                    await DispatcherHelper.DoEvents();
+
+                    string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
+                    string destinationFilePath = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
+                    File.Move(pdfFile, destinationFilePath, overwrite: true);
+                }
+
+                loadingWindow.UpdateStatus("Cleaning up temporary files...");
+                loadingWindow.UpdateProgress(100);
+                await DispatcherHelper.DoEvents();
+                CleanupUnfoldedFolder(outputDirectory);
+
+                loadingWindow.Close();
+                MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                MessageBox.Show($"Unfolding failed: {errorMessage}");
-            }
-
-            // Let the user select a directory for saving the files
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.Description = "Select a location to save the exported files";
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    string userSelectedPath = folderBrowserDialog.SelectedPath;
-
-                    try
-                    {
-                        // Copy all SVG files from the temp directory to the user's selected path
-                        string[] svgFiles = Directory.GetFiles(outputDirectory, $"{fileName}*.svg");
-
-                        foreach (string svgFile in svgFiles)
-                        {
-                            string destinationFilePath = Path.Combine(userSelectedPath, Path.GetFileName(svgFile));
-                            File.Copy(svgFile, destinationFilePath, overwrite: true);
-                        }
-
-                        MessageBox.Show("Files have been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        CleanupUnfoldedFolder(outputDirectory);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"An error occurred while exporting files: {ex.Message}", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
+                loadingWindow.Close();
+                MessageBox.Show(errorMessage, "Error Processing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void CleanupUnfoldedFolder(string folderPath)
         {
             try
@@ -151,6 +275,18 @@ namespace UnBox3D.ViewModels
             {
                 MessageBox.Show($"An error occurred during cleanup: {ex.Message}", "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        [RelayCommand]
+        private void ExportUnfoldModel()
+        {
+            if (string.IsNullOrEmpty(_importedFilePath))
+            {
+                MessageBox.Show("No model imported to unfold.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            //MessageBox.Show($"WidthCall:  {PageWidth}, HeightCall:  {PageHeight}");
+            ProcessUnfolding(_importedFilePath);
         }
 
         // Command to reset the view

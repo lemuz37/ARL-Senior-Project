@@ -44,7 +44,7 @@ namespace UnBox3D.Controls.States
             _rotationSensitivity = _settingsManager.GetSetting<float>(new UISettings().GetKey(), UISettings.MeshRotationSensitivity);
         }
 
-        public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseDown(MouseEventArgs e)
         {
             _lastMousePosition = Control.MousePosition;
             _accumulatedAngle = 0;
@@ -66,7 +66,7 @@ namespace UnBox3D.Controls.States
             // }
         }
 
-        public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        public void OnMouseMove(MouseEventArgs e)
         {
             if (_isRotating && _selectedMesh != null)
             {
@@ -87,7 +87,7 @@ namespace UnBox3D.Controls.States
             }
         }
 
-        public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseUp(MouseEventArgs e)
         {
             if (_isRotating && _selectedMesh != null && _accumulatedAngle != 0)
             {

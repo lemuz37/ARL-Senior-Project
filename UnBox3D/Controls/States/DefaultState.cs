@@ -26,7 +26,7 @@ namespace UnBox3D.Controls.States
             _camera = camera;
         }
 
-        public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseDown(MouseEventArgs e)
         {
             // Get the world space ray from the MousePicker
             Vector3 rayWorld = _rayCaster.GetRay();
@@ -41,12 +41,12 @@ namespace UnBox3D.Controls.States
             }
         }
 
-        public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        public void OnMouseMove(MouseEventArgs e)
         {
 
         }
 
-        public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e) 
+        public void OnMouseUp(MouseEventArgs e) 
         {
 
         }
