@@ -1,7 +1,7 @@
 ﻿using System;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using UnBox3D.Rendering.OpenGL; // Ensure this namespace matches your project
+using UnBox3D.Rendering.OpenGL;
 
 namespace UnBox3D.Rendering
 {
@@ -15,7 +15,7 @@ namespace UnBox3D.Rendering
 
         public GridPlaneRenderer(string vertexShaderPath, string fragmentShaderPath)
         {
-            _gridSize = 1000.0f;  // Adjust for performance
+            _gridSize = 1000.0f;
             _gridLines = 100;
             _transparency = 0.3f;
 
