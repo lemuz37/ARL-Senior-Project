@@ -1,82 +1,105 @@
-﻿using OpenTK.Graphics.OpenGL;
-using UnBox3D.Utils;
+﻿using System;
+using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using UnBox3D.Rendering.OpenGL; // Ensure this namespace matches your project
 
 namespace UnBox3D.Rendering
 {
     public class GridPlaneRenderer
     {
-        public void DrawTransparentXZPlaneWithGrid(float gridSize = 100000.0f, int gridLines = 100, float transparency = 0.3f)
+        private int _vao, _vbo;
+        private Shader _shader;
+        private int _gridLines;
+        private float _gridSize;
+        private float _transparency;
+
+        public GridPlaneRenderer(string vertexShaderPath, string fragmentShaderPath)
         {
-            // Enable blending to draw transparent objects
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            GL.Disable(EnableCap.DepthTest);
+            _gridSize = 1000.0f;  // Adjust for performance
+            _gridLines = 100;
+            _transparency = 0.3f;
 
-            // Light gray plane with transparency
-            GL.Color4(0.8f, 0.8f, 0.8f, transparency);
+            // Load Shader using your Shader class
+            _shader = new Shader(vertexShaderPath, fragmentShaderPath);
 
-            // Draw the transparent XZ-plane
-            GL.Begin(PrimitiveType.Quads);
-            GL.Vertex3(-gridSize, 0, -gridSize);  // Bottom left
-            GL.Vertex3(gridSize, 0, -gridSize);   // Bottom right
-            GL.Vertex3(gridSize, 0, gridSize);    // Top right
-            GL.Vertex3(-gridSize, 0, gridSize);   // Top left
-            GL.End();
+            InitializeGrid();
+        }
 
-            // Draw the grid lines over the XZ-plane
-            GL.Color3(Colors.Black);
-            GL.LineWidth(1.0f);
+        private void InitializeGrid()
+        {
+            float[] vertices = GenerateGridVertices(_gridSize, _gridLines);
 
-            GL.Begin(PrimitiveType.Lines);
+            // Generate VAO & VBO
+            _vao = GL.GenVertexArray();
+            _vbo = GL.GenBuffer();
 
-            // Vertical grid lines (parallel to Z-axis)
+            GL.BindVertexArray(_vao);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+
+            // Define vertex attributes (position only)
+            int positionLocation = _shader.GetAttribLocation("aPos");
+            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
+            GL.EnableVertexAttribArray(positionLocation);
+
+            GL.BindVertexArray(0);
+        }
+
+        private float[] GenerateGridVertices(float gridSize, int gridLines)
+        {
+            int numLines = (gridLines * 4) + 4;
+            float[] vertices = new float[numLines * 6];
+
+            int index = 0;
+            float step = gridSize / gridLines;
+
+            // Vertical lines (X direction)
             for (int i = -gridLines; i <= gridLines; i++)
             {
-                float x = i * (gridSize / gridLines);
-                GL.Vertex3(x, 0, -gridSize);  // Line from back to front
-                GL.Vertex3(x, 0, gridSize);
+                float x = i * step;
+                vertices[index++] = x; vertices[index++] = 0; vertices[index++] = -gridSize;
+                vertices[index++] = x; vertices[index++] = 0; vertices[index++] = gridSize;
             }
 
-            // Horizontal grid lines (parallel to X-axis)
+            // Horizontal lines (Z direction)
             for (int i = -gridLines; i <= gridLines; i++)
             {
-                float z = i * (gridSize / gridLines);
-                GL.Vertex3(-gridSize, 0, z);  // Line from left to right
-                GL.Vertex3(gridSize, 0, z);
+                float z = i * step;
+                vertices[index++] = -gridSize; vertices[index++] = 0; vertices[index++] = z;
+                vertices[index++] = gridSize; vertices[index++] = 0; vertices[index++] = z;
             }
 
-            GL.End();
+            return vertices;
+        }
 
-            // Make the X and Z axes thicker and colored
-            GL.LineWidth(3.0f);  // Thicker line width for the X and Z axes
-            GL.Begin(PrimitiveType.Lines);
+        public void DrawGrid(Matrix4 view, Matrix4 projection)
+        {
+            //GL.Enable(EnableCap.Blend);
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            //GL.Disable(EnableCap.DepthTest);
 
-            // Positive X-axis
-            GL.Color3(Colors.Green);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(gridSize, 0, 0);
+            _shader.Use();
 
-            // Negative X-axis
-            GL.Color3(Colors.Blue);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(-gridSize, 0, 0);
+            _shader.SetMatrix4("view", view);
+            _shader.SetMatrix4("projection", projection);
+            _shader.SetVector3("objectColor", new Vector3(0.5f, 0.5f, 0.5f)); // Light gray color
 
-            // Positive Z-axis
-            GL.Color3(Colors.Yellow);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 0, gridSize);
+            // Bind VAO and draw
+            GL.BindVertexArray(_vao);
+            GL.DrawArrays(PrimitiveType.Lines, 0, (_gridLines * 4) + 4);
+            GL.BindVertexArray(0);
 
-            // Negative Z-axis
-            GL.Color3(Colors.Black);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 0, -gridSize);
+            GL.UseProgram(0);
 
-            GL.End();
-
-            // Restore settings
-            GL.LineWidth(1.0f);   // Reset line width to default
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
+        }
+
+        public void Cleanup()
+        {
+            GL.DeleteVertexArray(_vao);
+            GL.DeleteBuffer(_vbo);
+            GL.DeleteProgram(_shader.Handle);
         }
     }
 }

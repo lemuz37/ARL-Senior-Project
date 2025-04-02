@@ -93,13 +93,19 @@ namespace UnBox3D.Rendering.OpenGL
 
 
         // Private Fields
+        private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
         private readonly IRenderer _sceneRenderer;
-        private readonly ISettingsManager _settingsManager;
+        private  GridPlaneRenderer _gridRenderer;
+        private readonly string _vertShader = "Rendering/OpenGL/Shaders/shader.vert";
+        private readonly string _fragShader = "Rendering/OpenGL/Shaders/lighting.frag";
+
         private ICamera _camera;
         private MouseController _mouseController;
-        private KeyboardController _keyboardController;
         private RayCaster _rayCaster;
+        private KeyboardController _keyboardController;
+
+
 
         private RenderMode currentRenderMode;
         private ShadingModel currentShadingModel;
@@ -114,6 +120,7 @@ namespace UnBox3D.Rendering.OpenGL
             _sceneManager = sceneManager;
             _sceneRenderer = sceneRenderer;
             _settingsManager = settingsManager;
+            
 
             // Attach event handlers
             Load += GlControl_Load;
@@ -183,20 +190,6 @@ namespace UnBox3D.Rendering.OpenGL
                     break;
             }
 
-            //switch (shadingModel)
-            //{
-            //    case "smooth":
-            //        SetShadingMode(ShadingModel.Smooth);
-            //        break;
-            //    case "flat":
-            //        SetShadingMode(ShadingModel.Flat);
-            //        break;
-            //    default:
-            //        Console.WriteLine("Error occurred when loading settings for shading mode.");
-            //        SetShadingMode(ShadingModel.Smooth);
-            //        break;
-            //}
-
             SetBackgroundColor(backgroundColorName);
         }
 
@@ -214,7 +207,7 @@ namespace UnBox3D.Rendering.OpenGL
 
             GL.Enable(EnableCap.DepthTest);
 
-            _vertexBufferObject = GL.GenBuffer();
+            _vertexBufferObject = GL.GenBuffer(); // Generates a unique ID for a new OpenGL buffer object
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
@@ -266,6 +259,7 @@ namespace UnBox3D.Rendering.OpenGL
             );
 
             _keyboardController = new KeyboardController(_camera);
+            _gridRenderer = new GridPlaneRenderer(_vertShader, _fragShader);
         }
 
         private void GlControl_Paint(object sender, PaintEventArgs e)
@@ -274,20 +268,25 @@ namespace UnBox3D.Rendering.OpenGL
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.BindVertexArray(_vaoModel);
+            _sceneRenderer.RenderScene(_sceneManager.GetMeshes(), _camera, _lightingShader);
 
-            _lightingShader.Use();
+            //GL.BindVertexArray(_vaoModel);
 
-            _lightingShader.SetMatrix4("model", Matrix4.Identity);
-            _lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
-            _lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
+            //_lightingShader.Use();
 
-            _lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
-            _lightingShader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
-            _lightingShader.SetVector3("lightPos", _lightPos);
-            _lightingShader.SetVector3("viewPos", _camera.Position);
+            //_lightingShader.SetMatrix4("model", Matrix4.Identity);
+            //_lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
+            //_lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            //_lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
+            //_lightingShader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
+            //_lightingShader.SetVector3("lightPos", _lightPos);
+            //_lightingShader.SetVector3("viewPos", _camera.Position);
+
+            //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
+            _gridRenderer.DrawGrid(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
+
 
             GL.BindVertexArray(_vaoLamp);
 
@@ -303,49 +302,6 @@ namespace UnBox3D.Rendering.OpenGL
             GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
 
             SwapBuffers();
-
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            //// Fix Projection Matrix Setup
-            //GL.MatrixMode(MatrixMode.Projection);
-            //GL.LoadIdentity();
-            //Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(
-            //    MathHelper.DegreesToRadians(45f),
-            //    Width / (float)Height,
-            //    0.1f,
-            //    1000f // Increase far plane
-            //);
-            //GL.LoadMatrix(ref perspective);
-
-            //// Fix Model-View Matrix
-            //GL.MatrixMode(MatrixMode.Modelview);
-            //GL.LoadIdentity();
-            //GL.Translate(0f, 0f, -2f); // Move it back instead of forward
-            //GL.Rotate(angle, 0f, 1f, 0f); // Rotate slightly
-
-            //// Ensure shading model is correct
-            //GL.ShadeModel(ShadingModel.Smooth);
-
-            //// Draw the triangle
-            //GL.Disable(EnableCap.Lighting);
-            //GL.Begin(PrimitiveType.Triangles);
-            //GL.Color3(1.0, 0.0, 0.0);
-            //GL.Vertex3(-0.5f, -0.5f, 0f);
-            //GL.Color3(0.0, 1.0, 0.0);
-            //GL.Vertex3(0.5f, -0.5f, 0f);
-            //GL.Color3(0.0, 0.0, 1.0);
-            //GL.Vertex3(0.0f, 0.5f, 0f);
-            //GL.End();
-            //GL.Enable(EnableCap.Lighting);
-
-            //// Ensure all OpenGL commands are executed
-            //GL.Flush();
-
-            //// Swap buffers to display frame
-            //SwapBuffers();
-
-            //// Rotate the triangle slightly each frame
-            //angle += 1f;
         }
 
 
