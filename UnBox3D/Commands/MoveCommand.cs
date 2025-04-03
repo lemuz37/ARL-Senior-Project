@@ -19,7 +19,7 @@ namespace UnBox3D.Commands
 
         public void Execute()
         {
-            _mesh.Move(_movement);
+            //_mesh.Move(_movement);
             MeshMoveMemento movedMesh = new MeshMoveMemento(_mesh, _movement);
             movedMeshes.Push(movedMesh);
         }
@@ -31,7 +31,7 @@ namespace UnBox3D.Commands
                 MeshMoveMemento movedMeshMemento = movedMeshes.Pop();
                 IAppMesh mesh = movedMeshMemento.Mesh;
                 Vector3 movement = movedMeshMemento.Movement;
-                mesh.Move(-movement);
+                //mesh.Move(-movement);
             }
         }
     }

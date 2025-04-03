@@ -1,12 +1,8 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Forms; // For WPF input handling
-using OpenTK.Mathematics;
+﻿using OpenTK.Mathematics;
 using UnBox3D.Rendering;
 using UnBox3D.Controls.States;
 using UnBox3D.Utils;
 using UnBox3D.Rendering.OpenGL;
-using OpenTK.GLControl;
 
 namespace UnBox3D.Controls
 {
@@ -14,7 +10,7 @@ namespace UnBox3D.Controls
     {
         private bool _isPanning;
         private bool _isYawingAndPitching;
-        private System.Drawing.Point _lastMousePosition;
+        private Point _lastMousePosition;
 
         private GLControlHost _glControlHost;
         private readonly ISettingsManager _settingsManager;

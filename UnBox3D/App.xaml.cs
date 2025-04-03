@@ -55,7 +55,8 @@ namespace UnBox3D
             services.AddSingleton<IRenderer, SceneRenderer>(provider =>
             {
                 var logger = provider.GetRequiredService<ILogger>();
-                return new SceneRenderer(logger);
+                var settings = provider.GetRequiredService<ISettingsManager>();
+                return new SceneRenderer(logger, settings);
             });
             services.AddSingleton<IGLControlHost, GLControlHost>(provider =>
             {
