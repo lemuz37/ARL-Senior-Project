@@ -83,7 +83,7 @@
         public string DefaultToolStripPosition { get; set; } = "top";
         public double DefaultCameraYawSensitivity { get; set; } = 0.2;
         public double DefaultCameraPitchSensitivity { get; set; } = 0.2;
-        public double DefaultCameraPanSensitivity { get; set; } = 1000.0;
+        public double DefaultCameraPanSensitivity { get; set; } = 10.0;
         public double DefaultMeshRotationSensitivity { get; set; } = 0.2;
         public double DefaultMeshMoveSensitivity { get; set; } = 0.2;
         public double DefaultZoomSensitivity { get; set; } = 1.0;
