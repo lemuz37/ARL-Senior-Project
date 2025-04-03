@@ -203,6 +203,16 @@ namespace UnBox3D.Views
             Debug.WriteLine("Blender installation completed.");
         }
 
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            // Open SettingsWindow
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.Show();
+
+            // Hide MainWindow
+            this.Hide();
+        }
+
         // Inject dependencies
         public void Initialize(IGLControlHost controlHost, ILogger logger)
         {

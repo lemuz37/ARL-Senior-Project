@@ -22,7 +22,7 @@
             <MenuItem Header="View">
                 <MenuItem Header="Reset View" Command="{Binding ResetViewCommand}" />
             </MenuItem>
-            <MenuItem Header="Settings"/>
+            <MenuItem Header="Settings" Click="Settings_Click"/>
             <MenuItem Header="Tools">
                 <MenuItem Header="Hierarchy Panel"/>
             </MenuItem>
