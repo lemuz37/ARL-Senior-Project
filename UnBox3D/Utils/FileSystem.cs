@@ -26,7 +26,8 @@ namespace UnBox3D.Utils
 
     public class FileSystem : IFileSystem
     {
-        // File operations
+        #region File Operations
+
         public bool DoesFileExists(string filePath) => File.Exists(filePath);
 
         public void WriteToFile(string filePath, string content)
@@ -60,6 +61,7 @@ namespace UnBox3D.Utils
 
             return new FileInfo(filePath).Length;
         }
+
         public void MoveFile(string sourceFilePath, string destinationFilePath)
         {
             if (!DoesFileExists(sourceFilePath))
@@ -73,7 +75,10 @@ namespace UnBox3D.Utils
             File.Move(sourceFilePath, destinationFilePath);
         }
 
-        // Directory operations
+        #endregion
+
+        #region Directory Operations
+
         public bool DoesDirectoryExists(string directoryPath) => Directory.Exists(directoryPath);
 
         public void CreateDirectory(string directoryPath)
@@ -104,10 +109,15 @@ namespace UnBox3D.Utils
             return Directory.GetDirectories(directoryPath);
         }
 
-        // Path operations
+        #endregion
+
+        #region Path Operations
+
         public string CombinePaths(params string[] paths)
         {
             return Path.Combine(paths);
         }
+
+        #endregion
     }
 }
