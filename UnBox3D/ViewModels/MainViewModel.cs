@@ -12,6 +12,8 @@ namespace UnBox3D.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
+        #region Fields & Properties
+
         private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
         private readonly ModelImporter _modelImporter;
@@ -22,16 +24,23 @@ namespace UnBox3D.ViewModels
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
+
         [ObservableProperty]
         private bool hierarchyVisible = true;
+
         [ObservableProperty]
         private float pageWidth = 25.0f;
+
         [ObservableProperty]
         private float pageHeight = 25.0f;
 
         public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
 
-        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager, 
+        #endregion
+
+        #region Constructor
+
+        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager,
             IFileSystem fileSystem, BlenderIntegration blenderIntegration,
             IBlenderInstaller blenderInstaller)
         {
@@ -42,6 +51,10 @@ namespace UnBox3D.ViewModels
             _blenderInstaller = blenderInstaller;
             _modelImporter = new ModelImporter(_settingsManager);
         }
+
+        #endregion
+
+        #region Model Import Methods
 
         [RelayCommand]
         private void ImportObjModel()
@@ -66,13 +79,8 @@ namespace UnBox3D.ViewModels
             }
         }
 
-        /* IMPORTANT:
-         * When you begin simplifying the model, EXPORT that simplified version to
-         * the ImportedModels dir and OVERWRITE the file because the unfolding script will use
-         * the ImportedModels dir and is not responsible for keeping track if its been simplified or not.
-        */
-
-        // Don't call this function. Reference the _importedFilePath if you want to get access to the ImportedModels dir
+        // Don't call this function directly.
+        // Reference _importedFilePath if you want access to the ImportedModels directory.
         private string EnsureImportDirectory(string filePath)
         {
             string importDirectory = _fileSystem.CombinePaths(AppDomain.CurrentDomain.BaseDirectory, "ImportedModels");
@@ -83,17 +91,21 @@ namespace UnBox3D.ViewModels
             }
 
             string destinationPath = _fileSystem.CombinePaths(importDirectory, Path.GetFileName(filePath));
-            File.Copy(filePath, destinationPath, overwrite:true);
+            File.Copy(filePath, destinationPath, overwrite: true);
 
             return destinationPath;
         }
+
+        #endregion
+
+        #region Unfolding Process Methods
 
         private async Task ProcessUnfolding(string inputModelPath)
         {
             Debug.WriteLine("Input model is coming from: " + inputModelPath);
             var loadingWindow = new Views.LoadingWindow();
 
-            // Ensure Blender is installed before continuin
+            // Ensure Blender is installed before continuing
             await _blenderInstaller.CheckAndInstallBlender();
 
             if (_fileSystem == null || _blenderIntegration == null)
@@ -138,7 +150,7 @@ namespace UnBox3D.ViewModels
             {
                 _fileSystem.CreateDirectory(outputDirectory);
             }
-            // In case of a crash, or force exit, some files remain inside and will cause incrorrect manipulation
+            // In case of a crash or force exit, some files may remain and cause incorrect manipulation
             CleanupUnfoldedFolder(outputDirectory);
 
             string scriptPath = _fileSystem.CombinePaths(baseDir, "Scripts", "unfolding_script.py");
@@ -235,7 +247,7 @@ namespace UnBox3D.ViewModels
                 }
                 else if (format == "PDF")
                 {
-                    loadingWindow.UpdateStatus ("Exporting PDF file...");
+                    loadingWindow.UpdateStatus("Exporting PDF file...");
                     loadingWindow.UpdateProgress(95);
                     await DispatcherHelper.DoEvents();
 
@@ -264,18 +276,20 @@ namespace UnBox3D.ViewModels
             try
             {
                 string[] files = Directory.GetFiles(folderPath);
-
                 foreach (string file in files)
                 {
                     File.Delete(file);
                 }
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred during cleanup: {ex.Message}", "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        #endregion
+
+        #region Relay Commands
 
         [RelayCommand]
         private void ExportUnfoldModel()
@@ -285,25 +299,21 @@ namespace UnBox3D.ViewModels
                 MessageBox.Show("No model imported to unfold.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            //MessageBox.Show($"WidthCall:  {PageWidth}, HeightCall:  {PageHeight}");
             ProcessUnfolding(_importedFilePath);
         }
 
-        // Command to reset the view
         [RelayCommand]
         private void ResetView()
         {
             MessageBox.Show("Resetting the view!");
         }
 
-        // Command for hierarchy visibility
         [RelayCommand]
         private void ToggleHierarchy()
         {
             HierarchyVisible = !HierarchyVisible;
         }
 
-        // Command to show About dialog
         [RelayCommand]
         private void About()
         {
@@ -329,22 +339,6 @@ namespace UnBox3D.ViewModels
             string exportPath = PromptForSaveLocation();
             //ModelExporter.Export(mesh, exportPath);
         }
-
-        // Helper methods (You need to implement UI prompts)
-        private string PromptForNewName(string currentName)
-        {
-            return Microsoft.VisualBasic.Interaction.InputBox("Enter new name:", "Rename Mesh", currentName);
-        }
-
-        private string PromptForSaveLocation()
-        {
-            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
-            {
-                Filter = "3D Models (*.obj)|*.obj"
-            };
-            return saveFileDialog.ShowDialog() == true ? saveFileDialog.FileName : null;
-        }
-
 
         // Mesh Simplification Commands
         [RelayCommand]
@@ -375,11 +369,30 @@ namespace UnBox3D.ViewModels
             // Call Adaptive Decimation logic here
         }
 
-        // Command to exit the application
         [RelayCommand]
         private void Exit()
         {
             System.Windows.Application.Current.Shutdown();
         }
+
+        #endregion
+
+        #region Helper Methods
+
+        private string PromptForNewName(string currentName)
+        {
+            return Microsoft.VisualBasic.Interaction.InputBox("Enter new name:", "Rename Mesh", currentName);
+        }
+
+        private string PromptForSaveLocation()
+        {
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            {
+                Filter = "3D Models (*.obj)|*.obj"
+            };
+            return saveFileDialog.ShowDialog() == true ? saveFileDialog.FileName : null;
+        }
+
+        #endregion
     }
 }
