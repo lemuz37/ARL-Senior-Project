@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Eventing.Reader;
+﻿using System;
 using System.IO;
 using System.Windows.Controls;
 using gs;
@@ -15,20 +15,31 @@ namespace UnBox3D.Utils
         void SetSetting(string mainSettingKey, string subSettingKey, object newValue);
         void SetSetting(string parentSettingKey, string mainSettingKey, string subSettingKey, object newValue);
     }
+
     public class SettingsManager : ISettingsManager
     {
+        #region Fields
+
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
         private readonly string _settingsFilePath;
         private readonly object _lock = new object();
         private JObject _settings;
 
+        #endregion
+
+        #region Constructor
+
         public SettingsManager(IFileSystem fileSystem, ILogger logger)
         {
             _fileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            string settingsDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "UnBox3D", "Settings");
+            string settingsDirectory = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "UnBox3D",
+                "Settings"
+            );
             _settingsFilePath = Path.Combine(settingsDirectory, "settings.json");
 
             if (!_fileSystem.DoesDirectoryExists(settingsDirectory))
@@ -40,6 +51,13 @@ namespace UnBox3D.Utils
             LoadSettings();
         }
 
+        #endregion
+
+        #region Settings Loading
+
+        /// <summary>
+        /// Loads settings from the file system, or initializes default settings if none exist.
+        /// </summary>
         private void LoadSettings()
         {
             lock (_lock)
@@ -71,6 +89,9 @@ namespace UnBox3D.Utils
             }
         }
 
+        #endregion
+
+        #region Default Settings
 
         /// <summary>
         /// Provides default values for application settings.
@@ -148,6 +169,13 @@ namespace UnBox3D.Utils
             };
         }
 
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Saves the current settings to the settings file.
+        /// </summary>
         public void SaveSettings()
         {
             lock (_lock)
@@ -157,6 +185,9 @@ namespace UnBox3D.Utils
             }
         }
 
+        #region GetSetting Methods
+
+        // Get a setting (two levels of nested dictionaries).
         public T? GetSetting<T>(string parentKey, string subSetting)
         {
             lock (_lock)
@@ -175,15 +206,16 @@ namespace UnBox3D.Utils
                         _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
                     }
                 }
-                else 
+                else
                 {
-                    _logger.Warn($"Parent key { parentKey } not present in Settings Dictionary.");
+                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
                 }
 
                 return default;
             }
         }
 
+        // Get a setting (three levels of nested dictionaries).
         public T? GetSetting<T>(string parentKey, string mainSetting, string subSetting)
         {
             lock (_lock)
@@ -196,10 +228,9 @@ namespace UnBox3D.Utils
 
                     if (parentDict.ContainsKey(mainSetting))
                     {
-
                         mainDict = (JObject)parentDict[mainSetting];
 
-                        if (mainDict.ContainsKey(subSetting)) 
+                        if (mainDict.ContainsKey(subSetting))
                         {
                             return mainDict[subSetting].ToObject<T>();
                         }
@@ -222,10 +253,11 @@ namespace UnBox3D.Utils
             }
         }
 
-        // Update a setting. Thread-safe with lock. Supports two levels of nested dictionaries.
-        // Two-Level Solution (e.g., "RenderingSettings" -> "BackgroundColor")
-        // mainSettingKey The immediate parent key (e.g., "AppSettings"). The top-level category (e.g., "AppSettings" or "RenderingSettings")
-        // subSettingKey The actual setting to update (e.g., "SplashScreenDuration"). The subcategory (e.g., "SplashScreenDuration")
+        #endregion
+
+        #region SetSetting Methods
+
+        // Update a setting (two levels of nested dictionaries).
         public void SetSetting(string parentKey, string subSetting, object newValue)
         {
             lock (_lock)
@@ -233,41 +265,34 @@ namespace UnBox3D.Utils
                 LoadSettings();
                 JObject parentDict;
                 if (_settings.ContainsKey(parentKey))
-                    {
-                        parentDict = (JObject)_settings[parentKey];
+                {
+                    parentDict = (JObject)_settings[parentKey];
 
-                        if (parentDict.ContainsKey(subSetting))
-                        {
-                            parentDict[subSetting] = JToken.FromObject(newValue);
-                        _logger.Info($"Updated { parentKey} -> { subSetting }");
-                        }
-                        else
-                        {
-                            _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
-                        }
+                    if (parentDict.ContainsKey(subSetting))
+                    {
+                        parentDict[subSetting] = JToken.FromObject(newValue);
+                        _logger.Info($"Updated {parentKey} -> {subSetting}");
                     }
                     else
                     {
-                        _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
+                        _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
                     }
-
-                    SaveSettings();
                 }
-        
+                else
+                {
+                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
+                }
+
+                SaveSettings();
+            }
         }
 
-        // Update a setting. Thread-safe with lock. Supports three levels of nested dictionaries.
-        // Three-Level Solution (e.g., "AssimpSettings" -> "Import" -> "EnableTriangulation")
-        // mainSettingKey: The immediate parent key (e.g., ""AssimpSettings""). The top-level category (e.g., ""AssimpSettings"" or "RenderingSettings")
-        // subSettingKey: The nested dictionary within the parent key (e.g., "Import"). The subcategory (e.g., "Import")
-        // settingToUpdateKey: The actual setting to update (e.g., "EnableTriangulation").
+        // Update a setting (three levels of nested dictionaries).
         public void SetSetting(string parentKey, string mainSetting, string subSetting, object newValue)
         {
-
             lock (_lock)
             {
                 LoadSettings();
-
 
                 JObject parentDict;
                 JObject mainDict;
@@ -277,13 +302,12 @@ namespace UnBox3D.Utils
 
                     if (parentDict.ContainsKey(mainSetting))
                     {
-
                         mainDict = (JObject)parentDict[mainSetting];
 
                         if (mainDict.ContainsKey(subSetting))
                         {
-                             mainDict[subSetting] = JToken.FromObject(newValue);
-                            _logger.Info($"Updated { parentKey } -> { mainSetting } -> { subSetting }");
+                            mainDict[subSetting] = JToken.FromObject(newValue);
+                            _logger.Info($"Updated {parentKey} -> {mainSetting} -> {subSetting}");
                         }
                         else
                         {
@@ -303,5 +327,9 @@ namespace UnBox3D.Utils
                 SaveSettings();
             }
         }
+
+        #endregion
+
+        #endregion
     }
 }

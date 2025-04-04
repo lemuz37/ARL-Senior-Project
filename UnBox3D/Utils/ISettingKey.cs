@@ -1,9 +1,16 @@
 ﻿namespace UnBox3D.Utils
 {
+    #region ISettingKey Interface
+
     public interface ISettingKey
     {
         string GetKey();
     }
+
+    #endregion
+
+    #region AppSettings
+
     public class AppSettings : ISettingKey
     {
         public static readonly string SplashScreenDuration = "SplashScreenDuration";
@@ -17,6 +24,10 @@
             return "AppSettings";
         }
     }
+
+    #endregion
+
+    #region AssimpSettings
 
     public class AssimpSettings : ISettingKey
     {
@@ -46,6 +57,10 @@
         }
     }
 
+    #endregion
+
+    #region RenderingSettings
+
     public class RenderingSettings : ISettingKey
     {
         public static readonly string BackgroundColor = "BackgroundColor";
@@ -70,6 +85,10 @@
         }
     }
 
+    #endregion
+
+    #region UISettings
+
     public class UISettings : ISettingKey
     {
         public static readonly string ToolStripPosition = "ToolStripPosition";
@@ -83,7 +102,7 @@
         public string DefaultToolStripPosition { get; set; } = "top";
         public double DefaultCameraYawSensitivity { get; set; } = 0.2;
         public double DefaultCameraPitchSensitivity { get; set; } = 0.2;
-        public double DefaultCameraPanSensitivity { get; set; } = 1000.0;
+        public double DefaultCameraPanSensitivity { get; set; } = 10.0;
         public double DefaultMeshRotationSensitivity { get; set; } = 0.2;
         public double DefaultMeshMoveSensitivity { get; set; } = 0.2;
         public double DefaultZoomSensitivity { get; set; } = 1.0;
@@ -93,6 +112,10 @@
             return "UISettings";
         }
     }
+
+    #endregion
+
+    #region UnitsSettings
 
     public class UnitsSettings : ISettingKey
     {
@@ -107,6 +130,10 @@
             return "UnitsSettings";
         }
     }
+
+    #endregion
+
+    #region WindowSettings
 
     public class WindowSettings : ISettingKey
     {
@@ -123,4 +150,6 @@
             return "WindowSettings";
         }
     }
+
+    #endregion
 }
