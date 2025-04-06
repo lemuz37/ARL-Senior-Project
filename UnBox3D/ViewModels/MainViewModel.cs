@@ -7,6 +7,7 @@ using UnBox3D.Utils;
 using UnBox3D.Rendering;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 
 namespace UnBox3D.ViewModels
 {
@@ -110,13 +111,13 @@ namespace UnBox3D.ViewModels
 
             if (_fileSystem == null || _blenderIntegration == null)
             {
-                MessageBox.Show("Internal error: dependencies not initialized.");
+                await ShowWpfMessageBoxAsync("Internal error: dependencies not initialized.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             if (PageWidth == 0 || PageHeight == 0)
             {
-                MessageBox.Show($"Page Dimensions cannot be 0.");
+                await ShowWpfMessageBoxAsync("Page Dimensions cannot be 0.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -135,7 +136,7 @@ namespace UnBox3D.ViewModels
 
             if (string.IsNullOrEmpty(userSelectedPath))
             {
-                MessageBox.Show("Unable to determine the selected directory.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await ShowWpfMessageBoxAsync("Unable to determine the selected directory.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -202,12 +203,12 @@ namespace UnBox3D.ViewModels
                             System.Windows.Application.Current.MainWindow.Activate();
                             // Show the MessageBox using DefaultDesktopOnly to force it on top
                             System.Windows.MessageBox.Show(
-                                            errorMessage,
-                                            "Error Processing File",
-                                            System.Windows.MessageBoxButton.OK,
-                                            System.Windows.MessageBoxImage.Error,
-                                            System.Windows.MessageBoxResult.OK,
-                                            System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+                                errorMessage,
+                                "Error Processing File",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error,
+                                MessageBoxResult.OK,
+                                System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                         });
 
                         return;
@@ -278,12 +279,12 @@ namespace UnBox3D.ViewModels
                 CleanupUnfoldedFolder(outputDirectory);
 
                 loadingWindow.Close();
-                MessageBox.Show($"{format} file has been exported successfully!", "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await ShowWpfMessageBoxAsync($"{format} file has been exported successfully!", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
                 loadingWindow.Close();
-                MessageBox.Show(errorMessage, "Error Processing File", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await ShowWpfMessageBoxAsync(errorMessage, "Error Processing File", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -299,7 +300,18 @@ namespace UnBox3D.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An error occurred during cleanup: {ex.Message}", "Cleanup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Synchronously show an error if cleanup fails.
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    System.Windows.Application.Current.MainWindow.Activate();
+                    System.Windows.MessageBox.Show(
+                        $"An error occurred during cleanup: {ex.Message}",
+                        "Cleanup Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK,
+                        System.Windows. MessageBoxOptions.DefaultDesktopOnly);
+                });
             }
         }
 
@@ -308,20 +320,20 @@ namespace UnBox3D.ViewModels
         #region Relay Commands
 
         [RelayCommand]
-        private void ExportUnfoldModel()
+        private async Task ExportUnfoldModel()
         {
             if (string.IsNullOrEmpty(_importedFilePath))
             {
-                MessageBox.Show("No model imported to unfold.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                await ShowWpfMessageBoxAsync("No model imported to unfold.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            ProcessUnfolding(_importedFilePath);
+            await ProcessUnfolding(_importedFilePath);
         }
 
         [RelayCommand]
-        private void ResetView()
+        private async void ResetView()
         {
-            MessageBox.Show("Resetting the view!");
+            await ShowWpfMessageBoxAsync("Resetting the view!", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         [RelayCommand]
@@ -331,9 +343,9 @@ namespace UnBox3D.ViewModels
         }
 
         [RelayCommand]
-        private void About()
+        private async void About()
         {
-            MessageBox.Show("UnBox3D - A 3D Model Viewer");
+            await ShowWpfMessageBoxAsync("UnBox3D - A 3D Model Viewer", "About", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         [RelayCommand]
@@ -350,38 +362,39 @@ namespace UnBox3D.ViewModels
         }
 
         [RelayCommand]
-        private void ExportMesh(IAppMesh mesh)
+        private async void ExportMesh(IAppMesh mesh)
         {
             string exportPath = PromptForSaveLocation();
             //ModelExporter.Export(mesh, exportPath);
+            await ShowWpfMessageBoxAsync($"Exporting mesh to: {exportPath}", "Export Mesh", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Mesh Simplification Commands
         [RelayCommand]
-        private void SimplifyQEM()
+        private async void SimplifyQEM()
         {
-            MessageBox.Show("QEM Simplification triggered!");
+            await ShowWpfMessageBoxAsync("QEM Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
             // Call QEM simplification logic here
         }
 
         [RelayCommand]
-        private void SimplifyEdgeCollapse()
+        private async void SimplifyEdgeCollapse()
         {
-            MessageBox.Show("Edge Collapse Simplification triggered!");
+            await ShowWpfMessageBoxAsync("Edge Collapse Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
             // Call Edge Collapse simplification logic here
         }
 
         [RelayCommand]
-        private void SimplifyDecimation()
+        private async void SimplifyDecimation()
         {
-            MessageBox.Show("Decimation Simplification triggered!");
+            await ShowWpfMessageBoxAsync("Decimation Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
             // Call Decimation logic here
         }
 
         [RelayCommand]
-        private void SimplifyAdaptiveDecimation()
+        private async void SimplifyAdaptiveDecimation()
         {
-            MessageBox.Show("Adaptive Decimation Simplification triggered!");
+            await ShowWpfMessageBoxAsync("Adaptive Decimation Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
             // Call Adaptive Decimation logic here
         }
 
@@ -394,6 +407,25 @@ namespace UnBox3D.ViewModels
         #endregion
 
         #region Helper Methods
+
+        /// <summary>
+        /// Shows a WPF MessageBox asynchronously using the UI Dispatcher.
+        /// </summary>
+        private static async Task ShowWpfMessageBoxAsync(string message, string title, MessageBoxButton button, MessageBoxImage image)
+        {
+            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                // Activate main window so the MessageBox appears on top.
+                System.Windows.Application.Current.MainWindow.Activate();
+                System.Windows.MessageBox.Show(
+                    message,
+                    title,
+                    button,
+                    image,
+                    MessageBoxResult.OK,
+                    System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+            });
+        }
 
         private string PromptForNewName(string currentName)
         {
