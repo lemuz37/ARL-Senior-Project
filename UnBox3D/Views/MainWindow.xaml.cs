@@ -81,7 +81,7 @@ namespace UnBox3D.Views
             bool isRunning = true;
             while (isRunning)
             {
-                Debug.WriteLine("Updating...");
+                //Debug.WriteLine("Updating...");
                 _controlHost.Render();
                 await Task.Delay(16); // 60 FPS
             }

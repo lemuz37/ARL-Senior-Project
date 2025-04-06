@@ -194,7 +194,23 @@ namespace UnBox3D.ViewModels
                     else
                     {
                         Debug.WriteLine($"break: {errorMessage} {incrementWidth} {incrementHeight}");
-                        break;
+                        loadingWindow.Close();
+
+                        await loadingWindow.Dispatcher.InvokeAsync(() =>
+                        {
+                            // Activate the main window to ensure it has focus
+                            System.Windows.Application.Current.MainWindow.Activate();
+                            // Show the MessageBox using DefaultDesktopOnly to force it on top
+                            System.Windows.MessageBox.Show(
+                                            errorMessage,
+                                            "Error Processing File",
+                                            System.Windows.MessageBoxButton.OK,
+                                            System.Windows.MessageBoxImage.Error,
+                                            System.Windows.MessageBoxResult.OK,
+                                            System.Windows.MessageBoxOptions.DefaultDesktopOnly);
+                        });
+
+                        return;
                     }
                 }
                 Debug.WriteLine($"script executed successfully: {errorMessage} {incrementWidth} {incrementHeight}");

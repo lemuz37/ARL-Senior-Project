@@ -264,7 +264,7 @@ namespace UnBox3D.Rendering.OpenGL
 
         private void GlControl_Paint(object sender, PaintEventArgs e)
         {
-            Debug.WriteLine("I am rendering now.");
+            //Debug.WriteLine("I am rendering now.");
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
