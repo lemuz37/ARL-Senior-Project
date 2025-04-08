@@ -1,6 +1,9 @@
 ﻿using SkiaSharp;
-using Svg.Skia;
+using Svg;
 using System;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace UnBox3D.Utils
@@ -11,19 +14,45 @@ namespace UnBox3D.Utils
         {
             try
             {
-                using var stream = File.OpenRead(svgPath);
-                var svg = new SKSvg();
-                svg.Load(stream);
+                SvgDocument svgDocument;
+                using (var stream = File.OpenRead(svgPath))
+                {
+                    svgDocument = SvgDocument.Open<SvgDocument>(stream);
+                }
 
-                var picture = svg.Picture;
-                if (picture == null) return;
+                // Scale factor to improve line visibility in PNG preview
+                int scaleFactor = 4;
 
-                var info = new SKImageInfo((int)picture.CullRect.Width, (int)picture.CullRect.Height);
-                using var surface = SKSurface.Create(info);
+                // Extract size, fallback to 1000x1000 if invalid
+                int width = (int)((svgDocument.Width.Type == SvgUnitType.Pixel) ? svgDocument.Width.Value : 1000) * scaleFactor;
+                int height = (int)((svgDocument.Height.Type == SvgUnitType.Pixel) ? svgDocument.Height.Value : 1000) * scaleFactor;
+
+                // Optional cap to avoid over-scaling
+                const int MaxSize = 4000;
+                if (width > MaxSize || height > MaxSize)
+                {
+                    float scale = (float)MaxSize / Math.Max(width, height);
+                    width = (int)(width * scale);
+                    height = (int)(height * scale);
+                }
+
+                using var bitmap = new Bitmap(width, height);
+                using var g = Graphics.FromImage(bitmap);
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                g.Clear(Color.White);
+                svgDocument.Draw(g);
+
+                using var memoryStream = new MemoryStream();
+                bitmap.Save(memoryStream, ImageFormat.Png);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                using var skBitmap = SKBitmap.Decode(memoryStream);
+                using var surface = SKSurface.Create(new SKImageInfo(skBitmap.Width, skBitmap.Height));
                 var canvas = surface.Canvas;
                 canvas.Clear(SKColors.White);
-                canvas.DrawPicture(picture);
-                canvas.Flush();
+                canvas.DrawBitmap(skBitmap, 0, 0);
 
                 using var image = surface.Snapshot();
                 using var data = image.Encode(SKEncodedImageFormat.Png, 100);
@@ -32,7 +61,9 @@ namespace UnBox3D.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error converting SVG to PNG: {ex.Message}");
+                var logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "conversion_errors.log");
+                File.AppendAllText(logPath, $"{DateTime.Now} | Failed to convert: {svgPath} → {pngPath}\n{ex}\n\n");
+                Console.WriteLine($"[SVGToPNGConverter] Failed: {ex.Message}");
             }
         }
     }

@@ -23,9 +23,10 @@
     <PackageReference Include="OpenTK.GLControl" Version="4.0.2" />
     <PackageReference Include="OpenTK.GLWpfControl" Version="4.3.3" />
     <PackageReference Include="OpenTkWPFHost" Version="5.0.0.3" />
-    <PackageReference Include="SkiaSharp" Version="3.116.1" />
-    <PackageReference Include="SkiaSharp.Views.WPF" Version="3.116.1" />
-    <PackageReference Include="Svg.Skia" Version="2.0.0.4" />
+    <PackageReference Include="SkiaSharp" Version="2.88.3" />
+    <PackageReference Include="SkiaSharp.Views.WPF" Version="2.88.0-preview.208" />
+    <PackageReference Include="Svg" Version="3.3.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>

@@ -229,12 +229,38 @@ namespace UnBox3D.ViewModels
                     {
                         string pngPath = Path.ChangeExtension(svgFile, ".png");
                         SVGToPNGConverter.Convert(svgFile, pngPath);
-                        pngFiles.Add(pngPath);
+
+                        // Ensure the file was actually created before adding it
+                        if (File.Exists(pngPath))
+                        {
+                            pngFiles.Add(pngPath);
+                        }
+                        else
+                        {
+                            Debug.WriteLine($"WARNING: PNG not created for {svgFile}");
+                        }
                     }
+
+                    // If no previews were successfully created, skip preview
+                    if (pngFiles.Count == 0)
+                    {
+                        MessageBox.Show("No preview files were generated. Export may have failed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Delay to give file system a moment to flush writes (optional)
+                    await Task.Delay(200);
 
                     // Show preview window with PNGs
                     var previewWindow = new SvgPreviewWindow(pngFiles);
                     bool? confirmed = previewWindow.ShowDialog();
+
+                    if (confirmed != true)
+                    {
+                        MessageBox.Show("Export cancelled by user.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
 
                     if (confirmed != true)  
                     {
