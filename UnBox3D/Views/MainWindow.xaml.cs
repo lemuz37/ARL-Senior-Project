@@ -183,7 +183,7 @@ namespace UnBox3D.Views
         private static async Task DownloadAndExtractBlender()
         {
             using HttpClient client = new HttpClient();
-            var response = await client.GetAsync(BlenderDownloadUrl);
+             var response = await client.GetAsync(BlenderDownloadUrl);
             response.EnsureSuccessStatusCode();
 
             byte[] data = await response.Content.ReadAsByteArrayAsync();

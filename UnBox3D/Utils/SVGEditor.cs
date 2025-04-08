@@ -1,18 +1,10 @@
-﻿using Svg;
-using Svg.Transforms;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using Svg = Svg.Custom;
 
-/* Values are in pixels
-// SOMEONE GET ON THIS
-// Margins don't work? It seems to crop out rather than provide that 2in buffer
-// Needs a proper buffer instead of translating/offsetting the view
-// OPTIMIZATION
-// Rotation and eliminating empty boxes are nice to implement but not urgent 
-*/
 
 namespace UnBox3D.Utils
 {
@@ -20,25 +12,10 @@ namespace UnBox3D.Utils
     {
         private const float MmToPx = 3.779527f;
 
-        public static void ExportSvgPanels(string inputSvgPath, string outputDirectory, string filename, int pageIndex, float panelWidthMm, float panelHeightMm, float marginMm = 0f)
+        public static void ExportSvgPanels(string inputSvgPath, string outputDirectory, string filename, int pageIndex, float panelWidthMm, float panelHeightMm, float marginMm = 0f, bool includeLabels = false, bool storeMetadata = true)
         {
-            Debug.WriteLine($"panelWidthMM: {panelWidthMm} - panelHeightMM: {panelHeightMm}");
-
             Debug.WriteLine($"Processing Page: {pageIndex} - Filename: {inputSvgPath}");
             SvgDocument svgDocument = SvgDocument.Open(inputSvgPath);
-
-            try
-            {
-                if (File.Exists(inputSvgPath))
-                {
-                    File.Delete(inputSvgPath);
-                    Debug.WriteLine($"Deleted SVG file: {inputSvgPath}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Failed to delete {inputSvgPath}: {ex.Message}");
-            }
 
             float panelWidth = panelWidthMm * MmToPx;
             float panelHeight = panelHeightMm * MmToPx;
@@ -50,6 +27,11 @@ namespace UnBox3D.Utils
             int numPanelsX = (int)Math.Ceiling((svgWidth - 2 * margin) / panelWidth);
             int numPanelsY = (int)Math.Ceiling((svgHeight - 2 * margin) / panelHeight);
 
+            Debug.WriteLine($"Total panels: {numPanelsX} x {numPanelsY}");
+
+            string svgFolderPath = Path.Combine(outputDirectory, $"{filename}_Export");
+            Directory.CreateDirectory(svgFolderPath);
+
             for (int x = 0; x < numPanelsX; x++)
             {
                 for (int y = 0; y < numPanelsY; y++)
@@ -57,7 +39,7 @@ namespace UnBox3D.Utils
                     float xOffset = x * panelWidth + margin;
                     float yOffset = y * panelHeight + margin;
 
-                    SvgDocument panelDoc = new SvgDocument
+                    var panelDoc = new SvgDocument
                     {
                         Width = new SvgUnit(panelWidth),
                         Height = new SvgUnit(panelHeight)
@@ -71,14 +53,68 @@ namespace UnBox3D.Utils
                             new SvgScale(MmToPx),
                             new SvgTranslate(-xOffset / MmToPx, -yOffset / MmToPx)
                         };
-                        panelDoc.Children.Add(clonedElement);
+
+                        if (IsElementPartiallyInBounds(clonedElement, panelWidth, panelHeight))
+                        {
+                            panelDoc.Children.Add(clonedElement);
+                        }
                     }
 
-                    string outputFilePath = Path.Combine(outputDirectory, $"{filename}_panel_page{pageIndex}_{x}_{y}.svg");
+                    if (includeLabels)
+                    {
+                        AddAlignmentLabels(panelDoc, filename, pageIndex, x, y);
+                    }
+
+                    if (storeMetadata)
+                    {
+                        AddMetadata(panelDoc, filename, pageIndex, x, y);
+                    }
+
+                    string outputFilePath = Path.Combine(svgFolderPath, $"{filename}_panel_page{pageIndex}_{x}_{y}.svg");
                     panelDoc.Write(outputFilePath);
                     Debug.WriteLine($"Exported panel to {outputFilePath} with x-offset: {xOffset}, y-offset: {yOffset}");
                 }
             }
+
+            Debug.WriteLine($"SVG export folder created at: {svgFolderPath}");
+        }
+
+        private static bool IsElementPartiallyInBounds(SvgElement element, float panelWidth, float panelHeight)
+        {
+            foreach (var transform in element.Transforms)
+            {
+                if (transform is SvgTranslate translate)
+                {
+                    float buffer = 10;
+                    if ((translate.X + buffer) < 0 || (translate.X - buffer) > panelWidth ||
+                        (translate.Y + buffer) < 0 || (translate.Y - buffer) > panelHeight)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static void AddAlignmentLabels(SvgDocument doc, string filename, int pageIndex, int x, int y)
+        {
+            var textLabel = new SvgText($"{filename} - Page {pageIndex} ({x}, {y})")
+            {
+                X = new SvgUnitCollection { new SvgUnit(10) },
+                Y = new SvgUnitCollection { new SvgUnit(20) },
+                FontSize = new SvgUnit(12),
+                Fill = new SvgColourServer(Color.Black)
+            };
+            doc.Children.Add(textLabel);
+        }
+
+        private static void AddMetadata(SvgDocument doc, string filename, int pageIndex, int x, int y)
+        {
+            var metadata = new SvgDescription
+            {
+                Content = $"Filename: {filename}, Page: {pageIndex}, Panel: ({x}, {y})"
+            };
+            doc.Children.Add(metadata);
         }
     }
 }

@@ -1,0 +1,15 @@
+﻿<Window x:Class="UnBox3D.Views.SvgPreviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Preview SVG Layout" Height="800" Width="1200"
+        WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button Content="✅ Confirm Export" Width="150" Margin="10" Click="Confirm_Click"/>
+            <Button Content="❌ Cancel" Width="150" Margin="10" Click="Cancel_Click"/>
+        </StackPanel>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <UniformGrid Name="SvgGrid" Rows="1" Columns="1" />
+        </ScrollViewer>
+    </DockPanel>
+</Window>

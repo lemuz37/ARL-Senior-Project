@@ -7,6 +7,8 @@ using UnBox3D.Utils;
 using UnBox3D.Rendering;
 using System.Diagnostics;
 using System.IO;
+using UnBox3D.Views;
+
 
 namespace UnBox3D.ViewModels
 {
@@ -216,23 +218,46 @@ namespace UnBox3D.ViewModels
 
                 if (format == "SVG")
                 {
-                    string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}*.svg");
-                    int fileCount = svgFiles.Length;
-                    int filesMoved = 0;
+
+                    string previewFolder = Path.Combine(outputDirectory, $"{newFileName}_Export");
+
+                    // Convert all SVGs to PNGs for preview
+                    string[] svgFiles = Directory.GetFiles(previewFolder, "*.svg");
+                    List<string> pngFiles = new List<string>();
 
                     foreach (string svgFile in svgFiles)
                     {
-                        loadingWindow.UpdateStatus($"Exporting file {filesMoved + 1} of {fileCount}");
-                        loadingWindow.UpdateProgress(80 + ((double)filesMoved / fileCount * 20));
-                        await DispatcherHelper.DoEvents();
-
-                        string fileSuffix = svgFile.Substring(svgFile.IndexOf(newFileName) + newFileName.Length);
-                        string destinationFilePath = Path.Combine(userSelectedPath, newFileName + fileSuffix);
-                        File.Move(svgFile, destinationFilePath, overwrite: true);
-
-                        filesMoved++;
+                        string pngPath = Path.ChangeExtension(svgFile, ".png");
+                        SVGToPNGConverter.Convert(svgFile, pngPath);
+                        pngFiles.Add(pngPath);
                     }
+
+                    // Show preview window with PNGs
+                    var previewWindow = new SvgPreviewWindow(pngFiles);
+                    bool? confirmed = previewWindow.ShowDialog();
+
+                    if (confirmed != true)  
+                    {
+                        MessageBox.Show("Export cancelled by user.", "Cancelled", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return;
+                    }
+
+
+                    loadingWindow.UpdateStatus("Exporting SVG folder...");
+                    loadingWindow.UpdateProgress(95);
+                    await DispatcherHelper.DoEvents();
+
+                    string sourceFolder = Path.Combine(outputDirectory, $"{newFileName}_Export");
+                    string destinationFolder = Path.Combine(userSelectedPath, $"{newFileName}_Export");
+
+                    if (Directory.Exists(destinationFolder))
+                    {
+                        Directory.Delete(destinationFolder, true);
+                    }
+
+                    Directory.Move(sourceFolder, destinationFolder);
                 }
+
                 else if (format == "PDF")
                 {
                     loadingWindow.UpdateStatus ("Exporting PDF file...");
