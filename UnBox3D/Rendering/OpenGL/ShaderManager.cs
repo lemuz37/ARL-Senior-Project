@@ -31,7 +31,7 @@
 
         public static void Cleanup()
         {
-            // Optionally dispose shaders if you add Dispose()
+            // Optionally dispose shaders
             //_lightingShader?.Dispose();
             //_lampShader?.Dispose();
             _lightingShader = null;

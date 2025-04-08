@@ -269,21 +269,6 @@ namespace UnBox3D.Rendering.OpenGL
 
             _sceneRenderer.RenderScene(_sceneManager.GetMeshes(), _camera, _lightingShader);
 
-            //GL.BindVertexArray(_vaoModel);
-
-            //_lightingShader.Use();
-
-            //_lightingShader.SetMatrix4("model", Matrix4.Identity);
-            //_lightingShader.SetMatrix4("view", _camera.GetViewMatrix());
-            //_lightingShader.SetMatrix4("projection", _camera.GetProjectionMatrix());
-
-            //_lightingShader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
-            //_lightingShader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
-            //_lightingShader.SetVector3("lightPos", _lightPos);
-            //_lightingShader.SetVector3("viewPos", _camera.Position);
-
-            //GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
-
             _gridRenderer.DrawGrid(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
 
 

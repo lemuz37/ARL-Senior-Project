@@ -3,8 +3,6 @@ using OpenTK.Graphics.OpenGL;
 using System.Collections.ObjectModel;
 using UnBox3D.Rendering.OpenGL;
 using OpenTK.Mathematics;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Assimp.Unmanaged;
 
 namespace UnBox3D.Rendering
 {
