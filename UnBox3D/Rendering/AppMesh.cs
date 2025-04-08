@@ -9,32 +9,33 @@ namespace UnBox3D.Rendering
 {
     public interface IAppMesh
     {
-        // Properties
-        //Vector3 GetCenter();
-        //Vector3 GetDimensions();
+        #region Properties
         DMesh3 GetG3Mesh();
         Mesh GetAssimpMesh();
-        string GetName();
+        string Name { get; set; }
         int VertexCount { get; }
         Vector3 GetColor();
         bool GetHighlighted();
         float[] Vertices { get; }
         List<Vector3> GetEdges();
         Quaternion GetTransform();
+        int[] GetIndices();
+        #endregion
 
-        // Actions
+        #region Actions
         void SetColor(Vector3 color);
-        //void Move(Vector3 translation);
         void Rotate(Quaternion rotation);
+        #endregion
 
-        // OpenGL Handles
+        #region OpenGL Handles
         int GetVAO();
         int GetVBO();
+        #endregion
     }
 
     public class AppMesh : IAppMesh, IDisposable
     {
-        // Fields
+        #region Fields
         private DMesh3 _g3Mesh;
         private Mesh _assimpMesh;
         private string _name;
@@ -45,8 +46,11 @@ namespace UnBox3D.Rendering
         private int _vao, _vertexBufferObject;
         private bool _disposed = false;
         private Quaternion _transform = Quaternion.Identity;
+        private int _ebo;
+        private int[] _indices;
+        #endregion
 
-        // Constructor
+        #region Constructor
         public AppMesh(DMesh3 g3mesh, Mesh assimpMesh)
         {
             _g3Mesh = g3mesh;
@@ -81,6 +85,9 @@ namespace UnBox3D.Rendering
                 }
             }
 
+            // Populate indices
+            _indices = assimpMesh.GetIndices();
+
             // Populate edges
             for (int i = 0; i < _g3Mesh.EdgeCount; i++)
             {
@@ -99,95 +106,83 @@ namespace UnBox3D.Rendering
 
             SetupMesh();
         }
+        #endregion
 
-        // OpenGL Setup
+        #region OpenGL Setup
         private void SetupMesh()
         {
-            Shader _lightingShader = new Shader("Rendering/OpenGL/Shaders/shader.vert", "Rendering/OpenGL/Shaders/lighting.frag");
+            Shader _lightingShader = ShaderManager.LightingShader;
 
-            _vertexBufferObject = GL.GenBuffer(); // Generates a unique ID for a new OpenGL buffer object
+            _vertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
+            _ebo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(int), _indices, BufferUsageHint.StaticDraw);
+
             _vao = GL.GenVertexArray();
             GL.BindVertexArray(_vao);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
+
             var positionLocation = _lightingShader.GetAttribLocation("aPos");
             GL.EnableVertexAttribArray(positionLocation);
+
             if (_assimpMesh.HasNormals)
             {
-                // Remember to change the stride as we now have 6 floats per vertex
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-                // We now need to define the layout of the normal so the shader can use it
                 var normalLocation = _lightingShader.GetAttribLocation("aNormal");
                 GL.EnableVertexAttribArray(normalLocation);
                 GL.VertexAttribPointer(normalLocation, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
             }
-            else 
+            else
             {
-                // Remember to change the stride as we now have 3 floats per vertex
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             }
+
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
         }
+        #endregion
 
-        // Properties
-        public string Name => GetName();
+        #region Properties
+        public string Name
+        {
+            get => _name;
+            set => _name = value;
+        }
         public int VertexCount => _assimpMesh.VertexCount;
         public float[] Vertices => _vertices;
         public int GetVAO() => _vao;
         public int GetVBO() => _vertexBufferObject;
+        #endregion
 
-        // Getters
+        #region Getters
         public DMesh3 GetG3Mesh() => _g3Mesh;
         public Mesh GetAssimpMesh() => _assimpMesh;
-        public string GetName() => _name;
         public Vector3 GetColor() => _color;
         public bool GetHighlighted() => _highlighted;
-        public float[] GetVertices() => _vertices;
         public List<Vector3> GetEdges() => _edges;
         public Quaternion GetTransform() => _transform;
+        public int[] GetIndices() => _indices;
+        #endregion
 
-        // Setters
+        #region Setters
         public void SetName(string name) => _name = name;
         public void SetColor(Vector3 color) => _color = color;
         public void SetHighlighted(bool flag) => _highlighted = flag;
+        #endregion
 
-        // Transformations
-        //public void Move(Vector3 translation)
-        //{
-        //    for (int i = 0; i < _vertices.Length; i++)
-        //    {
-        //        _vertices[i] += translation;
-        //    }
-        //}
-
+        #region Transformations
         public void Rotate(Quaternion rotation)
         {
             _transform = rotation * _transform;
             _transform.Normalize();
         }
+        #endregion
 
-
-
-        // Bounding Box Calculations
-        //public Vector3 GetCenter()
-        //{
-        //    if (_vertices.Count == 0) return Vector3.Zero;
-        //    var min = _vertices.Aggregate(Vector3.ComponentMin);
-        //    var max = _vertices.Aggregate(Vector3.ComponentMax);
-        //    return (min + max) * 0.5f;
-        //}
-
-        //public Vector3 GetDimensions()
-        //{
-        //    if (_vertices.Count == 0) return Vector3.Zero;
-        //    var min = _vertices.Aggregate(Vector3.ComponentMin);
-        //    var max = _vertices.Aggregate(Vector3.ComponentMax);
-        //    return max - min;
-        //}
-
-        // Cleanup & Disposal
+        #region Cleanup & Disposal
         public void Dispose()
         {
             Dispose(true);
@@ -199,11 +194,10 @@ namespace UnBox3D.Rendering
             if (_disposed) return;
             if (disposing)
             {
-                //_vertices?.Clear();
                 _edges?.Clear();
-                //_normals?.Clear();
             }
             _disposed = true;
         }
+        #endregion
     }
 }

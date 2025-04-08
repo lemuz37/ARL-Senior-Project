@@ -34,7 +34,7 @@ namespace UnBox3D.ViewModels
         [ObservableProperty]
         private float pageHeight = 25.0f;
 
-        public ObservableCollection<IAppMesh> Meshes => _sceneManager.GetMeshes();
+        public ObservableCollection<MeshSummary> Meshes { get; } = new();
 
         #endregion
 
@@ -75,6 +75,7 @@ namespace UnBox3D.ViewModels
                 foreach (var mesh in importedMeshes)
                 {
                     _sceneManager.AddMesh(mesh);
+                    Meshes.Add(new MeshSummary(mesh));
                 }
             }
         }
@@ -323,7 +324,7 @@ namespace UnBox3D.ViewModels
         [RelayCommand]
         private void RenameMesh(IAppMesh mesh)
         {
-            string newName = PromptForNewName(mesh.GetName());
+            string newName = PromptForNewName(mesh.Name);
             //mesh.SetName(newName);
         }
 

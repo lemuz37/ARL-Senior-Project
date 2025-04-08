@@ -4,6 +4,7 @@ using UnBox3D.Rendering.OpenGL;
 using UnBox3D.Utils;
 using System.Windows.Input;
 using TextBox = System.Windows.Controls.TextBox;
+using UnBox3D.Rendering;
 
 namespace UnBox3D.Views
 {
@@ -79,11 +80,12 @@ namespace UnBox3D.Views
         private async void StartUpdateLoop()
         {
             bool isRunning = true;
+            Stopwatch sw = new Stopwatch();
+
             while (isRunning)
             {
-                Debug.WriteLine("Updating...");
                 _controlHost.Render();
-                await Task.Delay(16); // 60 FPS
+                await Task.Delay(Math.Max(0, 16 - (int)sw.ElapsedMilliseconds));
             }
         }
         #endregion

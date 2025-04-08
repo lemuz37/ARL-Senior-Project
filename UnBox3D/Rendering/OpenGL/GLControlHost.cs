@@ -211,8 +211,8 @@ namespace UnBox3D.Rendering.OpenGL
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
-            _lightingShader = new Shader("Rendering/OpenGL/Shaders/shader.vert", "Rendering/OpenGL/Shaders/lighting.frag");
-            _lampShader = new Shader("Rendering/OpenGL/Shaders/shader.vert", "Rendering/OpenGL/Shaders/shader.frag");
+            _lightingShader = ShaderManager.LightingShader;
+            _lampShader = ShaderManager.LampShader;
 
             {
                 _vaoModel = GL.GenVertexArray();
@@ -243,8 +243,9 @@ namespace UnBox3D.Rendering.OpenGL
             }
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
+            GL.Disable(EnableCap.CullFace);
 
-            _camera = new Camera(new Vector3(0, 0, 0), GetWidth() / (float)GetHeight());
+            _camera = new Camera(new Vector3(0, 0, 5), GetWidth() / (float)GetHeight());
 
             // Initialize RayCaster
             _rayCaster = new RayCaster(this, _camera);
@@ -264,8 +265,6 @@ namespace UnBox3D.Rendering.OpenGL
 
         private void GlControl_Paint(object sender, PaintEventArgs e)
         {
-            Debug.WriteLine("I am rendering now.");
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _sceneRenderer.RenderScene(_sceneManager.GetMeshes(), _camera, _lightingShader);

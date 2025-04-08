@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using UnBox3D.Rendering.OpenGL;
 using OpenTK.Mathematics;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Assimp.Unmanaged;
 
 namespace UnBox3D.Rendering
 {
@@ -35,24 +36,22 @@ namespace UnBox3D.Rendering
             }
             else
             {
+                Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
+                shader.Use();
+
+                shader.SetMatrix4("view", camera.GetViewMatrix());
+                shader.SetMatrix4("projection", camera.GetProjectionMatrix());
+                shader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
+                shader.SetVector3("lightPos", lightPos);
+                shader.SetVector3("viewPos", camera.Position);
+
                 foreach (var appMesh in meshes)
                 {
-                    Vector3 lightPos = new Vector3(1.2f, 1.0f, 2.0f);
-
-                    _logger.Info($"Rendering mesh '{appMesh.GetName()}'.");
                     GL.BindVertexArray(appMesh.GetVAO());
-
-                    shader.Use();
-                    shader.SetMatrix4("model", Matrix4.Identity);
-                    shader.SetMatrix4("view", camera.GetViewMatrix());
-                    shader.SetMatrix4("projection", camera.GetProjectionMatrix());
-
-                    shader.SetVector3("objectColor", new Vector3(1.0f, 0.5f, 0.31f));
-                    shader.SetVector3("lightColor", new Vector3(1.0f, 1.0f, 1.0f));
-                    shader.SetVector3("lightPos", lightPos);
-                    shader.SetVector3("viewPos", camera.Position);
-
-                    GL.DrawArrays(PrimitiveType.Triangles, 0, appMesh.VertexCount);
+                    Matrix4 model = Matrix4.CreateFromQuaternion(appMesh.GetTransform());
+                    shader.SetMatrix4("model", model);
+                    shader.SetVector3("objectColor", appMesh.GetColor());
+                    GL.DrawElements(PrimitiveType.Triangles, appMesh.GetIndices().Length, DrawElementsType.UnsignedInt, 0);
                 }
                 GL.BindVertexArray(0);
             }
