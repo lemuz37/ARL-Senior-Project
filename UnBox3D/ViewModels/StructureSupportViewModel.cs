@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
+using System.IO;
 
 namespace UnBox3D.ViewModels
 {
@@ -35,6 +36,26 @@ namespace UnBox3D.ViewModels
                     $"Long Edge: {resultLong} in\n" +
                     $"Equilateral Beam: {equilateralBeamValue} in ",
                     "Calculated Dimensions", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "beams.obj");
+
+            try
+            {
+                BeamArrayExporter.GenerateRightAngleBeamsObjFile(
+                    filePath,
+                    (float)resultShort,
+                    (float)resultMedium,
+                    (float)resultLong
+                );
+
+                System.Windows.MessageBox.Show($"OBJ file successfully exported to:\n{filePath}", "Export Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Failed to export OBJ file:\n{ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
         }
     }
 }
