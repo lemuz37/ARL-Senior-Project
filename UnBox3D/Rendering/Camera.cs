@@ -31,7 +31,7 @@ namespace UnBox3D.Rendering
         {
             Position = position;
             AspectRatio = aspectRatio;
-            _fov = MathHelper.DegreesToRadians(90);
+            _fov = MathHelper.DegreesToRadians(45);
         }
 
         public Vector3 Position { get; set; }
@@ -83,7 +83,7 @@ namespace UnBox3D.Rendering
 
         public Matrix4 GetProjectionMatrix()
         {
-            return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.01f, 200000f);
+            return Matrix4.CreatePerspectiveFieldOfView(_fov, AspectRatio, 0.1f, 1000000.0f);
         }
 
         private void UpdateVectors()

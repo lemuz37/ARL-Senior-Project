@@ -12,6 +12,8 @@ namespace UnBox3D.Utils
         void DeleteFile(string filePath);
         long GetFileSize(string filePath);
         void MoveFile(string sourceFilePath, string destinationFilePath);
+        Task WriteAllBytesAsync(string filePath, byte[] bytes);
+        Stream CreateFile(string filePath);
 
         // Directory operations
         bool DoesDirectoryExists(string directoryPath);
@@ -26,7 +28,8 @@ namespace UnBox3D.Utils
 
     public class FileSystem : IFileSystem
     {
-        // File operations
+        #region File Operations
+
         public bool DoesFileExists(string filePath) => File.Exists(filePath);
 
         public void WriteToFile(string filePath, string content)
@@ -60,6 +63,7 @@ namespace UnBox3D.Utils
 
             return new FileInfo(filePath).Length;
         }
+
         public void MoveFile(string sourceFilePath, string destinationFilePath)
         {
             if (!DoesFileExists(sourceFilePath))
@@ -73,7 +77,20 @@ namespace UnBox3D.Utils
             File.Move(sourceFilePath, destinationFilePath);
         }
 
-        // Directory operations
+        public async Task WriteAllBytesAsync(string filePath, byte[] bytes)
+        {
+            await File.WriteAllBytesAsync(filePath, bytes);
+        }
+
+        public Stream CreateFile(string filePath)
+        {
+            return File.Create(filePath);
+        }
+
+        #endregion
+
+        #region Directory Operations
+
         public bool DoesDirectoryExists(string directoryPath) => Directory.Exists(directoryPath);
 
         public void CreateDirectory(string directoryPath)
@@ -104,10 +121,15 @@ namespace UnBox3D.Utils
             return Directory.GetDirectories(directoryPath);
         }
 
-        // Path operations
+        #endregion
+
+        #region Path Operations
+
         public string CombinePaths(params string[] paths)
         {
             return Path.Combine(paths);
         }
+
+        #endregion
     }
 }

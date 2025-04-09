@@ -1,9 +1,16 @@
 ﻿namespace UnBox3D.Utils
 {
+    #region ISettingKey Interface
+
     public interface ISettingKey
     {
         string GetKey();
     }
+
+    #endregion
+
+    #region AppSettings
+
     public class AppSettings : ISettingKey
     {
         public static readonly string SplashScreenDuration = "SplashScreenDuration";
@@ -17,6 +24,10 @@
             return "AppSettings";
         }
     }
+
+    #endregion
+
+    #region AssimpSettings
 
     public class AssimpSettings : ISettingKey
     {
@@ -46,6 +57,10 @@
         }
     }
 
+    #endregion
+
+    #region RenderingSettings
+
     public class RenderingSettings : ISettingKey
     {
         public static readonly string BackgroundColor = "BackgroundColor";
@@ -69,6 +84,10 @@
             return "RenderingSettings";
         }
     }
+
+    #endregion
+
+    #region UISettings
 
     public class UISettings : ISettingKey
     {
@@ -94,6 +113,10 @@
         }
     }
 
+    #endregion
+
+    #region UnitsSettings
+
     public class UnitsSettings : ISettingKey
     {
         public static readonly string DefaultUnit = "DefaultUnit";
@@ -107,6 +130,10 @@
             return "UnitsSettings";
         }
     }
+
+    #endregion
+
+    #region WindowSettings
 
     public class WindowSettings : ISettingKey
     {
@@ -123,4 +150,6 @@
             return "WindowSettings";
         }
     }
+
+    #endregion
 }

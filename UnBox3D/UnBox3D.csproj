@@ -7,7 +7,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>Assets\Icons\logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Icons\logo.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="UnBox3D.sln" />
@@ -45,15 +50,21 @@
   </ItemGroup>
 
   <ItemGroup>
-	<None Update="Blender\**\*">
+    <None Update="Blender\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
-	<None Update="Scripts\unfolding_script.py">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
+    <None Update="Scripts\unfolding_script.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Icons\logo.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

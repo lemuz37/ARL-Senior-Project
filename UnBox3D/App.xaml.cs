@@ -19,18 +19,19 @@ namespace UnBox3D
         {
             base.OnStartup(e);
 
-            // Configure the service provider (DI container)
+            // Configure the service provider (Dependency Injection container)
             _serviceProvider = ConfigureServices();
 
-            // Resolve MainWindow and MainViewModel
+            // Resolve MainWindow and MainViewModel from the DI container
             var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
             var mainViewModel = _serviceProvider.GetRequiredService<MainViewModel>();
             mainWindow.DataContext = mainViewModel;
 
-            // Initialize and show MainWindow
+            // Initialize MainWindow with required services and show it
             mainWindow.Initialize(
                 _serviceProvider.GetRequiredService<IGLControlHost>(),
-                _serviceProvider.GetRequiredService<ILogger>()
+                _serviceProvider.GetRequiredService<ILogger>(),
+                _serviceProvider.GetRequiredService<IBlenderInstaller>()
             );
             mainWindow.Show();
         }
@@ -39,18 +40,21 @@ namespace UnBox3D
         {
             var services = new ServiceCollection();
 
-            // Register core utilities
+            #region Core Utilities Registration
             services.AddSingleton<IFileSystem, FileSystem>();
             services.AddSingleton<ILogger, Logger>(provider =>
             {
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
-                return new Logger(fileSystem,
+                return new Logger(
+                    fileSystem,
                     logDirectory: @"C:\\ProgramData\\UnBox3D\\Logs",
-                    logFileName: "UnBox3D.log");
+                    logFileName: "UnBox3D.log"
+                );
             });
             services.AddSingleton<ISettingsManager, SettingsManager>();
+            #endregion
 
-            // Register OpenGL and rendering services
+            #region Rendering Services Registration
             services.AddSingleton<ISceneManager, SceneManager>();
             services.AddSingleton<IRenderer, SceneRenderer>(provider =>
             {
@@ -65,11 +69,18 @@ namespace UnBox3D
                 var settingsManager = provider.GetRequiredService<ISettingsManager>();
                 return new GLControlHost(sceneManager, sceneRenderer, settingsManager);
             });
+            #endregion
 
-            // Register MainWindow and MainViewModel
+            #region UI and ViewModel Registration
+            services.AddSingleton<IBlenderInstaller, BlenderInstaller>(provider =>
+            {
+                var fileSystem = provider.GetRequiredService<IFileSystem>();
+                return new BlenderInstaller(fileSystem);
+            });
+
             services.AddSingleton<BlenderIntegration>();
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<IBlenderInstaller>(provider => provider.GetRequiredService<MainWindow>());
+
             services.AddSingleton<MainViewModel>(provider =>
             {
                 var settings = provider.GetRequiredService<ISettingsManager>();
@@ -79,13 +90,14 @@ namespace UnBox3D
                 var blenderInstaller = provider.GetRequiredService<IBlenderInstaller>();
                 return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller);
             });
+            #endregion
 
             return services.BuildServiceProvider();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
-            // Dispose the service provider when the application exits
+            // Clean up the service provider on exit
             _serviceProvider?.Dispose();
             base.OnExit(e);
         }
