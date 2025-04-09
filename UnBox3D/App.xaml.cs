@@ -72,7 +72,12 @@ namespace UnBox3D
             #endregion
 
             #region UI and ViewModel Registration
-            services.AddSingleton<IBlenderInstaller, BlenderInstaller>();
+            services.AddSingleton<IBlenderInstaller, BlenderInstaller>(provider =>
+            {
+                var fileSystem = provider.GetRequiredService<IFileSystem>();
+                return new BlenderInstaller(fileSystem);
+            });
+
             services.AddSingleton<BlenderIntegration>();
             services.AddSingleton<MainWindow>();
 

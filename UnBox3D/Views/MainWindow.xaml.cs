@@ -34,7 +34,23 @@ namespace UnBox3D.Views
                 _logger?.Info("MainWindow loaded. Initializing OpenGL...");
 
                 // Ensure Blender is installed
-                await _blenderInstaller.CheckAndInstallBlender();
+                var loadingWindow = new LoadingWindow
+                {
+                    StatusHint = "Installing Blender... This may take a moment."
+                };
+                loadingWindow.Show();
+
+                var progress = new Progress<double>(value =>
+                {
+                    loadingWindow.UpdateProgress(value * 100);
+                    loadingWindow.UpdateStatus($"Installing Blender... {Math.Round(value * 100)}%");
+                });
+
+                await _blenderInstaller.CheckAndInstallBlender(progress);
+
+                loadingWindow.Close();
+
+
 
                 // Attach GLControlHost to WindowsFormsHost
                 openGLHost.Child = (Control)_controlHost;

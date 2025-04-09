@@ -12,6 +12,8 @@ namespace UnBox3D.Utils
         void DeleteFile(string filePath);
         long GetFileSize(string filePath);
         void MoveFile(string sourceFilePath, string destinationFilePath);
+        Task WriteAllBytesAsync(string filePath, byte[] bytes);
+        Stream CreateFile(string filePath);
 
         // Directory operations
         bool DoesDirectoryExists(string directoryPath);
@@ -73,6 +75,16 @@ namespace UnBox3D.Utils
                 throw new DirectoryNotFoundException("Destination directory does not exist");
 
             File.Move(sourceFilePath, destinationFilePath);
+        }
+
+        public async Task WriteAllBytesAsync(string filePath, byte[] bytes)
+        {
+            await File.WriteAllBytesAsync(filePath, bytes);
+        }
+
+        public Stream CreateFile(string filePath)
+        {
+            return File.Create(filePath);
         }
 
         #endregion
