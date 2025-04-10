@@ -13,7 +13,7 @@ namespace UnBox3D.Rendering
         void AddMesh(IAppMesh mesh);
         void DeleteMesh(IAppMesh mesh);
         void RemoveSmallMeshes(float threshold);
-        void LoadBoundingBoxes();
+        List<AppMesh> LoadBoundingBoxes();
     }
     public class SceneManager: ISceneManager
     {
@@ -115,18 +115,25 @@ namespace UnBox3D.Rendering
             return Vector3.Zero;
         }
 
-        public void LoadBoundingBoxes()
+        public List<AppMesh> LoadBoundingBoxes()
         {
             var originalMeshes = _sceneMeshes.ToList();
+            var boxMeshes = new List<AppMesh>();
 
             foreach (IAppMesh mesh in originalMeshes)
             {
                 DMesh3 geomMesh = mesh.GetG3Mesh();
                 Vector3 meshCenter = GetMeshCenter(geomMesh);
                 Vector3 meshDimensions = GetMeshDimensions(geomMesh);
-                _sceneMeshes.Add(GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z));
+
+                AppMesh boxMesh = GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z);
+                boxMeshes.Add(boxMesh);
+
+                _sceneMeshes.Add(boxMesh);
                 _sceneMeshes.Remove(mesh);
             }
+
+            return boxMeshes;
         }
 
         private float GetMeshSize(DMesh3 mesh)

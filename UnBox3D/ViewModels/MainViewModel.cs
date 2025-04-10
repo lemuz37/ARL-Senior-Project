@@ -383,8 +383,12 @@ namespace UnBox3D.ViewModels
         [RelayCommand]
         private async void AddBoundingBox()
         {
-            await ShowWpfMessageBoxAsync("Adding Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
-            _sceneManager.LoadBoundingBoxes();
+            List<AppMesh> boxMeshList = _sceneManager.LoadBoundingBoxes();
+            foreach (var mesh in boxMeshList)
+            {
+                Meshes.Add(new MeshSummary(mesh));
+            }
+            await ShowWpfMessageBoxAsync("Added Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Mesh Simplification Commands
