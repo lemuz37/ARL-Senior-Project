@@ -8,9 +8,9 @@ namespace UnBox3D.Rendering
 {
     public class GeometryGenerator
     {
-        public static AppMesh CreateBox(Vector3 center, float width, float height, float depth)
+        public static AppMesh CreateBox(Vector3 center, float width, float height, float depth, string name = "Box")
         {
-            Mesh assimpMesh = new Mesh("Box", PrimitiveType.Triangle);
+            Mesh assimpMesh = new Mesh(name, PrimitiveType.Triangle);
             DMesh3 g3Mesh = new DMesh3();
 
             // Define box vertices

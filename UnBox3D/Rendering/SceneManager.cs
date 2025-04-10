@@ -126,7 +126,7 @@ namespace UnBox3D.Rendering
                 Vector3 meshCenter = GetMeshCenter(geomMesh);
                 Vector3 meshDimensions = GetMeshDimensions(geomMesh);
 
-                AppMesh boxMesh = GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z);
+                AppMesh boxMesh = GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z, mesh.Name);
                 boxMeshes.Add(boxMesh);
 
                 _sceneMeshes.Add(boxMesh);

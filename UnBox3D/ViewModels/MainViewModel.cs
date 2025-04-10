@@ -384,11 +384,13 @@ namespace UnBox3D.ViewModels
         private async void AddBoundingBox()
         {
             List<AppMesh> boxMeshList = _sceneManager.LoadBoundingBoxes();
+
+            Meshes.Clear();
             foreach (var mesh in boxMeshList)
             {
                 Meshes.Add(new MeshSummary(mesh));
             }
-            await ShowWpfMessageBoxAsync("Added Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
+            //await ShowWpfMessageBoxAsync("Added Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Mesh Simplification Commands
