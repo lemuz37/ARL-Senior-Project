@@ -1,14 +1,16 @@
 ﻿using OpenTK.Mathematics;
 using Assimp;
 using g3;
+using System.Diagnostics;
+using UnBox3D.Utils;
 
 namespace UnBox3D.Rendering
 {
     public class GeometryGenerator
     {
-        public static AppMesh CreateBox(Vector3 center, float width, float height, float depth)
+        public static AppMesh CreateBox(Vector3 center, float width, float height, float depth, string name = "Box")
         {
-            Mesh assimpMesh = new Mesh("Box", PrimitiveType.Triangle);
+            Mesh assimpMesh = new Mesh(name, PrimitiveType.Triangle);
             DMesh3 g3Mesh = new DMesh3();
 
             // Define box vertices
@@ -46,14 +48,41 @@ namespace UnBox3D.Rendering
                 [4, 5, 1], [4, 1, 0]  // Bottom
             ];
 
+            // Initialize empty normals for each vertex
+            Vector3[] vertexNormals = new Vector3[vertices.Length];
+
             foreach (var face in faces)
             {
+                Vector3 v0 = vertices[face[0]];
+                Vector3 v1 = vertices[face[1]];
+                Vector3 v2 = vertices[face[2]];
+
+                Vector3 edge1 = v1 - v0;
+                Vector3 edge2 = v2 - v0;
+
+                Vector3 faceNormal = Vector3.Cross(edge1, edge2).Normalized();
+
+                // Accumulate normals at each vertex of the face
+                vertexNormals[face[0]] += faceNormal;
+                vertexNormals[face[1]] += faceNormal;
+                vertexNormals[face[2]] += faceNormal;
                 assimpMesh.Faces.Add(new Face(face));
 
                 // Add faces to g3Mesh
                 g3Mesh.AppendTriangle(face[0], face[1], face[2]);
             }
-            return new AppMesh(g3Mesh, assimpMesh);
+
+            // Normalize accumulated vertex normals and add to Assimp
+            foreach (var normal in vertexNormals)
+            {
+                var n = normal.Normalized();
+                assimpMesh.Normals.Add(new Assimp.Vector3D(n.X, n.Y, n.Z));
+            }
+
+            AppMesh appMesh = new AppMesh(g3Mesh, assimpMesh);
+            appMesh.SetColor(Colors.Red);
+
+            return appMesh;
         }
 
         public static AppMesh CreateCylinder(Vector3 center, float radius, float height, int segments)
