@@ -380,6 +380,13 @@ namespace UnBox3D.ViewModels
             await ShowWpfMessageBoxAsync($"Exporting mesh to: {exportPath}", "Export Mesh", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        [RelayCommand]
+        private async void AddBoundingBox()
+        {
+            await ShowWpfMessageBoxAsync("Adding Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
+            _sceneManager.LoadBoundingBoxes();
+        }
+
         // Mesh Simplification Commands
         [RelayCommand]
         private async void SimplifyQEM()

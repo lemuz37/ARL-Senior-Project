@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using g3;
 using System.Collections.ObjectModel;
+using UnBox3D.Utils;
 
 
 namespace UnBox3D.Rendering
@@ -12,6 +13,7 @@ namespace UnBox3D.Rendering
         void AddMesh(IAppMesh mesh);
         void DeleteMesh(IAppMesh mesh);
         void RemoveSmallMeshes(float threshold);
+        void LoadBoundingBoxes();
     }
     public class SceneManager: ISceneManager
     {
@@ -54,6 +56,78 @@ namespace UnBox3D.Rendering
             }
         }
 
+        public Vector3 GetMeshCenter(DMesh3 mesh)
+        {
+            if (mesh.VertexCount > 0)
+            {
+                Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+                Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
+                for (int i = 0; i < mesh.VertexCount; i++)
+                {
+                    g3.Vector3d vertex = mesh.GetVertex(i);
+                    Vector3 vertexVec = new Vector3((float)vertex.x, (float)vertex.y, (float)vertex.z);
+
+                    // Update min and max
+                    min = Vector3.ComponentMin(min, vertexVec);
+                    max = Vector3.ComponentMax(max, vertexVec);
+                }
+
+                // Calculate the center
+                return (min + max) * 0.5f;
+            }
+
+            return Vector3.Zero;
+        }
+
+        public Vector3 GetMeshDimensions(DMesh3 mesh)
+        {
+            if (mesh.VertexCount > 0)
+            {
+                float largestXDimension = 0.0f;
+                float largestYDimension = 0.0f;
+                float largestZDimension = 0.0f;
+
+                Vector3 meshCenter = GetMeshCenter(mesh);
+
+                for (int i = 0; i < mesh.VertexCount; i++)
+                {
+                    g3.Vector3d vertex = mesh.GetVertex(i);
+                    Vector3 vertexVec = new Vector3((float)vertex.x, (float)vertex.y, (float)vertex.z);
+
+                    if (largestXDimension < (vertexVec.X - meshCenter.X))
+                    {
+                        largestXDimension = vertexVec.X - meshCenter.X;
+                    }
+                    if (largestYDimension < (vertexVec.Y - meshCenter.Y))
+                    {
+                        largestYDimension = vertexVec.Y - meshCenter.Y;
+                    }
+                    if (largestZDimension < (vertexVec.Z - meshCenter.Z))
+                    {
+                        largestZDimension = vertexVec.Z - meshCenter.Z;
+                    }
+                }
+
+                return new Vector3(largestXDimension * 2, largestYDimension * 2, largestZDimension * 2); // multiplying by 2 because thats the largest distance from the center
+            }
+
+            return Vector3.Zero;
+        }
+
+        public void LoadBoundingBoxes()
+        {
+            var originalMeshes = _sceneMeshes.ToList();
+
+            foreach (IAppMesh mesh in originalMeshes)
+            {
+                DMesh3 geomMesh = mesh.GetG3Mesh();
+                Vector3 meshCenter = GetMeshCenter(geomMesh);
+                Vector3 meshDimensions = GetMeshDimensions(geomMesh);
+                _sceneMeshes.Add(GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z));
+                _sceneMeshes.Remove(mesh);
+            }
+        }
 
         private float GetMeshSize(DMesh3 mesh)
         {
