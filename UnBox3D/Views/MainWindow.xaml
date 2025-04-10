@@ -15,11 +15,10 @@
             <MenuItem Header="File">
                 <MenuItem Header="Import Model" Command="{Binding ImportObjModelCommand}" />
                 <MenuItem Header="Simplify Model">
-                    <!--<MenuItem Header="QEM Simplification" Command="{Binding SimplifyQEMCommand}" />
+                    <MenuItem Header="QEM Simplification" Command="{Binding SimplifyQEMCommand}" />
                     <MenuItem Header="Edge Collapse" Command="{Binding SimplifyEdgeCollapseCommand}" />
                     <MenuItem Header="Decimation" Command="{Binding SimplifyDecimationCommand}" />
                     <MenuItem Header="Adaptive Decimation" Command="{Binding SimplifyAdaptiveDecimationCommand}" />
-                    -->
                     <MenuItem Header="Add Bounding Box" Command="{Binding AddBoundingBoxCommand}" />
                 </MenuItem>
                 <MenuItem Header="Export Model" Command="{Binding ExportMeshCommand}" />
