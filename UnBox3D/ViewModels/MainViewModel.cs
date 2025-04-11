@@ -11,6 +11,7 @@ using UnBox3D.Views;
 using UnBox3D.Controls;
 using UnBox3D.Rendering.OpenGL;
 using UnBox3D.Commands;
+using OpenTK.Mathematics;
 
 namespace UnBox3D.ViewModels
 {
@@ -531,7 +532,26 @@ namespace UnBox3D.ViewModels
         }
 
         [RelayCommand]
-        private async void ReplaceWithCylinder()
+        private async void ReplaceWithCylinderOption(IAppMesh mesh)
+        {
+            Vector3 center = _sceneManager.GetMeshCenter(mesh.GetG4Mesh());
+            Vector3 meshDimensions = _sceneManager.GetMeshDimensions(mesh.GetG4Mesh());
+
+            bool isXAligned = (meshDimensions.X < meshDimensions.Z);
+
+            float radius = Math.Max(Math.Min(meshDimensions.X, meshDimensions.Z), meshDimensions.Y) / 2;
+            float height = isXAligned ? meshDimensions.X : meshDimensions.Z;
+
+            AppMesh cylinder = GeometryGenerator.CreateCylinder(center, radius, height, 32);
+            
+            _sceneManager.ReplaceMesh(mesh, cylinder);
+
+            await ShowWpfMessageBoxAsync("Replaced Mesh!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        // If you want to implement replace with cylinder by clicking
+        [RelayCommand]
+        private async void ReplaceWithCylinderClick()
         {
             var command = new SetReplaceStateCommand(_glControlHost, _mouseController, _sceneManager, new RayCaster(_glControlHost, _camera), _camera, _commandHistory);
             command.Execute();

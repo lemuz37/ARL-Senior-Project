@@ -46,12 +46,6 @@
                     </StackPanel>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Replace Selected Mesh with Cylinder"
-              Command="{Binding ReplaceWithCylinderCommand}"
-              ToolTip="Click a mesh in the scene to replace it with a procedural cylinder." />
-
-                
-                <Separator />
                 <MenuItem Header="Reduce All Meshes Complexity" StaysOpenOnClick="True">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock Text="Reduce Mesh Complexity (%)" FontWeight="Bold" />
@@ -175,7 +169,9 @@
                                     <MenuItem Header="Replace with...">
                                         <MenuItem Header="Box" />
                                         <MenuItem Header="Rectangle" />
-                                        <MenuItem Header="Cylinder" />
+                                        <MenuItem Header="Cylinder" Command="{Binding PlacementTarget.Tag.ReplaceWithCylinderOptionCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding SourceMesh}"
+                                                  ToolTip="Replaces this mesh with a red cylinder of the same size and orientation."/>
                                         <MenuItem Header="Plane" />
                                     </MenuItem>
                                     <MenuItem Header="Reduce Mesh Complexity">
