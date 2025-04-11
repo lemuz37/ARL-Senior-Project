@@ -59,7 +59,11 @@ namespace UnBox3D
             services.AddSingleton<IState, DefaultState>(provider =>
             {
                 var sceneManager = provider.GetRequiredService<ISceneManager>();
+<<<<<<< Updated upstream
                 var glHost = provider.GetRequiredService<GLControlHost>();
+=======
+                var glHost = provider.GetRequiredService<IGLControlHost>();
+>>>>>>> Stashed changes
                 var camera = provider.GetRequiredService<ICamera>();
                 var rayCaster = provider.GetRequiredService<IRayCaster>();
                 return new DefaultState(sceneManager, glHost, camera, rayCaster);
@@ -108,6 +112,21 @@ namespace UnBox3D
 
                 return new MouseController(settingsManger, camera, neutralState, rayCaster, glControlHost);
             });
+<<<<<<< Updated upstream
+=======
+
+            services.AddSingleton<MouseController>(provider =>
+            {
+                var settingsManger = provider.GetRequiredService<ISettingsManager>();
+                var camera = provider.GetRequiredService<ICamera>();
+                var neutralState = provider.GetRequiredService<IState>();
+                var rayCaster = provider.GetRequiredService<IRayCaster>();
+                var glControlHost = provider.GetRequiredService<GLControlHost>();
+
+                return new MouseController(settingsManger, camera, neutralState, rayCaster, glControlHost);
+            });
+
+>>>>>>> Stashed changes
             services.AddSingleton<BlenderIntegration>();
             services.AddSingleton<MainWindow>();
 
@@ -118,12 +137,20 @@ namespace UnBox3D
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
                 var blenderIntegration = provider.GetRequiredService<BlenderIntegration>();
                 var blenderInstaller = provider.GetRequiredService<IBlenderInstaller>();
+<<<<<<< Updated upstream
+=======
+                var modelExporter = provider.GetRequiredService<ModelExporter>();
+>>>>>>> Stashed changes
                 var mouseController = provider.GetRequiredService<MouseController>();
                 var camera = provider.GetRequiredService<ICamera>();
                 var glControlHost = provider.GetRequiredService<IGLControlHost>();
                 var commandHistory = provider.GetRequiredService<ICommandHistory>();
+<<<<<<< Updated upstream
 
                 return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller, mouseController, glControlHost, camera, commandHistory);
+=======
+                return new MainViewModel(logger, settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller, modelExporter, mouseController, glControlHost, camera, commandHistory);
+>>>>>>> Stashed changes
             });
             #endregion
 

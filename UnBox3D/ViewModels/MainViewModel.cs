@@ -8,7 +8,11 @@ using UnBox3D.Rendering;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+<<<<<<< Updated upstream
 using g3;
+=======
+using UnBox3D.Views;
+>>>>>>> Stashed changes
 using UnBox3D.Commands;
 using UnBox3D.Controls;
 using UnBox3D.Rendering.OpenGL;
@@ -22,11 +26,19 @@ namespace UnBox3D.ViewModels
         private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
         private readonly IGLControlHost _glControlHost;
+<<<<<<< Updated upstream
         private readonly MouseController _mouseController;
+=======
+>>>>>>> Stashed changes
         private readonly ModelImporter _modelImporter;
         private readonly IFileSystem _fileSystem;
         private readonly BlenderIntegration _blenderIntegration;
         private readonly IBlenderInstaller _blenderInstaller;
+<<<<<<< Updated upstream
+=======
+        private readonly ModelExporter _modelExporter;
+        private readonly MouseController _mouseController;
+>>>>>>> Stashed changes
         private readonly ICamera _camera;
         private readonly ICommandHistory _commandHistory;
         private string _importedFilePath; // Global filepath that should be referenced when simplifying
@@ -51,7 +63,12 @@ namespace UnBox3D.ViewModels
 
         public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager,
             IFileSystem fileSystem, BlenderIntegration blenderIntegration,
+<<<<<<< Updated upstream
             IBlenderInstaller blenderInstaller, MouseController mouseController, IGLControlHost glControlHost, ICamera camera, ICommandHistory commandHistory)
+=======
+            IBlenderInstaller blenderInstaller, ModelExporter modelExporter,
+            MouseController mouseController, IGLControlHost glControlHost, ICamera camera, ICommandHistory commandHistory)
+>>>>>>> Stashed changes
         {
             _settingsManager = settingsManager;
             _sceneManager = sceneManager;
@@ -59,6 +76,10 @@ namespace UnBox3D.ViewModels
             _blenderIntegration = blenderIntegration;
             _blenderInstaller = blenderInstaller;
             _modelImporter = new ModelImporter(_settingsManager);
+<<<<<<< Updated upstream
+=======
+            _modelExporter = modelExporter;
+>>>>>>> Stashed changes
             _mouseController = mouseController;
             _glControlHost = glControlHost;
             _camera = camera;
@@ -407,6 +428,17 @@ namespace UnBox3D.ViewModels
 
         [RelayCommand]
         private async void ReplaceWithCylinder()
+<<<<<<< Updated upstream
+=======
+        {
+            var command = new SetReplaceStateCommand(_glControlHost, _mouseController, _sceneManager, new RayCaster(_glControlHost, _camera), _camera, _commandHistory);
+            command.Execute();
+            await ShowWpfMessageBoxAsync("Replaced!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        [RelayCommand]
+        private async Task SimplifyQEC(IAppMesh mesh)
+>>>>>>> Stashed changes
         {
             var command = new SetReplaceStateCommand(_glControlHost, _mouseController, _sceneManager, new RayCaster(_glControlHost, _camera), _camera, _commandHistory);
             command.Execute();

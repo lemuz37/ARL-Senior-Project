@@ -25,8 +25,79 @@
                 <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
 
+<<<<<<< Updated upstream
             <MenuItem Header="View">
                 <MenuItem Header="Reset View" Command="{Binding ResetViewCommand}" />
+=======
+            <MenuItem Header="Edit">
+                <MenuItem StaysOpenOnClick="True" Header="Replace All Meshes with Bounding Boxes">
+                    <StackPanel Orientation="Vertical" Margin="10,0,10,5">
+                        <TextBlock Text="Remove Small Meshes Below Threshold (%)" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Slider x:Name="thresholdSlider"
+                                        Width="120"
+                                        Minimum="0" Maximum="100"
+                                        ValueChanged="MeshThreshold_ValueChanged"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        ToolTip="Meshes smaller than this threshold will be removed." />
+                            <TextBlock Text="{Binding ElementName=thresholdSlider, Path=Value, StringFormat=' {0:F0}%'}"
+                                           Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </StackPanel>
+
+                        <Separator Margin="0,10,0,5"/>
+                        <Button Content="Replace with Bounding Boxes"
+                                    Command="{Binding AddBoundingBoxCommand}"
+                                    HorizontalAlignment="Stretch"
+                                    Padding="5"
+                                    Margin="0,0,0,0" 
+                                    ToolTip="Replaces all meshes with their bounding box representations. Meshes smaller than the threshold will be removed."/>
+                    </StackPanel>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Replace Selected Mesh with Cylinder"
+              Command="{Binding ReplaceWithCylinderCommand}"
+              ToolTip="Click a mesh in the scene to replace it with a procedural cylinder." />
+
+                <Separator />
+                <MenuItem Header="Reduce All Meshes Complexity" StaysOpenOnClick="True">
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <TextBlock Text="Reduce Mesh Complexity (%)" FontWeight="Bold" />
+                        <TextBlock Text="Drag right to simplify more, left to keep more detail." 
+                                   FontSize="11" Foreground="Gray" HorizontalAlignment="Center"/>
+                        <Slider Minimum="10" Maximum="100"
+                                Value="{Binding SimplificationRatio, Mode=TwoWay}"
+                                                Width="120"
+                                                TickFrequency="10"
+                                                IsSnapToTickEnabled="True"
+                                                TickPlacement="BottomRight"
+                                                HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding SimplificationRatio, StringFormat='Reducing by {0:F0}%'}" 
+                                   FontSize="12" Foreground="Gray" HorizontalAlignment="Center"/>
+                        <Separator />
+
+                        <Button Content="High Quality (Slowest)"
+                    Command="{Binding SimplifyAllQECCommand}"
+                    ToolTip="Quadric Edge Collapse powered by Open3D"
+                    HorizontalAlignment="Stretch"
+                    Padding="5" />
+
+                        <Button Content="Moderate Quality (Fast)"
+                    Command="{Binding SimplifyAllFQDCommand}"
+                    ToolTip="Fast Quadric Decimation powered by PyVista"
+                    HorizontalAlignment="Stretch"
+                    Padding="5" />
+
+                        <Button Content="Lower Quality (Fastest)"
+                    Command="{Binding SimplifyAllVCCommand}"
+                    ToolTip="Vertex Clustering Simplification powered by Open3D"
+                    HorizontalAlignment="Stretch"
+                    Padding="5" />
+                    </StackPanel>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Remove All Meshes" Command="{Binding ClearSceneCommand}" />
+>>>>>>> Stashed changes
             </MenuItem>
 
             <MenuItem Header="Settings" />

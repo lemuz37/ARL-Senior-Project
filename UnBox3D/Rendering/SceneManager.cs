@@ -13,9 +13,15 @@ namespace UnBox3D.Rendering
         void AddMesh(IAppMesh mesh);
         void DeleteMesh(IAppMesh mesh);
         void RemoveSmallMeshes(float threshold);
+<<<<<<< Updated upstream
         Vector3 GetMeshCenter(DMesh3 mesh);
         Vector3 GetMeshDimensions(DMesh3 mesh);
         //List<DMesh3> LoadRotatedCylinder(Vector3 center, float radius, float height, int segments, Vector3 direction);
+=======
+        void ReplaceMesh(IAppMesh oldMesh, IAppMesh newMesh);
+        Vector3 GetMeshCenter(DMesh3 mesh);
+        Vector3 GetMeshDimensions(DMesh3 mesh);
+>>>>>>> Stashed changes
         List<AppMesh> LoadBoundingBoxes();
     }
     public class SceneManager: ISceneManager

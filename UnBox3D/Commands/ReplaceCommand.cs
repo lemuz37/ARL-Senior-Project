@@ -13,7 +13,11 @@ namespace UnBox3D.Commands
         private readonly IRayCaster _rayCaster;
         private readonly IGLControlHost _glControlHost;
         private readonly ICamera _camera;
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         private readonly Stack<MeshReplaceMemento> replacedMeshes;
 
         public ReplaceCommand(IGLControlHost glControlHost, ISceneManager sceneManager, IRayCaster rayCaster, ICamera camera)
@@ -119,8 +123,13 @@ namespace UnBox3D.Commands
                 */
 
                 // Create replacement cylinder
+<<<<<<< Updated upstream
                 Vector3 meshCenter = _sceneManager.GetMeshCenter(clickedMesh.GetG3Mesh());
                 Vector3 meshDimensions = _sceneManager.GetMeshDimensions(clickedMesh.GetG3Mesh());
+=======
+                Vector3 meshCenter = _sceneManager.GetMeshCenter(clickedMesh.GetG4Mesh());
+                Vector3 meshDimensions = _sceneManager.GetMeshDimensions(clickedMesh.GetG4Mesh());
+>>>>>>> Stashed changes
 
                 bool isXAligned = (meshDimensions.X < meshDimensions.Z);
 
@@ -181,5 +190,9 @@ namespace UnBox3D.Commands
     }
 
 
+<<<<<<< Updated upstream
 }
 
+=======
+}
+>>>>>>> Stashed changes

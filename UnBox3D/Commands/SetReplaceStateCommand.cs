@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 using UnBox3D.Controls.States;
+=======
+﻿using UnBox3D.Controls.States;
+>>>>>>> Stashed changes
 using UnBox3D.Controls;
 using UnBox3D.Models;
 using UnBox3D.Rendering;
@@ -38,4 +42,8 @@ namespace UnBox3D.Commands
             _mouseController.SetState(_defaultState);
         }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

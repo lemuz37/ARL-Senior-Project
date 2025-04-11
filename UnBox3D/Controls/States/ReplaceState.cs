@@ -47,4 +47,8 @@ namespace UnBox3D.Controls.States
 
         }
     }
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes
