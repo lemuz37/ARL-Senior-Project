@@ -48,6 +48,9 @@ namespace UnBox3D.ViewModels
         [ObservableProperty]
         private float simplificationRatio = 50f; // represents percentage (10–100)
 
+        [ObservableProperty]
+        private float smallMeshThreshold = 0f;
+
         public ObservableCollection<MeshSummary> Meshes { get; } = new();
 
 
@@ -519,16 +522,37 @@ namespace UnBox3D.ViewModels
         #region Mesh Simplification Commands
 
         [RelayCommand]
-        private async void AddBoundingBox()
+        private async void ReplaceSceneWithBoundingBox()
         {
+            // Value set from UI slider
+            float threshold = SmallMeshThreshold;
+
+            // 1. Generate bounding boxes and load them
             List<AppMesh> boxMeshList = _sceneManager.LoadBoundingBoxes();
 
+            // 2. Clear the scene and UI
+            _sceneManager.ClearScene();
             Meshes.Clear();
-            foreach (var mesh in boxMeshList)
+
+            // 3. Export the generated bounding boxes to a temp .obj file
+            string tempFileName = $"bounding_boxes_scene_{Guid.NewGuid()}.obj";
+            string? exportedPath = _modelExporter.ExportToObj(boxMeshList.Cast<IAppMesh>().ToList(), tempFileName);
+
+            if (string.IsNullOrWhiteSpace(exportedPath))
             {
+                await ShowWpfMessageBoxAsync("Failed to export bounding boxes.", "Export Error",
+                                             MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // 4. Re-import the exported .obj file to fully reload it into the scene
+            var importedMeshes = _modelImporter.ImportModel(exportedPath);
+            _importedFilePath = exportedPath;
+            foreach (var mesh in importedMeshes)
+            {
+                _sceneManager.AddMesh(mesh);
                 Meshes.Add(new MeshSummary(mesh));
             }
-            //await ShowWpfMessageBoxAsync("Added Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         [RelayCommand]
