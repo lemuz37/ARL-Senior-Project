@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OpenTK.Mathematics;
+using System.ServiceProcess;
 using System.Windows;
+using UnBox3D.Controls;
+using UnBox3D.Controls.States;
 using UnBox3D.Models;
 using UnBox3D.Rendering;
 using UnBox3D.Rendering.OpenGL;
@@ -52,9 +55,25 @@ namespace UnBox3D
                 );
             });
             services.AddSingleton<ISettingsManager, SettingsManager>();
+            services.AddSingleton<ICommandHistory, CommandHistory>();
+            services.AddSingleton<IState, DefaultState>(provider =>
+            {
+                var sceneManager = provider.GetRequiredService<ISceneManager>();
+                var glHost = provider.GetRequiredService<GLControlHost>();
+                var camera = provider.GetRequiredService<ICamera>();
+                var rayCaster = provider.GetRequiredService<IRayCaster>();
+                return new DefaultState(sceneManager, glHost, camera, rayCaster);
+            });
             #endregion
 
             #region Rendering Services Registration
+            services.AddSingleton<IRayCaster, RayCaster>();
+            services.AddSingleton<ICamera, Camera>(provider =>
+            {
+                Vector3 defaultPos = new Vector3(0, 0, 0);
+                float defaultAspectRatio = 16f / 9f;
+                return new Camera(defaultPos, defaultAspectRatio);
+            });
             services.AddSingleton<ISceneManager, SceneManager>();
             services.AddSingleton<IRenderer, SceneRenderer>(provider =>
             {
@@ -62,13 +81,14 @@ namespace UnBox3D
                 var settings = provider.GetRequiredService<ISettingsManager>();
                 return new SceneRenderer(logger, settings);
             });
-            services.AddSingleton<IGLControlHost, GLControlHost>(provider =>
+            services.AddSingleton<GLControlHost>(provider =>
             {
                 var sceneManager = provider.GetRequiredService<ISceneManager>();
                 var sceneRenderer = provider.GetRequiredService<IRenderer>();
                 var settingsManager = provider.GetRequiredService<ISettingsManager>();
                 return new GLControlHost(sceneManager, sceneRenderer, settingsManager);
             });
+            services.AddSingleton<IGLControlHost>(provider => provider.GetRequiredService<GLControlHost>());
             #endregion
 
             #region UI and ViewModel Registration
@@ -78,6 +98,16 @@ namespace UnBox3D
                 return new BlenderInstaller(fileSystem);
             });
 
+            services.AddSingleton<MouseController>(provider =>
+            {
+                var settingsManger = provider.GetRequiredService<ISettingsManager>();
+                var camera = provider.GetRequiredService<ICamera>();
+                var neutralState = provider.GetRequiredService<IState>();
+                var rayCaster = provider.GetRequiredService<IRayCaster>();
+                var glControlHost = provider.GetRequiredService<GLControlHost>();
+
+                return new MouseController(settingsManger, camera, neutralState, rayCaster, glControlHost);
+            });
             services.AddSingleton<BlenderIntegration>();
             services.AddSingleton<MainWindow>();
 
@@ -88,7 +118,12 @@ namespace UnBox3D
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
                 var blenderIntegration = provider.GetRequiredService<BlenderIntegration>();
                 var blenderInstaller = provider.GetRequiredService<IBlenderInstaller>();
-                return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller);
+                var mouseController = provider.GetRequiredService<MouseController>();
+                var camera = provider.GetRequiredService<ICamera>();
+                var glControlHost = provider.GetRequiredService<IGLControlHost>();
+                var commandHistory = provider.GetRequiredService<ICommandHistory>();
+
+                return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller, mouseController, glControlHost, camera, commandHistory);
             });
             #endregion
 

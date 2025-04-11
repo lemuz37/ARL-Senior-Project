@@ -20,6 +20,7 @@ namespace UnBox3D.Rendering
         List<Vector3> GetEdges();
         Quaternion GetTransform();
         int[] GetIndices();
+
         #endregion
 
         #region Actions
@@ -103,8 +104,10 @@ namespace UnBox3D.Rendering
                     (float)_g3Mesh.GetVertex(edgeVertices.b).y,
                     (float)_g3Mesh.GetVertex(edgeVertices.b).z));
             }
+  
 
             SetupMesh();
+
         }
         #endregion
 
@@ -166,6 +169,7 @@ namespace UnBox3D.Rendering
         public List<Vector3> GetEdges() => _edges;
         public Quaternion GetTransform() => _transform;
         public int[] GetIndices() => _indices;
+
         #endregion
 
         #region Setters

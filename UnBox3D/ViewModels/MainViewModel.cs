@@ -8,6 +8,10 @@ using UnBox3D.Rendering;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using g3;
+using UnBox3D.Commands;
+using UnBox3D.Controls;
+using UnBox3D.Rendering.OpenGL;
 
 namespace UnBox3D.ViewModels
 {
@@ -17,10 +21,14 @@ namespace UnBox3D.ViewModels
 
         private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
+        private readonly IGLControlHost _glControlHost;
+        private readonly MouseController _mouseController;
         private readonly ModelImporter _modelImporter;
         private readonly IFileSystem _fileSystem;
         private readonly BlenderIntegration _blenderIntegration;
         private readonly IBlenderInstaller _blenderInstaller;
+        private readonly ICamera _camera;
+        private readonly ICommandHistory _commandHistory;
         private string _importedFilePath; // Global filepath that should be referenced when simplifying
 
         [ObservableProperty]
@@ -43,7 +51,7 @@ namespace UnBox3D.ViewModels
 
         public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager,
             IFileSystem fileSystem, BlenderIntegration blenderIntegration,
-            IBlenderInstaller blenderInstaller)
+            IBlenderInstaller blenderInstaller, MouseController mouseController, IGLControlHost glControlHost, ICamera camera, ICommandHistory commandHistory)
         {
             _settingsManager = settingsManager;
             _sceneManager = sceneManager;
@@ -51,6 +59,10 @@ namespace UnBox3D.ViewModels
             _blenderIntegration = blenderIntegration;
             _blenderInstaller = blenderInstaller;
             _modelImporter = new ModelImporter(_settingsManager);
+            _mouseController = mouseController;
+            _glControlHost = glControlHost;
+            _camera = camera;
+            _commandHistory = commandHistory;
         }
 
         #endregion
@@ -391,6 +403,14 @@ namespace UnBox3D.ViewModels
                 Meshes.Add(new MeshSummary(mesh));
             }
             //await ShowWpfMessageBoxAsync("Added Bounding Box!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        [RelayCommand]
+        private async void ReplaceWithCylinder()
+        {
+            var command = new SetReplaceStateCommand(_glControlHost, _mouseController, _sceneManager, new RayCaster(_glControlHost, _camera), _camera, _commandHistory);
+            command.Execute();
+            await ShowWpfMessageBoxAsync("Replaced!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // Mesh Simplification Commands

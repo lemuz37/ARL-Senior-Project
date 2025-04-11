@@ -33,6 +33,7 @@
 
             <MenuItem Header="Tools">
                 <MenuItem Header="Hierarchy Panel" />
+                <MenuItem Header="Replace With Cylinder" Command="{Binding ReplaceWithCylinderCommand}" />
             </MenuItem>
 
             <MenuItem Header="About Us">

@@ -13,6 +13,9 @@ namespace UnBox3D.Rendering
         void AddMesh(IAppMesh mesh);
         void DeleteMesh(IAppMesh mesh);
         void RemoveSmallMeshes(float threshold);
+        Vector3 GetMeshCenter(DMesh3 mesh);
+        Vector3 GetMeshDimensions(DMesh3 mesh);
+        //List<DMesh3> LoadRotatedCylinder(Vector3 center, float radius, float height, int segments, Vector3 direction);
         List<AppMesh> LoadBoundingBoxes();
     }
     public class SceneManager: ISceneManager
@@ -31,6 +34,28 @@ namespace UnBox3D.Rendering
             if (mesh != null)
                 _sceneMeshes.Add(mesh);
         }
+        /*
+        public void RotateMesh(DMesh3 mesh, Matrix4 rotationMatrix)
+        {
+            if (mesh != null)
+            {
+                for (int i = 0; i < mesh.VertexCount; i++)
+                {
+                    // Retrieve the vertex
+                    g3.Vector3d vertex = mesh.GetVertex(i);
+
+                    // Convert the vertex to a Vector4 for transformation (homogeneous coordinates)
+                    Vector4 transformedVertex = new Vector4((float)vertex.x, (float)vertex.y, (float)vertex.z, 1.0f);
+
+                    // Apply the rotation matrix
+                    transformedVertex = Vector4.Transform(transformedVertex, rotationMatrix);
+
+                    // Update the vertex with the transformed coordinates
+                    mesh.SetVertex(i, new g3.Vector3d(transformedVertex.X, transformedVertex.Y, transformedVertex.Z));
+                }
+            }
+        }*/
+
 
         public void RemoveMeshes() 
         {
