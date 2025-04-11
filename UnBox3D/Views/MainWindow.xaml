@@ -46,6 +46,12 @@
                     </StackPanel>
                 </MenuItem>
                 <Separator />
+                <MenuItem Header="Replace Selected Mesh with Cylinder"
+              Command="{Binding ReplaceWithCylinderCommand}"
+              ToolTip="Click a mesh in the scene to replace it with a procedural cylinder." />
+
+                
+                <Separator />
                 <MenuItem Header="Reduce All Meshes Complexity" StaysOpenOnClick="True">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <TextBlock Text="Reduce Mesh Complexity (%)" FontWeight="Bold" />
