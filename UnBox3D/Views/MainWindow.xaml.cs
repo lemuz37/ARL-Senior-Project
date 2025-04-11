@@ -230,7 +230,12 @@ namespace UnBox3D.Views
             }
         }
 
-
-
+        private void MeshThreshold_ValueChanged(object sender, EventArgs e)
+        { 
+            if (sender is System.Windows.Controls.Slider slider)
+            {
+                Debug.WriteLine(slider.Value);
+            }
+        }
     }
 }
