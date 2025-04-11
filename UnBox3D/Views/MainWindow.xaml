@@ -9,13 +9,11 @@
         WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/Assets/Icons/logo.ico">
 
-
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="Import Model" Command="{Binding ImportObjModelCommand}" />
-
                 <MenuItem Header="Export Model" Command="{Binding ExportModelCommand}" />
                 <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
@@ -26,6 +24,7 @@
                         <TextBlock Text="Remove Small Meshes Below Threshold (%)" FontWeight="Bold" Margin="0,0,0,5"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Slider x:Name="thresholdSlider"
+                                        Value="{Binding SmallMeshThreshold, Mode=TwoWay}"
                                         Width="120"
                                         Minimum="0" Maximum="100"
                                         ValueChanged="MeshThreshold_ValueChanged"
@@ -38,7 +37,7 @@
 
                         <Separator Margin="0,10,0,5"/>
                         <Button Content="Replace with Bounding Boxes"
-                                    Command="{Binding AddBoundingBoxCommand}"
+                                    Command="{Binding ReplaceSceneWithBoundingBoxCommand}"
                                     HorizontalAlignment="Stretch"
                                     Padding="5"
                                     Margin="0,0,0,0" 
@@ -174,9 +173,7 @@
 
                                     <MenuItem Header="Replace with...">
                                         <MenuItem Header="Box" />
-                                        <MenuItem Header="Rectangle" />
                                         <MenuItem Header="Cylinder" />
-                                        <MenuItem Header="Plane" />
                                     </MenuItem>
                                     <MenuItem Header="Reduce Mesh Complexity">
                                         <StackPanel Orientation="Vertical" Margin="10,0,10,0">
