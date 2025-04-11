@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OpenTK.Mathematics;
+using System.IO;
 using System.Windows;
 using UnBox3D.Models;
 using UnBox3D.Rendering;
@@ -60,7 +61,8 @@ namespace UnBox3D
             {
                 var logger = provider.GetRequiredService<ILogger>();
                 var settings = provider.GetRequiredService<ISettingsManager>();
-                return new SceneRenderer(logger, settings);
+                var sceneManager = provider.GetRequiredService<ISceneManager>();
+                return new SceneRenderer(logger, settings, sceneManager);
             });
             services.AddSingleton<IGLControlHost, GLControlHost>(provider =>
             {
@@ -77,18 +79,25 @@ namespace UnBox3D
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
                 return new BlenderInstaller(fileSystem);
             });
+            services.AddSingleton<ModelExporter>(provider => {
+                var settingsManager = provider.GetRequiredService<ISettingsManager>();
+                return new ModelExporter(settingsManager);
+            });
+
 
             services.AddSingleton<BlenderIntegration>();
             services.AddSingleton<MainWindow>();
 
             services.AddSingleton<MainViewModel>(provider =>
             {
+                var logger = provider.GetRequiredService<ILogger>();
                 var settings = provider.GetRequiredService<ISettingsManager>();
                 var sceneManager = provider.GetRequiredService<ISceneManager>();
                 var fileSystem = provider.GetRequiredService<IFileSystem>();
                 var blenderIntegration = provider.GetRequiredService<BlenderIntegration>();
                 var blenderInstaller = provider.GetRequiredService<IBlenderInstaller>();
-                return new MainViewModel(settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller);
+                var modelExporter = provider.GetRequiredService<ModelExporter>();
+                return new MainViewModel(logger, settings, sceneManager, fileSystem, blenderIntegration, blenderInstaller, modelExporter);
             });
             #endregion
 
@@ -97,6 +106,48 @@ namespace UnBox3D
 
         protected override void OnExit(ExitEventArgs e)
         {
+            // 1. Read the "CleanupExportOnExit" setting
+            var settingsManager = _serviceProvider?.GetRequiredService<ISettingsManager>();
+            if (settingsManager != null)
+            {
+                bool cleanupOnExit = settingsManager.GetSetting<bool>(
+                    new AppSettings().GetKey(),
+                    AppSettings.CleanupExportOnExit
+                );
+
+                // 2. If the user wants cleanup, do it
+                if (cleanupOnExit)
+                {
+                    // Also fetch the export directory from settings
+                    string? exportDir = settingsManager.GetSetting<string>(
+                        new AppSettings().GetKey(),
+                        AppSettings.ExportDirectory
+                    );
+
+                    // Fallback if it doesn't exist
+                    if (string.IsNullOrWhiteSpace(exportDir) || !Directory.Exists(exportDir))
+                    {
+                        exportDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Export");
+                    }
+
+                    try
+                    {
+                        //Remove only .obj files
+                        foreach (var file in Directory.GetFiles(exportDir, "*.obj"))
+                        {
+                            File.Delete(file);
+                        }
+                        foreach (var file in Directory.GetFiles(exportDir, "*.mtl"))
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Failed to clean up export directory: {ex.Message}");
+                    }
+                }
+            }
             // Clean up the service provider on exit
             _serviceProvider?.Dispose();
             base.OnExit(e);

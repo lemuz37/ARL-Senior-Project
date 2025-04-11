@@ -23,7 +23,7 @@ namespace UnBox3D.Tests.Models
             //appMeshes.Should().NotBeNull();                  // Ensure the returned list is not null
             //appMeshes.Should().NotBeEmpty();                // Ensure at least one mesh is loaded
             //appMeshes.First().GetAssimpMesh().VertexCount.Should().BeGreaterThan(0); // Ensure the first mesh has vertices
-            //appMeshes.First().GetG3Mesh().TriangleCount.Should().BeGreaterThan(0); // Ensure the first mesh has triangles
+            //appMeshes.First().GetG4Mesh().TriangleCount.Should().BeGreaterThan(0); // Ensure the first mesh has triangles
         }
     }
 }

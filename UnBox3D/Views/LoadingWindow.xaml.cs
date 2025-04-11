@@ -9,6 +9,20 @@ namespace UnBox3D.Views
     public partial class LoadingWindow : Window, INotifyPropertyChanged
     {
         private string _statusHint;
+        private bool _isProgressIndeterminate;
+        public bool IsProgressIndeterminate
+        {
+            get => _isProgressIndeterminate;
+            set
+            {
+                if (_isProgressIndeterminate != value)
+                {
+                    _isProgressIndeterminate = value;
+                    OnPropertyChanged(nameof(IsProgressIndeterminate));
+                }
+            }
+        }
+
 
         public LoadingWindow()
         {
@@ -50,9 +64,14 @@ namespace UnBox3D.Views
                 return;
             }
 
-            progressPercentage = Math.Max(0, Math.Min(100, progressPercentage));
-            ProgressBar.Value = progressPercentage;
+            if (!IsProgressIndeterminate)
+            {
+                // Only set the value if it's NOT indeterminate
+                progressPercentage = Math.Max(0, Math.Min(100, progressPercentage));
+                ProgressBar.Value = progressPercentage;
+            }
         }
+
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

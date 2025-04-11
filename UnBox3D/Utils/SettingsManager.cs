@@ -113,7 +113,8 @@ namespace UnBox3D.Utils
                 [appSettings.GetKey()] = new JObject
                 {
                     [AppSettings.SplashScreenDuration] = appSettings.DefaultSplashScreenDuration,
-                    [AppSettings.ExportDirectory] = appSettings.DefaultExportDirectory
+                    [AppSettings.ExportDirectory] = appSettings.DefaultExportDirectory,
+                    [AppSettings.CleanupExportOnExit] = appSettings.DefaultCleanupExportOnExit
                 },
 
                 [assimpSettings.GetKey()] = new JObject

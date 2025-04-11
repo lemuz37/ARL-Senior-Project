@@ -36,7 +36,9 @@ namespace UnBox3D.Views
                 // Ensure Blender is installed
                 var loadingWindow = new LoadingWindow
                 {
-                    StatusHint = "Installing Blender... This may take a moment."
+                    StatusHint = "Installing Blender...",
+                    Owner = System.Windows.Application.Current.MainWindow,
+                    IsProgressIndeterminate = false
                 };
                 loadingWindow.Show();
 
@@ -78,6 +80,25 @@ namespace UnBox3D.Views
             catch (Exception ex)
             {
                 _logger?.Error($"Error during cleanup: {ex.Message}");
+            }
+        }
+
+        private void Settings_Click(object? sender, EventArgs e)
+        {
+            // click handler for Settings menu item: opens the settings window!
+            // NOTE: maybe refactor the SettingsWindow opening code to store a reusable instance of it in an App instance?
+            var settingsWindow = App.Current.Windows
+                .OfType<SettingsWindow>()
+                .FirstOrDefault();
+
+            if (settingsWindow != null)
+            {
+                settingsWindow.Show();
+                this.Hide();
+            }
+            else
+            {
+                _logger?.Warn("Failed to open settings window, found null instance instead.");
             }
         }
         #endregion
@@ -230,7 +251,12 @@ namespace UnBox3D.Views
             }
         }
 
-
-
+        private void MeshThreshold_ValueChanged(object sender, EventArgs e)
+        { 
+            if (sender is System.Windows.Controls.Slider slider)
+            {
+                Debug.WriteLine(slider.Value);
+            }
+        }
     }
 }
