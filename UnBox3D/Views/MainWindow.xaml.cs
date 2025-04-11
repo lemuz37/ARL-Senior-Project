@@ -52,8 +52,6 @@ namespace UnBox3D.Views
 
                 loadingWindow.Close();
 
-
-
                 // Attach GLControlHost to WindowsFormsHost
                 openGLHost.Child = (Control)_controlHost;
 
@@ -83,6 +81,7 @@ namespace UnBox3D.Views
             }
         }
 
+
         private void Settings_Click(object? sender, EventArgs e)
         {
             // click handler for Settings menu item: opens the settings window!
@@ -100,6 +99,7 @@ namespace UnBox3D.Views
             {
                 _logger?.Warn("Failed to open settings window, found null instance instead.");
             }
+
         }
         #endregion
 
