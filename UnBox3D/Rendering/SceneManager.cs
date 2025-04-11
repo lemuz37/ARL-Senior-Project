@@ -15,6 +15,8 @@ namespace UnBox3D.Rendering
         void ClearScene();
         void RemoveSmallMeshes(float threshold);
         void ReplaceMesh(IAppMesh oldMesh, IAppMesh newMesh);
+        Vector3 GetMeshCenter(DMesh3 mesh);
+        Vector3 GetMeshDimensions(DMesh3 mesh);
         List<AppMesh> LoadBoundingBoxes();
     }
 
