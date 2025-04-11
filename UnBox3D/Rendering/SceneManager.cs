@@ -160,6 +160,8 @@ namespace UnBox3D.Rendering
             return boxMeshes;
         }
 
+        
+
         private float GetMeshSize(DMesh3 mesh)
         {
             if (mesh.VertexCount == 0) return 0;
