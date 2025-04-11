@@ -2,7 +2,7 @@
 using UnBox3D.Utils;
 using TextBox = System.Windows.Controls.TextBox;
 using CheckBox = System.Windows.Controls.CheckBox;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace UnBox3D.Views
 {
@@ -28,11 +28,13 @@ namespace UnBox3D.Views
         public SettingsWindow()
         {
             InitializeComponent();
+
+            /// add lifecycle handlers
             Loaded += SettingsWindow_Loaded;
             Closed += SettingsWindow_Closed;
         }
 
-        #region Event Handlers
+        #region Lifecycle Handlers
         private void SettingsWindow_Loaded(object sender, RoutedEventArgs args)
         {
             _logger.Info("SettingsWindow loaded.");
@@ -42,13 +44,10 @@ namespace UnBox3D.Views
         {
             _logger.Info("SettingsWindow closed.");
         }
-        #endregion
 
-        #region Lifecycle
         public void Initialize(ILogger logger, ISettingsManager settingsManager)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _settingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
+            /// for mapping inputs to validator functions which trigger on edit
             _inputValidators = new Dictionary<string, Func<string, bool>>
             {
                 { "splash_screen_opt", IsValidIntegerInput },
@@ -68,6 +67,8 @@ namespace UnBox3D.Views
                 { "default_window_height_opt", IsValidIntegerInput },
                 { "default_window_width_opt", IsValidIntegerInput }
             };
+
+            /// for mapping inputs to appropriate setting keys
             _inputSettingKeys = new Dictionary<string, Tuple<string, string>>
             {
                 { "splash_screen_opt", Tuple.Create("AppSettings", "SplashScreenDuration") },
@@ -100,6 +101,10 @@ namespace UnBox3D.Views
                 { "default_window_height_opt", Tuple.Create("WindowSettings", "Height") },
                 { "default_window_width_opt", Tuple.Create("WindowSettings", "Width") },
             };
+
+            /// injects dependencies to initialize logger and settings management components...
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _settingsManager = settingsManager ?? throw new ArgumentNullException(nameof(settingsManager));
         }
         #endregion
 
@@ -187,7 +192,7 @@ namespace UnBox3D.Views
                 .FirstOrDefault();
 
             mainWindow?.Show();
-            this.Close();
+            this.Hide();
         }
 
         private void TextBox_InputChanged(object sender, RoutedEventArgs e)
@@ -195,6 +200,11 @@ namespace UnBox3D.Views
             var textBox = sender as TextBox;
             var textBoxName = textBox.Name;
             var textInput = textBox.Text;
+
+            if (_inputValidators == null)
+            {
+                return;
+            }
 
             /// NOTE: this code will validate a text-box's value if applicable, and then submit
             if (_inputValidators.ContainsKey(textBoxName))
@@ -220,6 +230,11 @@ namespace UnBox3D.Views
             var textBoxName = textBox.Name;
             var textInput = textBox.Text;
 
+            if (_inputSettingKeys == null)
+            {
+                return;
+            }
+
             (string parentName, string subName) = _inputSettingKeys[textBoxName];
 
             _settingsManager.SetSetting(parentName, subName, textInput);
@@ -230,6 +245,11 @@ namespace UnBox3D.Views
             var checkBox = sender as CheckBox;
             var checkBoxName = checkBox.Name;
             var checkFlag = checkBox.IsChecked;
+
+            if (_inputSettingKeys == null)
+            {
+                return;
+            }
 
             (string parentName, string subName) = _inputSettingKeys[checkBoxName];
 

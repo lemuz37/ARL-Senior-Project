@@ -50,8 +50,6 @@ namespace UnBox3D.Views
 
                 loadingWindow.Close();
 
-
-
                 // Attach GLControlHost to WindowsFormsHost
                 openGLHost.Child = (Control)_controlHost;
 
@@ -78,6 +76,25 @@ namespace UnBox3D.Views
             catch (Exception ex)
             {
                 _logger?.Error($"Error during cleanup: {ex.Message}");
+            }
+        }
+
+        private void Settings_Click(object? sender, EventArgs e)
+        {
+            // click handler for Settings menu item: opens the settings window!
+            // NOTE: maybe refactor the SettingsWindow opening code to store a reusable instance of it in an App instance?
+            var settingsWindow = App.Current.Windows
+                .OfType<SettingsWindow>()
+                .FirstOrDefault();
+
+            if (settingsWindow != null)
+            {
+                settingsWindow.Show();
+                this.Hide();
+            }
+            else
+            {
+                _logger?.Warn("Failed to open settings window, found null instance instead.");
             }
         }
         #endregion

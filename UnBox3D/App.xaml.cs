@@ -34,6 +34,16 @@ namespace UnBox3D
                 _serviceProvider.GetRequiredService<IBlenderInstaller>()
             );
             mainWindow.Show();
+
+            // Initialize SettingsWindow with its needed services but hide it for now...
+            var settingsWindow = _serviceProvider.GetRequiredService<SettingsWindow>();
+
+            settingsWindow.Initialize(
+                _serviceProvider.GetRequiredService<ILogger>(),
+                _serviceProvider.GetRequiredService<ISettingsManager>()
+            );
+            settingsWindow.Owner = mainWindow;
+            settingsWindow.Hide();
         }
 
         private ServiceProvider ConfigureServices()
@@ -79,6 +89,7 @@ namespace UnBox3D
             });
 
             services.AddSingleton<BlenderIntegration>();
+            services.AddSingleton<SettingsWindow>();
             services.AddSingleton<MainWindow>();
 
             services.AddSingleton<MainViewModel>(provider =>
