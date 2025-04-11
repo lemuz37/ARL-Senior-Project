@@ -144,7 +144,6 @@ namespace UnBox3D
                     }
                     catch (Exception ex)
                     {
-                        // Log or silently swallow, depending on your preference
                         System.Diagnostics.Debug.WriteLine($"Failed to clean up export directory: {ex.Message}");
                     }
                 }

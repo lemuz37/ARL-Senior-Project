@@ -21,43 +21,5 @@ namespace UnBox3D.Models
             Name = source.Name;
             VertexCount = source.VertexCount;
         }
-
-        // Mesh Simplification Commands
-        [RelayCommand]
-        private void SimplifyDecimation(IAppMesh mesh)
-        {
-            if (mesh is AppMesh appMesh)
-            {
-                // Ensure that the simplification (and subsequent GL calls) occur on the UI thread
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    appMesh.SimplifyDecimation();
-                });
-            }
-        }
-
-        [RelayCommand]
-        private void SimplifyEdgeCollapse(IAppMesh mesh)
-        {
-            if (mesh is AppMesh appMesh)
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    appMesh.SimplifyEdgeCollapse();
-                });
-            }
-        }
-
-        [RelayCommand]
-        private void SimplifyAdaptiveDecimation(IAppMesh mesh)
-        {
-            if (mesh is AppMesh appMesh)
-            {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
-                {
-                    appMesh.SimplifyAdaptiveDecimation();
-                });
-            }
-        }
     }
 }
