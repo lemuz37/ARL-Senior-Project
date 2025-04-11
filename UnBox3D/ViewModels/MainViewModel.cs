@@ -546,6 +546,7 @@ namespace UnBox3D.ViewModels
 
             // 4. Re-import the exported .obj file to fully reload it into the scene
             var importedMeshes = _modelImporter.ImportModel(exportedPath);
+            _importedFilePath = exportedPath;
             foreach (var mesh in importedMeshes)
             {
                 _sceneManager.AddMesh(mesh);
