@@ -267,7 +267,7 @@ namespace UnBox3D.Rendering.OpenGL
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            _sceneRenderer.RenderScene(_sceneManager.GetMeshes(), _camera, _lightingShader);
+            _sceneRenderer.RenderScene(_camera, _lightingShader);
 
             _gridRenderer.DrawGrid(_camera.GetViewMatrix(), _camera.GetProjectionMatrix());
 

@@ -1,4 +1,4 @@
-﻿using g3;
+﻿using g4;
 using OpenTK.Mathematics;
 using System.Collections.ObjectModel;
 using System.Windows.Forms;
@@ -97,16 +97,16 @@ namespace UnBox3D.Rendering
 
             foreach (var mesh in scene)
             {
-                for (int i = 0; i < mesh.GetG3Mesh().TriangleCount; i++)
+                for (int i = 0; i < mesh.GetG4Mesh().TriangleCount; i++)
                 {
-                    Index3i triangle = mesh.GetG3Mesh().GetTriangle(i);
+                    Index3i triangle = mesh.GetG4Mesh().GetTriangle(i);
 
                     // Get the vertices of the triangle
-                    g3.Vector3d v0 = mesh.GetG3Mesh().GetVertex(triangle.a);
-                    g3.Vector3d v1 = mesh.GetG3Mesh().GetVertex(triangle.b);
-                    g3.Vector3d v2 = mesh.GetG3Mesh().GetVertex(triangle.c);
+                    g4.Vector3d v0 = mesh.GetG4Mesh().GetVertex(triangle.a);
+                    g4.Vector3d v1 = mesh.GetG4Mesh().GetVertex(triangle.b);
+                    g4.Vector3d v2 = mesh.GetG4Mesh().GetVertex(triangle.c);
 
-                    // Convert g3.Vector3d to OpenTK.Vector3 for ray intersection test
+                    // Convert g4.Vector3d to OpenTK.Vector3 for ray intersection test
                     Vector3 vertex0 = new Vector3((float)v0.x, (float)v0.z, (float)v0.y);
                     Vector3 vertex1 = new Vector3((float)v1.x, (float)v1.z, (float)v1.y);
                     Vector3 vertex2 = new Vector3((float)v2.x, (float)v2.z, (float)v2.y);

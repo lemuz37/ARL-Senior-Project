@@ -1,4 +1,5 @@
-﻿using UnBox3D.Rendering;
+﻿using CommunityToolkit.Mvvm.Input;
+using UnBox3D.Rendering;
 
 namespace UnBox3D.Models
 {
@@ -7,7 +8,7 @@ namespace UnBox3D.Models
     /// Keeps track of the mesh name, vertex count, and a reference to the full mesh.
     /// Helps avoid performance issues by not exposing all the heavy data to the view.
     /// </summary>
-    public class MeshSummary
+    public partial class MeshSummary
     {
         public string Name { get; set; }
         public int VertexCount { get; set; }
@@ -19,6 +20,44 @@ namespace UnBox3D.Models
             SourceMesh = source;
             Name = source.Name;
             VertexCount = source.VertexCount;
+        }
+
+        // Mesh Simplification Commands
+        [RelayCommand]
+        private void SimplifyDecimation(IAppMesh mesh)
+        {
+            if (mesh is AppMesh appMesh)
+            {
+                // Ensure that the simplification (and subsequent GL calls) occur on the UI thread
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    appMesh.SimplifyDecimation();
+                });
+            }
+        }
+
+        [RelayCommand]
+        private void SimplifyEdgeCollapse(IAppMesh mesh)
+        {
+            if (mesh is AppMesh appMesh)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    appMesh.SimplifyEdgeCollapse();
+                });
+            }
+        }
+
+        [RelayCommand]
+        private void SimplifyAdaptiveDecimation(IAppMesh mesh)
+        {
+            if (mesh is AppMesh appMesh)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    appMesh.SimplifyAdaptiveDecimation();
+                });
+            }
         }
     }
 }

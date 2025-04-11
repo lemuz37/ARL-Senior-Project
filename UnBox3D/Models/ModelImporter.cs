@@ -1,5 +1,5 @@
 ﻿using Assimp;
-using g3;
+using g4;
 using System.Diagnostics;
 using UnBox3D.Rendering;
 using UnBox3D.Utils;
@@ -16,6 +16,9 @@ namespace UnBox3D.Models
         private readonly ISettingsManager _settingsManager;
         private List<IAppMesh>? importedMeshes;
         private Scene? scene;
+        private bool _wasScaled = false;
+        public bool WasScaled => _wasScaled;
+
 
         public ModelImporter(ISettingsManager settingsManager)
         {
@@ -68,7 +71,7 @@ namespace UnBox3D.Models
                 }
             }
 
-            // Step 1: Convert Assimp meshes into g3 meshes and calculate the total model bounds
+            // Step 1: Convert Assimp meshes into g4 meshes and calculate the total model bounds
             AxisAlignedBox3d modelBounds = AxisAlignedBox3d.Empty;
             List<(DMesh3 dmesh, Mesh assimpMesh)> meshPairs = new();
 
@@ -77,14 +80,14 @@ namespace UnBox3D.Models
                 Mesh mesh = scene.Meshes[i];
                 DMesh3 dmesh = new DMesh3();
 
-                // Copy vertices from Assimp mesh to g3 mesh
+                // Copy vertices from Assimp mesh to g4 mesh
                 for (int j = 0; j < mesh.VertexCount; j++)
                 {
                     Vector3D v = mesh.Vertices[j];
-                    dmesh.AppendVertex(new g3.Vector3d(v.X, v.Y, v.Z));
+                    dmesh.AppendVertex(new g4.Vector3d(v.X, v.Y, v.Z));
                 }
 
-                // Copy triangle faces from Assimp to g3
+                // Copy triangle faces from Assimp to g4
                 for (int j = 0; j < mesh.FaceCount; j++)
                 {
                     Face face = mesh.Faces[j];
@@ -104,8 +107,10 @@ namespace UnBox3D.Models
             double scaleFactor = (maxDim > targetSize) ? targetSize / maxDim : 1.0;
 
             if (scaleFactor != 1.0)
+            {
                 Debug.WriteLine($"[ModelImporter] Global scale applied: {scaleFactor:F4} (original size: {maxDim:F2})");
-
+                _wasScaled = true;
+            }
             foreach (var (dmesh, _) in meshPairs)
             {
                 MeshTransforms.Scale(dmesh, scaleFactor);
@@ -118,7 +123,7 @@ namespace UnBox3D.Models
                 scaledBounds.Contain(dmesh.CachedBounds);
             }
 
-            g3.Vector3d center = scaledBounds.Center;
+            g4.Vector3d center = scaledBounds.Center;
 
             foreach (var (dmesh, assimpMesh) in meshPairs)
             {
