@@ -1,4 +1,5 @@
-﻿using UnBox3D.Rendering;
+﻿using CommunityToolkit.Mvvm.Input;
+using UnBox3D.Rendering;
 
 namespace UnBox3D.Models
 {
@@ -7,7 +8,7 @@ namespace UnBox3D.Models
     /// Keeps track of the mesh name, vertex count, and a reference to the full mesh.
     /// Helps avoid performance issues by not exposing all the heavy data to the view.
     /// </summary>
-    public class MeshSummary
+    public partial class MeshSummary
     {
         public string Name { get; set; }
         public int VertexCount { get; set; }

@@ -15,9 +15,11 @@
     {
         public static readonly string SplashScreenDuration = "SplashScreenDuration";
         public static readonly string ExportDirectory = "ExportDirectory";
+        public static readonly string CleanupExportOnExit = "CleanupExportOnExit";
 
         public double DefaultSplashScreenDuration { get; set; } = 3.0;
         public string DefaultExportDirectory { get; set; } = "C:\\ProgramData\\UnBox3D\\Export";
+        public bool DefaultCleanupExportOnExit { get; set; } = false;
 
         public string GetKey()
         {

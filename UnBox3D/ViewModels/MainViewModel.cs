@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using OpenTK.Mathematics;
 using System.Collections.ObjectModel;
 using UnBox3D.Models;
 using UnBox3D.Utils;
@@ -8,6 +7,10 @@ using UnBox3D.Rendering;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using UnBox3D.Views;
+using UnBox3D.Controls;
+using UnBox3D.Rendering.OpenGL;
+using UnBox3D.Commands;
 
 namespace UnBox3D.ViewModels
 {
@@ -15,12 +18,18 @@ namespace UnBox3D.ViewModels
     {
         #region Fields & Properties
 
+        private readonly ILogger _logger;
         private readonly ISettingsManager _settingsManager;
         private readonly ISceneManager _sceneManager;
+        private readonly IGLControlHost _glControlHost;
         private readonly ModelImporter _modelImporter;
+        private readonly MouseController _mouseController;
+        private readonly ICamera _camera;
         private readonly IFileSystem _fileSystem;
         private readonly BlenderIntegration _blenderIntegration;
         private readonly IBlenderInstaller _blenderInstaller;
+        private readonly ModelExporter _modelExporter;
+        private readonly ICommandHistory _commandHistory;
         private string _importedFilePath; // Global filepath that should be referenced when simplifying
 
         [ObservableProperty]
@@ -35,22 +44,36 @@ namespace UnBox3D.ViewModels
         [ObservableProperty]
         private float pageHeight = 25.0f;
 
+        [ObservableProperty]
+        private float simplificationRatio = 50f; // represents percentage (10–100)
+
+        [ObservableProperty]
+        private float smallMeshThreshold = 0f;
+
         public ObservableCollection<MeshSummary> Meshes { get; } = new();
+
 
         #endregion
 
         #region Constructor
 
-        public MainViewModel(ISettingsManager settingsManager, ISceneManager sceneManager,
+        public MainViewModel(ILogger logger, ISettingsManager settingsManager, ISceneManager sceneManager,
             IFileSystem fileSystem, BlenderIntegration blenderIntegration,
-            IBlenderInstaller blenderInstaller)
+            IBlenderInstaller blenderInstaller, ModelExporter modelExporter,
+            MouseController mouseController, IGLControlHost glControlHost, ICamera camera, ICommandHistory commandHistory)
         {
+            _logger = logger;
             _settingsManager = settingsManager;
             _sceneManager = sceneManager;
             _fileSystem = fileSystem;
             _blenderIntegration = blenderIntegration;
             _blenderInstaller = blenderInstaller;
             _modelImporter = new ModelImporter(_settingsManager);
+            _modelExporter = modelExporter;
+            _mouseController = mouseController;
+            _glControlHost = glControlHost;
+            _camera = camera;
+            _commandHistory = commandHistory;
         }
 
         #endregion
@@ -78,6 +101,16 @@ namespace UnBox3D.ViewModels
                     _sceneManager.AddMesh(mesh);
                     Meshes.Add(new MeshSummary(mesh));
                 }
+
+                if (_modelImporter.WasScaled)
+                {
+                    var exportPath = _modelExporter.ExportToObj(_sceneManager.GetMeshes().ToList());
+                    if (exportPath != null) 
+                    {
+                        _importedFilePath = exportPath;
+                    }
+
+                }
             }
         }
 
@@ -93,7 +126,15 @@ namespace UnBox3D.ViewModels
             }
 
             string destinationPath = _fileSystem.CombinePaths(importDirectory, Path.GetFileName(filePath));
-            File.Copy(filePath, destinationPath, overwrite: true);
+            try
+            {
+                File.Copy(filePath, destinationPath, overwrite: true);
+            }
+            catch (IOException ex)
+            {
+                throw new InvalidOperationException("Failed to copy file to ImportedModels directory.", ex);
+            }
+
 
             return destinationPath;
         }
@@ -106,9 +147,11 @@ namespace UnBox3D.ViewModels
         {
             Debug.WriteLine("Input model is coming from: " + inputModelPath);
 
-            var installWindow = new Views.LoadingWindow
+            var installWindow = new LoadingWindow
             {
-                StatusHint = "Installing Blender. Please wait..."
+                StatusHint = "Installing Blender...",
+                Owner = System.Windows.Application.Current.MainWindow,
+                IsProgressIndeterminate = false
             };
             installWindow.Show();
 
@@ -130,10 +173,11 @@ namespace UnBox3D.ViewModels
             }
             else
             {
-
-                var loadingWindow = new Views.LoadingWindow
+                var loadingWindow = new LoadingWindow
                 {
-                    StatusHint = "This may take several minutes depending on model complexity"
+                    StatusHint = "This may take several minutes depending on model complexity",
+                    Owner = System.Windows.Application.Current.MainWindow,
+                    IsProgressIndeterminate = false
                 };
                 loadingWindow.Show();
 
@@ -297,6 +341,26 @@ namespace UnBox3D.ViewModels
             }
         }
 
+        [RelayCommand]
+        private async Task UnfoldMesh(IAppMesh mesh)
+        {
+            if (mesh == null)
+                return;
+
+            // 1. Export the single mesh to a temporary .obj file
+            string fileName = $"unfold_temp_{Guid.NewGuid()}.obj";
+            string? exportedPath = _modelExporter.ExportToObj(new List<IAppMesh> { mesh }, fileName);
+
+            if (string.IsNullOrWhiteSpace(exportedPath))
+            {
+                await ShowWpfMessageBoxAsync("Failed to export mesh for unfolding.", "Export Error",
+                                             MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // 2. Unfold just this mesh using the same logic you already have
+            await ProcessUnfolding(exportedPath);
+        }
 
 
         private void CleanupUnfoldedFolder(string folderPath)
@@ -360,59 +424,358 @@ namespace UnBox3D.ViewModels
         }
 
         [RelayCommand]
-        private void RenameMesh(IAppMesh mesh)
+        private async Task ExportMesh(IAppMesh mesh)
         {
-            string newName = PromptForNewName(mesh.Name);
-            //mesh.SetName(newName);
+            if (mesh == null)
+                return;
+
+            var path = PromptForSaveLocation();
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            var exported = _modelExporter.ExportToObjAbsolutePath(new List<IAppMesh> { mesh }, path);
+            if (exported != null)
+            {
+                await ShowWpfMessageBoxAsync($"Exported mesh to: {exported}",
+                                             "Export Mesh",
+                                             MessageBoxButton.OK,
+                                             MessageBoxImage.Information);
+            }
+            else
+            {
+                await ShowWpfMessageBoxAsync("Failed to export mesh.",
+                                             "Export Mesh",
+                                             MessageBoxButton.OK,
+                                             MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ClearScene()
+        {
+            var result = await ShowWpfMessageBoxAsync("Are you sure you want to clear the scene?",
+                                                      "Clear Scene",
+                                                      MessageBoxButton.YesNo,
+                                                      MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                _sceneManager.ClearScene();
+                Meshes.Clear();
+            }
         }
 
         [RelayCommand]
         private void DeleteMesh(IAppMesh mesh)
         {
+            if (mesh == null)
+                return;
+
             _sceneManager.DeleteMesh(mesh);
+
+            // Dispose of the mesh's unmanaged resources
+            if (mesh is IDisposable disposableMesh)
+            {
+                disposableMesh.Dispose();
+            }
+
+            // Remove the corresponding MeshSummary from the UI-bound collection.
+            // Assuming Meshes is an ObservableCollection<MeshSummary>
+            var summaryToRemove = Meshes.FirstOrDefault(ms => ms.SourceMesh == mesh);
+            if (summaryToRemove != null)
+            {
+                Meshes.Remove(summaryToRemove);
+            }
         }
 
         [RelayCommand]
-        private async void ExportMesh(IAppMesh mesh)
+        private async Task ExportModel()
         {
-            string exportPath = PromptForSaveLocation();
-            //ModelExporter.Export(mesh, exportPath);
-            await ShowWpfMessageBoxAsync($"Exporting mesh to: {exportPath}", "Export Mesh", MessageBoxButton.OK, MessageBoxImage.Information);
+            // 1. Prompt user for the export path
+            string? path = PromptForSaveLocation();
+            if (string.IsNullOrEmpty(path))
+                return; // user cancelled
+
+            // 2. Export all meshes
+            var meshesToExport = _sceneManager.GetMeshes().ToList();
+            var savedPath = _modelExporter.ExportToObjAbsolutePath(meshesToExport, path);
+
+            // 3. Notify user of success/failure
+            if (savedPath != null)
+            {
+                await ShowWpfMessageBoxAsync($"Exported all meshes to: {savedPath}",
+                                             "Export Meshes",
+                                             MessageBoxButton.OK,
+                                             MessageBoxImage.Information);
+            }
+            else
+            {
+                await ShowWpfMessageBoxAsync("Failed to export meshes.",
+                                             "Export Meshes",
+                                             MessageBoxButton.OK,
+                                             MessageBoxImage.Error);
+            }
         }
 
-        // Mesh Simplification Commands
+        #endregion
+
+        #region Mesh Simplification Commands
+
         [RelayCommand]
-        private async void SimplifyQEM()
+        private async void ReplaceSceneWithBoundingBox()
         {
-            await ShowWpfMessageBoxAsync("QEM Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
-            // Call QEM simplification logic here
+            // Value set from UI slider
+            float threshold = SmallMeshThreshold;
+
+            // 1. Generate bounding boxes and load them
+            List<AppMesh> boxMeshList = _sceneManager.LoadBoundingBoxes();
+
+            // 2. Clear the scene and UI
+            _sceneManager.ClearScene();
+            Meshes.Clear();
+
+            // 3. Export the generated bounding boxes to a temp .obj file
+            string tempFileName = $"bounding_boxes_scene_{Guid.NewGuid()}.obj";
+            string? exportedPath = _modelExporter.ExportToObj(boxMeshList.Cast<IAppMesh>().ToList(), tempFileName);
+
+            if (string.IsNullOrWhiteSpace(exportedPath))
+            {
+                await ShowWpfMessageBoxAsync("Failed to export bounding boxes.", "Export Error",
+                                             MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // 4. Re-import the exported .obj file to fully reload it into the scene
+            var importedMeshes = _modelImporter.ImportModel(exportedPath);
+            foreach (var mesh in importedMeshes)
+            {
+                _sceneManager.AddMesh(mesh);
+                Meshes.Add(new MeshSummary(mesh));
+            }
         }
 
         [RelayCommand]
-        private async void SimplifyEdgeCollapse()
+        private async void ReplaceWithCylinder()
         {
-            await ShowWpfMessageBoxAsync("Edge Collapse Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
-            // Call Edge Collapse simplification logic here
+            var command = new SetReplaceStateCommand(_glControlHost, _mouseController, _sceneManager, new RayCaster(_glControlHost, _camera), _camera, _commandHistory);
+            command.Execute();
+            await ShowWpfMessageBoxAsync("Replaced!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+
+        [RelayCommand]
+        private async Task SimplifyQEC(IAppMesh mesh)
+        {
+            await RunPythonSimplificationSingle(mesh, "quadric_edge_collapse");
         }
 
         [RelayCommand]
-        private async void SimplifyDecimation()
+        private async Task SimplifyFQD(IAppMesh mesh) 
         {
-            await ShowWpfMessageBoxAsync("Decimation Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
-            // Call Decimation logic here
+            await RunPythonSimplificationSingle(mesh, "fast_quadric_decimation");
         }
 
         [RelayCommand]
-        private async void SimplifyAdaptiveDecimation()
+        private async Task SimplifyVC(IAppMesh mesh) 
         {
-            await ShowWpfMessageBoxAsync("Adaptive Decimation Simplification triggered!", "Simplification", MessageBoxButton.OK, MessageBoxImage.Information);
-            // Call Adaptive Decimation logic here
+            await RunPythonSimplificationSingle(mesh, "vertex_clustering");
         }
 
         [RelayCommand]
-        private void Exit()
+        private async Task SimplifyAllQEC()
         {
-            System.Windows.Application.Current.Shutdown();
+            await RunPythonSceneSimplification("quadric_edge_collapse");
+        }
+
+        [RelayCommand]
+        private async Task SimplifyAllFQD()
+        {
+            await RunPythonSceneSimplification("fast_quadric_decimation");
+        }
+
+        [RelayCommand]
+        private async Task SimplifyAllVC()
+        {
+            await RunPythonSceneSimplification("vertex_clustering");
+        }
+
+        private async Task RunPythonSceneSimplification(string method)
+        {
+            if (Meshes.ToList().Count == 0)
+            {
+                await ShowWpfMessageBoxAsync("No meshes to simplify.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var loadingWindow = new LoadingWindow
+            {
+                StatusHint = $"Simplifying all meshes… This may take a few moments.",
+                Owner = System.Windows.Application.Current.MainWindow,
+                IsProgressIndeterminate = true
+            };
+            loadingWindow.Show();
+
+            if (method == "quadric_edge_collapse")
+                loadingWindow.UpdateStatus($"Quadric Edge Collapse Simplification");
+            else if (method == "fast_quadric_decimation")
+                loadingWindow.UpdateStatus($"Fast Quadric Decimation");
+            else if (method == "vertex_clustering")
+                loadingWindow.UpdateStatus($"Vertex Clustering Simplification");
+
+            try
+            {
+                // 1. Export all current meshes to a temp OBJ
+                string? exportFile = _modelExporter.ExportToObj(Meshes.Select(m => m.SourceMesh).ToList(), $"scene_to_simplify.obj");
+                if (exportFile == null)
+                {
+                    await ShowWpfMessageBoxAsync("Failed to export current scene.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // 2. Prepare paths and arguments
+                string simplifiedOutput = Path.Combine(Path.GetTempPath(), $"simplified_scene_{method}.obj");
+                string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", "simplify.exe");
+                float ratio = Math.Clamp(SimplificationRatio, 10, 100) / 100f;
+
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = exePath,
+                    Arguments = $"\"{exportFile}\" \"{simplifiedOutput}\" \"{method}\" \"{ratio}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var process = new Process { StartInfo = startInfo };
+                process.Start();
+                string stdout = await process.StandardOutput.ReadToEndAsync();
+                string stderr = await process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    await ShowWpfMessageBoxAsync($"simplify.exe error:\n{stderr}", "Simplification Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // 3. Import simplified mesh
+                loadingWindow.UpdateStatus("Importing simplified mesh...");
+                var simplifiedMeshes = _modelImporter.ImportModel(simplifiedOutput);
+                if (simplifiedMeshes.Count == 0)
+                {
+                    await ShowWpfMessageBoxAsync("No mesh found in simplified result.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // 4. Clear current scene and replace with new simplified mesh
+                _sceneManager.ClearScene();
+                Meshes.Clear();
+                foreach (var simplified in simplifiedMeshes)
+                {
+                    _sceneManager.AddMesh(simplified);
+                    Meshes.Add(new MeshSummary(simplified));
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowWpfMessageBoxAsync($"Exception: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                loadingWindow.Close();
+            }
+        }
+
+        private async Task RunPythonSimplificationSingle(IAppMesh mesh, string method)
+        {
+            // 1. Export just this single mesh to a temp file
+            string tempName = $"temp_singlemesh_{Guid.NewGuid()}.obj";
+            var tempFile = _modelExporter.ExportToObj(new List<IAppMesh> { mesh }, tempName);
+
+            if (tempFile == null)
+            {
+                await ShowWpfMessageBoxAsync("Failed to export single mesh.", "Error",
+                                             MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // 2. Prepare the output from the simplify.exe
+            string baseOutput = Path.Combine(Path.GetTempPath(), $"simplified_{method}.obj");
+
+            // 3. Show a loading window
+            var loadingWindow = new LoadingWindow
+            {
+                StatusHint = $"Simplifying mesh… This may take a while.",
+                Owner = System.Windows.Application.Current.MainWindow,
+                IsProgressIndeterminate = true
+            };
+            loadingWindow.Show();
+
+            if (method == "quadric_edge_collapse")
+                loadingWindow.UpdateStatus($"Quadric Edge Collapse Simplification");
+            else if (method == "fast_quadric_decimation")
+                loadingWindow.UpdateStatus($"Fast Quadric Decimation");
+            else if (method == "vertex_clustering")
+                loadingWindow.UpdateStatus($"Vertex Clustering Simplification");
+
+            try
+            {
+                var exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts", "simplify.exe");
+
+                float ratio = Math.Clamp(SimplificationRatio, 10, 100) / 100f;
+
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = exePath,
+                    Arguments = $"\"{tempFile}\" \"{baseOutput}\" \"{method}\" \"{ratio}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var process = new Process { StartInfo = startInfo };
+                process.Start();
+
+                string stdout = await process.StandardOutput.ReadToEndAsync();
+                string stderr = await process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    await ShowWpfMessageBoxAsync($"simplify.exe error:\n{stderr}",
+                                                 "Simplification Failed",
+                                                 MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // 5. Re-import the simplified file
+                var simplifiedMeshes = _modelImporter.ImportModel(baseOutput);
+                if (simplifiedMeshes.Count > 0)
+                {
+                    var simplified = simplifiedMeshes[0];
+                    _sceneManager.ReplaceMesh(mesh, simplified);
+
+                    // 6. Update UI
+                    var oldSummary = Meshes.FirstOrDefault(ms => ms.SourceMesh == mesh);
+                    if (oldSummary != null)
+                    {
+                        Meshes.Remove(oldSummary);
+                        Meshes.Add(new MeshSummary(simplified));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowWpfMessageBoxAsync($"Exception: {ex.Message}",
+                                             "Error",
+                                             MessageBoxButton.OK,
+                                             MessageBoxImage.Error);
+            }
+            finally
+            {
+                loadingWindow.Close();
+            }
         }
 
         #endregion
@@ -422,13 +785,13 @@ namespace UnBox3D.ViewModels
         /// <summary>
         /// Shows a WPF MessageBox asynchronously using the UI Dispatcher.
         /// </summary>
-        private static async Task ShowWpfMessageBoxAsync(string message, string title, MessageBoxButton button, MessageBoxImage image)
+        private static async Task<MessageBoxResult> ShowWpfMessageBoxAsync(string message, string title, MessageBoxButton button, MessageBoxImage image)
         {
-            await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
+            return await System.Windows.Application.Current.Dispatcher.InvokeAsync(() =>
             {
                 // Activate main window so the MessageBox appears on top.
                 System.Windows.Application.Current.MainWindow.Activate();
-                System.Windows.MessageBox.Show(
+                return System.Windows.MessageBox.Show(
                     message,
                     title,
                     button,
@@ -438,20 +801,29 @@ namespace UnBox3D.ViewModels
             });
         }
 
-        private string PromptForNewName(string currentName)
+        private string? PromptForSaveLocation()
         {
-            return Microsoft.VisualBasic.Interaction.InputBox("Enter new name:", "Rename Mesh", currentName);
-        }
-
-        private string PromptForSaveLocation()
-        {
-            var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+            var dialog = new Microsoft.Win32.SaveFileDialog
             {
-                Filter = "3D Models (*.obj)|*.obj"
+                Title = "Save Mesh As .obj",
+                Filter = "Wavefront OBJ (*.obj)|*.obj",
+                FileName = "export.obj"
             };
-            return saveFileDialog.ShowDialog() == true ? saveFileDialog.FileName : null;
-        }
 
+            // If user clicks 'Save'
+            bool? result = dialog.ShowDialog();
+            if (result == true)
+            {
+                return dialog.FileName;
+            }
+            return null;
+        }
         #endregion
+
+        [RelayCommand]
+        private void Exit()
+        {
+            System.Windows.Application.Current.Shutdown();
+        }
     }
 }

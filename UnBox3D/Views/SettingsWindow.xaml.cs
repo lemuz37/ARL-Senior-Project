@@ -4,6 +4,7 @@ using TextBox = System.Windows.Controls.TextBox;
 using CheckBox = System.Windows.Controls.CheckBox;
 using System.Collections.Generic;
 
+
 namespace UnBox3D.Views
 {
     /// <summary>
@@ -186,7 +187,6 @@ namespace UnBox3D.Views
             _logger.Info("Saving settings changes...");
             _settingsManager.SaveSettings();
             _logger.Info("Settings saved.");
-
             var mainWindow = App.Current.Windows
                 .OfType<MainWindow>()
                 .FirstOrDefault();

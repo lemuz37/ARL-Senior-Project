@@ -23,6 +23,7 @@
         <ProgressBar x:Name="ProgressBar" 
                      Grid.Row="1" 
                      Height="20" 
+                     IsIndeterminate="{Binding IsProgressIndeterminate}"
                      Minimum="0" 
                      Maximum="100" 
                      Value="0"/>

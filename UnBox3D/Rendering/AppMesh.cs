@@ -1,7 +1,8 @@
 ﻿using Assimp;
-using g3;
+using g4;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using System.Diagnostics;
 using UnBox3D.Rendering.OpenGL;
 using Quaternion = OpenTK.Mathematics.Quaternion;
 
@@ -10,8 +11,8 @@ namespace UnBox3D.Rendering
     public interface IAppMesh
     {
         #region Properties
-        DMesh3 GetG3Mesh();
-        Mesh GetAssimpMesh();
+        DMesh3 GetG4Mesh();
+        Assimp.Mesh GetAssimpMesh();
         string Name { get; set; }
         int VertexCount { get; }
         Vector3 GetColor();
@@ -36,7 +37,7 @@ namespace UnBox3D.Rendering
     public class AppMesh : IAppMesh, IDisposable
     {
         #region Fields
-        private DMesh3 _g3Mesh;
+        private DMesh3 _g4Mesh;
         private Mesh _assimpMesh;
         private string _name;
         private bool _highlighted = false;
@@ -51,9 +52,9 @@ namespace UnBox3D.Rendering
         #endregion
 
         #region Constructor
-        public AppMesh(DMesh3 g3mesh, Mesh assimpMesh)
+        public AppMesh(DMesh3 g4mesh, Assimp.Mesh assimpMesh)
         {
-            _g3Mesh = g3mesh;
+            _g4Mesh = g4mesh;
             _assimpMesh = assimpMesh;
             _name = assimpMesh.Name;
             _edges = new List<Vector3>();
@@ -89,19 +90,19 @@ namespace UnBox3D.Rendering
             _indices = assimpMesh.GetIndices();
 
             // Populate edges
-            for (int i = 0; i < _g3Mesh.EdgeCount; i++)
+            for (int i = 0; i < _g4Mesh.EdgeCount; i++)
             {
-                Index2i edgeVertices = _g3Mesh.GetEdgeV(i);
+                Index2i edgeVertices = _g4Mesh.GetEdgeV(i);
 
                 _edges.Add(new Vector3(
-                    (float)_g3Mesh.GetVertex(edgeVertices.a).x,
-                    (float)_g3Mesh.GetVertex(edgeVertices.a).y,
-                    (float)_g3Mesh.GetVertex(edgeVertices.a).z));
+                    (float)_g4Mesh.GetVertex(edgeVertices.a).x,
+                    (float)_g4Mesh.GetVertex(edgeVertices.a).y,
+                    (float)_g4Mesh.GetVertex(edgeVertices.a).z));
 
                 _edges.Add(new Vector3(
-                    (float)_g3Mesh.GetVertex(edgeVertices.b).x,
-                    (float)_g3Mesh.GetVertex(edgeVertices.b).y,
-                    (float)_g3Mesh.GetVertex(edgeVertices.b).z));
+                    (float)_g4Mesh.GetVertex(edgeVertices.b).x,
+                    (float)_g4Mesh.GetVertex(edgeVertices.b).y,
+                    (float)_g4Mesh.GetVertex(edgeVertices.b).z));
             }
 
             SetupMesh();
@@ -111,16 +112,37 @@ namespace UnBox3D.Rendering
         #region OpenGL Setup
         private void SetupMesh()
         {
+            // Ensure that this method is running on the thread with a valid OpenGL context.
+            // Clean up previously allocated buffers (if any)
+            if (_vao != 0)
+            {
+                GL.DeleteVertexArray(_vao);
+                _vao = 0;
+            }
+            if (_vertexBufferObject != 0)
+            {
+                GL.DeleteBuffer(_vertexBufferObject);
+                _vertexBufferObject = 0;
+            }
+            if (_ebo != 0)
+            {
+                GL.DeleteBuffer(_ebo);
+                _ebo = 0;
+            }
+
             Shader _lightingShader = ShaderManager.LightingShader;
 
+            // Setup vertex buffer object (VBO)
             _vertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
+            // Setup element buffer object (EBO)
             _ebo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, _ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, _indices.Length * sizeof(int), _indices, BufferUsageHint.StaticDraw);
 
+            // Setup vertex array object (VAO)
             _vao = GL.GenVertexArray();
             GL.BindVertexArray(_vao);
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
@@ -141,9 +163,11 @@ namespace UnBox3D.Rendering
                 GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
             }
 
+            // Unbind for safety
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindVertexArray(0);
         }
+
         #endregion
 
         #region Properties
@@ -159,8 +183,8 @@ namespace UnBox3D.Rendering
         #endregion
 
         #region Getters
-        public DMesh3 GetG3Mesh() => _g3Mesh;
-        public Mesh GetAssimpMesh() => _assimpMesh;
+        public DMesh3 GetG4Mesh() => _g4Mesh;
+        public Assimp.Mesh GetAssimpMesh() => _assimpMesh;
         public Vector3 GetColor() => _color;
         public bool GetHighlighted() => _highlighted;
         public List<Vector3> GetEdges() => _edges;
@@ -182,6 +206,122 @@ namespace UnBox3D.Rendering
         }
         #endregion
 
+        #region MeshSimplification
+
+        public void SimplifyEdgeCollapse(double targetRatio = 0.5)
+        {
+            int triCountBefore = _g4Mesh.TriangleCount;
+            int targetTris = (int)(triCountBefore * targetRatio);
+
+            var reducer = new MyReducer(_g4Mesh)
+            {
+                PreserveBoundaryShape = false,
+                ProjectionMode = Reducer.TargetProjectionMode.NoProjection,
+                ENABLE_PROFILING = true,
+            };
+
+            reducer.MinEdgeLengthPublic = 0.0;
+
+            reducer.ReduceToTriangleCount(targetTris);
+
+            int triCountAfter = _g4Mesh.TriangleCount;
+            Debug.WriteLine($"EdgeCollapse: Before = {triCountBefore}, After = {triCountAfter}");
+
+            RefreshAssimpMesh();
+            SetupMesh();
+        }
+
+
+
+        public void SimplifyDecimation(double targetEdgeLen = -1)
+        {
+            // Compute a default target edge length from the mesh bounds if none is provided.
+            double maxDim = _g4Mesh.CachedBounds.MaxDim;
+            double wantedEdgeLen = (targetEdgeLen < 0) ? maxDim * 0.01 : targetEdgeLen;
+
+            // Create a Reducer instance for your mesh.
+            Reducer reducer = new Reducer(_g4Mesh);
+
+            reducer.PreserveBoundaryShape = false;
+
+            // Use the ReduceToEdgeLength method to simplify the mesh based on edge length.
+            reducer.ReduceToEdgeLength(wantedEdgeLen);
+
+            // After reduction, the mesh is modified in-place.
+            // _g4Mesh = reducer.mesh; // if you need to reassign explicitly
+
+            // Refresh the Assimp mesh and OpenGL buffers so they reflect changes.
+            RefreshAssimpMesh();
+            SetupMesh();
+        }
+
+        public void SimplifyAdaptiveDecimation()
+        {
+            // Create a new DMesh3 instance from your current mesh 
+            DMesh3 newMesh = new DMesh3(_g4Mesh);
+
+            // Create a Remesher instance using the new mesh
+            Remesher remesh = new Remesher(newMesh);
+
+            // Set the target edge length based on your mesh's size.
+            // For instance, using 2% of the maximum dimension:
+            double maxDim = newMesh.CachedBounds.MaxDim;
+            remesh.SetTargetEdgeLength(maxDim * 0.02);
+
+            // Configure remesher parameters: enable flips and collapses for simplification.
+            remesh.EnableFlips = true;
+            remesh.EnableCollapses = true;
+            // Optionally, you can disable splits if you prefer only to reduce complexity.
+            remesh.EnableSplits = false;
+            remesh.EnableSmoothing = false;
+
+            // Execute multiple remeshing passes; the number of passes may depend on your
+            // desired quality and simplification level.
+            for (int i = 0; i < 10; i++)
+                remesh.BasicRemeshPass();
+
+            // Assign the new (remeshed) DMesh3 back to your app's internal mesh
+            _g4Mesh = newMesh;
+            RefreshAssimpMesh();
+            SetupMesh();
+        }
+
+        private void RefreshAssimpMesh()
+        {
+            _assimpMesh.Vertices.Clear();
+            _assimpMesh.Normals.Clear();
+            _assimpMesh.Faces.Clear();
+
+            // Recreate from new _g4Mesh
+            // Notice we swap Y and Z if you did so when you originally populated your vertex buffer
+            foreach (var vID in _g4Mesh.VertexIndices())
+            {
+                g4.Vector3d v = _g4Mesh.GetVertex(vID);
+                _assimpMesh.Vertices.Add(new Assimp.Vector3D((float)v.x, (float)v.z, (float)v.y));
+            }
+
+            // Recreate faces
+            foreach (var tID in _g4Mesh.TriangleIndices())
+            {
+                Index3i tri = _g4Mesh.GetTriangle(tID);
+                _assimpMesh.Faces.Add(new Assimp.Face(new int[] { tri.a, tri.b, tri.c }));
+            }
+
+            // If you still need a local _indices array, build it manually
+            List<int> newIndices = new List<int>();
+            foreach (int tID in _g4Mesh.TriangleIndices())
+            {
+                Index3i tri = _g4Mesh.GetTriangle(tID);
+                newIndices.Add(tri.a);
+                newIndices.Add(tri.b);
+                newIndices.Add(tri.c);
+            }
+            _indices = newIndices.ToArray();
+        }
+
+
+        #endregion
+
         #region Cleanup & Disposal
         public void Dispose()
         {
@@ -192,12 +332,56 @@ namespace UnBox3D.Rendering
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed) return;
+
             if (disposing)
             {
+                // Managed resources can be disposed here.
                 _edges?.Clear();
             }
+
+            // Clean up OpenGL resources.
+            if (_vao != 0)
+            {
+                GL.DeleteVertexArray(_vao);
+                _vao = 0;
+            }
+            if (_vertexBufferObject != 0)
+            {
+                GL.DeleteBuffer(_vertexBufferObject);
+                _vertexBufferObject = 0;
+            }
+            if (_ebo != 0)
+            {
+                GL.DeleteBuffer(_ebo);
+                _ebo = 0;
+            }
+
             _disposed = true;
         }
+
         #endregion
     }
+
+    public class MyReducer : Reducer
+    {
+        public MyReducer(DMesh3 m) : base(m)
+        {
+            PreserveBoundaryShape = false;
+            ProjectionMode = TargetProjectionMode.NoProjection;
+        }
+
+        // Expose the protected MinEdgeLength as a public property
+        public double MinEdgeLengthPublic
+        {
+            get => MinEdgeLength;
+            set => MinEdgeLength = value;
+        }
+
+        protected override void Precompute(bool bMeshIsClosed = false)
+        {
+            HaveBoundary = false;
+            IsBoundaryVtxCache = new bool[mesh.MaxVertexID];
+        }
+    }
+
 }
