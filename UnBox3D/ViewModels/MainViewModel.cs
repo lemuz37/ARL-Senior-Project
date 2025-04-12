@@ -11,6 +11,7 @@ using UnBox3D.Views;
 using UnBox3D.Controls;
 using UnBox3D.Rendering.OpenGL;
 using UnBox3D.Commands;
+using PdfSharpCore.Pdf;
 
 namespace UnBox3D.ViewModels
 {
@@ -326,14 +327,22 @@ namespace UnBox3D.ViewModels
                 {
                     string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
 
-                    loadingWindow.UpdateStatus("Combining SVG panels into PDF...");
-                    loadingWindow.UpdateProgress(90);
-                    await DispatcherHelper.DoEvents();
+                    string[] svgFiles = Directory.GetFiles(outputDirectory, $"{newFileName}_panel_page*.svg");
+                    int fileCount = svgFiles.Length;
 
-                    await Task.Run(() =>
+                    var pdf = new PdfDocument();
+
+                    for (int i = 0; i < fileCount; i++)
                     {
-                        SVGEditor.ExportToPdf(outputDirectory, newFileName, pdfFile);
-                    });
+                        string svgFile = svgFiles[i];
+                        loadingWindow.UpdateStatus($"Combining file {i + 1} of {fileCount} into PDF...");
+                        loadingWindow.UpdateProgress(80 + ((double)i / fileCount * 20));
+                        await DispatcherHelper.DoEvents();
+
+                        await Task.Run(() => SVGEditor.ExportToPdf(svgFile, pdf));
+                    }
+
+                    pdf.Save(pdfFile);
 
                     string destination = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
                     File.Move(pdfFile, destination, overwrite: true);

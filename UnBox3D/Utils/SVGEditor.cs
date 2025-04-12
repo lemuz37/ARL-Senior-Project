@@ -80,37 +80,28 @@ namespace UnBox3D.Utils
             }
         }
 
-        public static void ExportToPdf(string svgDirectory, string fileNamePrefix, string outputPdfPath)
+        public static void ExportToPdf(string svgFile, PdfDocument pdf)
         {
-            var pdf = new PdfDocument();
-            var svgFiles = Directory.GetFiles(svgDirectory, $"{fileNamePrefix}_panel_page*.svg");
-            Array.Sort(svgFiles);
+            Debug.WriteLine($"Combining SVG: {svgFile}");
 
-            foreach (var svgFile in svgFiles)
+            SvgDocument svgDoc;
+            using (var fs = File.OpenRead(svgFile))
             {
-                Debug.WriteLine("svgFile: " + svgFile);
-                SvgDocument svgDoc;
-                using (var fs = File.OpenRead(svgFile))
-                {
-                    svgDoc = SvgDocument.Open<SvgDocument>(fs);
-                }
-
-                using var bmp = svgDoc.Draw();
-
-                using var ms = new MemoryStream();
-                bmp.Save(ms, ImageFormat.Png);
-                ms.Position = 0;
-
-                var page = pdf.AddPage();
-                page.Width = XUnit.FromPoint(bmp.Width);
-                page.Height = XUnit.FromPoint(bmp.Height);
-
-                using var gfx = XGraphics.FromPdfPage(page);
-                using var xImage = XImage.FromStream(() => ms);
-                gfx.DrawImage(xImage, 0, 0);
+                svgDoc = SvgDocument.Open<SvgDocument>(fs);
             }
 
-            pdf.Save(outputPdfPath);
+            using var bmp = svgDoc.Draw();
+            using var ms = new MemoryStream();
+            bmp.Save(ms, ImageFormat.Png);
+            ms.Position = 0;
+
+            var page = pdf.AddPage();
+            page.Width = XUnit.FromPoint(bmp.Width);
+            page.Height = XUnit.FromPoint(bmp.Height);
+
+            using var gfx = XGraphics.FromPdfPage(page);
+            using var xImage = XImage.FromStream(() => ms);
+            gfx.DrawImage(xImage, 0, 0);
         }
     }
 }
