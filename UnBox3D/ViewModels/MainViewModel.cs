@@ -251,7 +251,7 @@ namespace UnBox3D.ViewModels
 
                     success = await Task.Run(() => _blenderIntegration.RunBlenderScript(
                         inputModelPath, outputDirectory, scriptPath,
-                        newFileName, incrementWidth, incrementHeight, format, out errorMessage));
+                        newFileName, incrementWidth, incrementHeight, "SVG", out errorMessage));
 
                     if (!success)
                     {
@@ -325,6 +325,16 @@ namespace UnBox3D.ViewModels
                 else if (format == "PDF")
                 {
                     string pdfFile = Path.Combine(outputDirectory, $"{newFileName}.pdf");
+
+                    loadingWindow.UpdateStatus("Combining SVG panels into PDF...");
+                    loadingWindow.UpdateProgress(90);
+                    await DispatcherHelper.DoEvents();
+
+                    await Task.Run(() =>
+                    {
+                        SVGEditor.ExportToPdf(outputDirectory, newFileName, pdfFile);
+                    });
+
                     string destination = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
                     File.Move(pdfFile, destination, overwrite: true);
                 }

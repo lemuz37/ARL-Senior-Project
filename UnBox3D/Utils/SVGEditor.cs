@@ -1,11 +1,10 @@
-﻿using Svg;
+﻿using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
+using Svg;
 using Svg.Transforms;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-
+using System.Drawing.Imaging;    // For ImageFormat
 /* Values are in pixels
 // SOMEONE GET ON THIS
 // Margins don't work? It seems to crop out rather than provide that 2in buffer
@@ -79,6 +78,39 @@ namespace UnBox3D.Utils
                     Debug.WriteLine($"Exported panel to {outputFilePath} with x-offset: {xOffset}, y-offset: {yOffset}");
                 }
             }
+        }
+
+        public static void ExportToPdf(string svgDirectory, string fileNamePrefix, string outputPdfPath)
+        {
+            var pdf = new PdfDocument();
+            var svgFiles = Directory.GetFiles(svgDirectory, $"{fileNamePrefix}_panel_page*.svg");
+            Array.Sort(svgFiles);
+
+            foreach (var svgFile in svgFiles)
+            {
+                Debug.WriteLine("svgFile: " + svgFile);
+                SvgDocument svgDoc;
+                using (var fs = File.OpenRead(svgFile))
+                {
+                    svgDoc = SvgDocument.Open<SvgDocument>(fs);
+                }
+
+                using var bmp = svgDoc.Draw();
+
+                using var ms = new MemoryStream();
+                bmp.Save(ms, ImageFormat.Png);
+                ms.Position = 0;
+
+                var page = pdf.AddPage();
+                page.Width = XUnit.FromPoint(bmp.Width);
+                page.Height = XUnit.FromPoint(bmp.Height);
+
+                using var gfx = XGraphics.FromPdfPage(page);
+                using var xImage = XImage.FromStream(() => ms);
+                gfx.DrawImage(xImage, 0, 0);
+            }
+
+            pdf.Save(outputPdfPath);
         }
     }
 }
