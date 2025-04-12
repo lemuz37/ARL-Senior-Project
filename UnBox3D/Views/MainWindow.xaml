@@ -38,7 +38,7 @@
 
                         <Separator Margin="0,10,0,5"/>
                         <Button Content="Replace with Bounding Boxes"
-                                    Command="{Binding AddBoundingBoxCommand}"
+                                    Command="{Binding ReplaceSceneWithBoundingBoxesCommand}"
                                     HorizontalAlignment="Stretch"
                                     Padding="5"
                                     Margin="0,0,0,0" 
@@ -167,12 +167,10 @@
                                               CommandParameter="{Binding SourceMesh}" />
 
                                     <MenuItem Header="Replace with...">
-                                        <MenuItem Header="Box" />
-                                        <MenuItem Header="Rectangle" />
+                                        <MenuItem Header="Cube" />
                                         <MenuItem Header="Cylinder" Command="{Binding PlacementTarget.Tag.ReplaceWithCylinderOptionCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                                                   CommandParameter="{Binding SourceMesh}"
-                                                  ToolTip="Replaces this mesh with a red cylinder of the same size and orientation."/>
-                                        <MenuItem Header="Plane" />
+                                                  ToolTip="Replaces this mesh with a cylinder of the same size and orientation."/>
                                     </MenuItem>
                                     <MenuItem Header="Reduce Mesh Complexity">
                                         <StackPanel Orientation="Vertical" Margin="10,0,10,0">

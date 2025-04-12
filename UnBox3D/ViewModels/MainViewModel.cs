@@ -522,7 +522,7 @@ namespace UnBox3D.ViewModels
         #region Mesh Simplification Commands
 
         [RelayCommand]
-        private async void ReplaceSceneWithBoundingBox()
+        private async void ReplaceSceneWithBoundingBoxes()
         {
             // Value set from UI slider
             float threshold = SmallMeshThreshold;
