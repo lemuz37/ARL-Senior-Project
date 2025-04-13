@@ -107,7 +107,7 @@ namespace UnBox3D.ViewModels
                 if (_modelImporter.WasScaled)
                 {
                     var exportPath = _modelExporter.ExportToObj(_sceneManager.GetMeshes().ToList());
-                    if (exportPath != null) 
+                    if (exportPath != null)
                     {
                         _importedFilePath = exportPath;
                     }
@@ -332,6 +332,7 @@ namespace UnBox3D.ViewModels
                     int fileCount = svgFiles.Length;
 
                     var pdf = new PdfDocument();
+                    bool allSuccessful = true;
 
                     for (int i = 0; i < fileCount; i++)
                     {
@@ -340,15 +341,34 @@ namespace UnBox3D.ViewModels
                         loadingWindow.UpdateProgress(80 + ((double)i / fileCount * 20));
                         await DispatcherHelper.DoEvents();
 
-                        await Task.Run(() => SVGEditor.ExportToPdf(svgFile, pdf));
+                        bool successful = await Task.Run(() => SVGEditor.ExportToPdf(svgFile, pdf));
+                        if (!successful)
+                        {
+                            allSuccessful = false;
+                            break;
+                        }
                     }
 
-                    pdf.Save(pdfFile);
+                    if (allSuccessful)
+                    {
+                        pdf.Save(pdfFile);
+                        string destination = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
+                        File.Move(pdfFile, destination, overwrite: true);
+                    }
+                    else
+                    {
+                        await ShowWpfMessageBoxAsync($"The SVG files are too large to be combined into partitioned panels for PDF. Will instead use the fallback PDF which may result in loss of some panels. Exporting will continue.", "Unable to allocate the required memory", MessageBoxButton.OK, MessageBoxImage.Warning);
 
-                    string destination = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
-                    File.Move(pdfFile, destination, overwrite: true);
+                        Debug.WriteLine($"incrW: {incrementWidth} incrH: {incrementHeight}");
+
+                        await Task.Run(() => _blenderIntegration.RunBlenderScript(
+                            inputModelPath, outputDirectory, scriptPath,
+                            newFileName, incrementWidth, incrementHeight, "PDF", out errorMessage));
+
+                        string destination = Path.Combine(userSelectedPath, $"{newFileName}.pdf");
+                        File.Move(pdfFile, destination, overwrite: true);
+                    }
                 }
-
                 loadingWindow.UpdateStatus("Cleaning up temporary files...");
                 loadingWindow.UpdateProgress(100);
                 await DispatcherHelper.DoEvents();
@@ -405,7 +425,7 @@ namespace UnBox3D.ViewModels
                         MessageBoxButton.OK,
                         MessageBoxImage.Error,
                         MessageBoxResult.OK,
-                        System.Windows. MessageBoxOptions.DefaultDesktopOnly);
+                        System.Windows.MessageBoxOptions.DefaultDesktopOnly);
                 });
             }
         }
@@ -586,7 +606,7 @@ namespace UnBox3D.ViewModels
             float height = isXAligned ? meshDimensions.X : meshDimensions.Z;
 
             AppMesh cylinder = GeometryGenerator.CreateCylinder(center, radius, height, 32);
-            
+
             _sceneManager.ReplaceMesh(mesh, cylinder);
 
             await ShowWpfMessageBoxAsync("Replaced Mesh!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -609,13 +629,13 @@ namespace UnBox3D.ViewModels
         }
 
         [RelayCommand]
-        private async Task SimplifyFQD(IAppMesh mesh) 
+        private async Task SimplifyFQD(IAppMesh mesh)
         {
             await RunPythonSimplificationSingle(mesh, "fast_quadric_decimation");
         }
 
         [RelayCommand]
-        private async Task SimplifyVC(IAppMesh mesh) 
+        private async Task SimplifyVC(IAppMesh mesh)
         {
             await RunPythonSimplificationSingle(mesh, "vertex_clustering");
         }

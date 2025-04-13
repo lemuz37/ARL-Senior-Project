@@ -80,28 +80,43 @@ namespace UnBox3D.Utils
             }
         }
 
-        public static void ExportToPdf(string svgFile, PdfDocument pdf)
+        public static bool ExportToPdf(string svgFile, PdfDocument pdf)
         {
             Debug.WriteLine($"Combining SVG: {svgFile}");
 
-            SvgDocument svgDoc;
-            using (var fs = File.OpenRead(svgFile))
+            try
             {
-                svgDoc = SvgDocument.Open<SvgDocument>(fs);
+                SvgDocument svgDoc;
+                using (var fs = File.OpenRead(svgFile))
+                {
+                    svgDoc = SvgDocument.Open<SvgDocument>(fs);
+                }
+
+                using var bmp = svgDoc.Draw();
+                using var ms = new MemoryStream();
+                bmp.Save(ms, ImageFormat.Png);
+                ms.Position = 0;
+
+                var page = pdf.AddPage();
+                page.Width = XUnit.FromPoint(bmp.Width);
+                page.Height = XUnit.FromPoint(bmp.Height);
+
+                using var gfx = XGraphics.FromPdfPage(page);
+                using var xImage = XImage.FromStream(() => ms);
+                gfx.DrawImage(xImage, 0, 0);
+
+                return true;
             }
-
-            using var bmp = svgDoc.Draw();
-            using var ms = new MemoryStream();
-            bmp.Save(ms, ImageFormat.Png);
-            ms.Position = 0;
-
-            var page = pdf.AddPage();
-            page.Width = XUnit.FromPoint(bmp.Width);
-            page.Height = XUnit.FromPoint(bmp.Height);
-
-            using var gfx = XGraphics.FromPdfPage(page);
-            using var xImage = XImage.FromStream(() => ms);
-            gfx.DrawImage(xImage, 0, 0);
+            catch (Svg.Exceptions.SvgMemoryException ex)
+            {
+                Debug.WriteLine($"Caught SvgMemoryException: {ex.Message}");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error processing SVG: {ex.Message}");
+                return false;
+            }
         }
     }
 }
