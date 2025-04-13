@@ -9,11 +9,13 @@
         WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/Assets/Icons/logo.ico">
 
+
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
                 <MenuItem Header="Import Model" Command="{Binding ImportObjModelCommand}" />
+
                 <MenuItem Header="Export Model" Command="{Binding ExportModelCommand}" />
                 <MenuItem Header="Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
@@ -24,7 +26,6 @@
                         <TextBlock Text="Remove Small Meshes Below Threshold (%)" FontWeight="Bold" Margin="0,0,0,5"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <Slider x:Name="thresholdSlider"
-                                        Value="{Binding SmallMeshThreshold, Mode=TwoWay}"
                                         Width="120"
                                         Minimum="0" Maximum="100"
                                         ValueChanged="MeshThreshold_ValueChanged"
@@ -37,19 +38,13 @@
 
                         <Separator Margin="0,10,0,5"/>
                         <Button Content="Replace with Bounding Boxes"
-                                    Command="{Binding ReplaceSceneWithBoundingBoxCommand}"
+                                    Command="{Binding ReplaceSceneWithBoundingBoxesCommand}"
                                     HorizontalAlignment="Stretch"
                                     Padding="5"
                                     Margin="0,0,0,0" 
                                     ToolTip="Replaces all meshes with their bounding box representations. Meshes smaller than the threshold will be removed."/>
                     </StackPanel>
                 </MenuItem>
-                <Separator />
-                <MenuItem Header="Replace Selected Mesh with Cylinder"
-              Command="{Binding ReplaceWithCylinderCommand}"
-              ToolTip="Click a mesh in the scene to replace it with a procedural cylinder." />
-
-                
                 <Separator />
                 <MenuItem Header="Reduce All Meshes Complexity" StaysOpenOnClick="True">
                     <StackPanel Orientation="Vertical" Margin="10">
@@ -172,8 +167,10 @@
                                               CommandParameter="{Binding SourceMesh}" />
 
                                     <MenuItem Header="Replace with...">
-                                        <MenuItem Header="Box" />
-                                        <MenuItem Header="Cylinder" />
+                                        <MenuItem Header="Cube" />
+                                        <MenuItem Header="Cylinder" Command="{Binding PlacementTarget.Tag.ReplaceWithCylinderOptionCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding SourceMesh}"
+                                                  ToolTip="Replaces this mesh with a cylinder of the same size and orientation."/>
                                     </MenuItem>
                                     <MenuItem Header="Reduce Mesh Complexity">
                                         <StackPanel Orientation="Vertical" Margin="10,0,10,0">

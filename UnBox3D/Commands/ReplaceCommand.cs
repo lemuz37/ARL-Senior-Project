@@ -71,7 +71,6 @@ namespace UnBox3D.Commands
                 int meshIndex = _sceneManager.GetMeshes().IndexOf(clickedMesh);
                 if (meshIndex == -1) return; // Safety check
 
-
                 //MeshConnectedComponents c = new MeshConnectedComponents(clickedMesh);
                 // c.FindConnectedT();
 
@@ -130,14 +129,14 @@ namespace UnBox3D.Commands
                 float height = isXAligned ? meshDimensions.X : meshDimensions.Z;
                 AppMesh replacementMesh = GeometryGenerator.CreateCylinder(meshCenter, radius, height, 32);
 
+                
                 Vector3 color = new Vector3(1.0f, 0.0f, 0.0f); // red color
 
                 MeshReplaceMemento replaceMesh = new MeshReplaceMemento(clickedMesh, replacementMesh, color);
                 replacedMeshes.Push(replaceMesh);
 
                 replacementMesh.SetColor(color);
-                _sceneManager.AddMesh(replacementMesh);
-                _sceneManager.DeleteMesh(clickedMesh);
+                _sceneManager.ReplaceMesh(clickedMesh, replacementMesh);
                 Console.WriteLine($"Replacement Complete!");
             }
         }
