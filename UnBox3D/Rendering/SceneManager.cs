@@ -69,17 +69,6 @@ namespace UnBox3D.Rendering
             }
         }
 
-        //public void RemoveSmallMeshes(float threshold)
-        //{
-        //    var meshesToRemove = _sceneMeshes
-        //        .Where(mesh => GetMeshSize(mesh.GetG4Mesh()) < threshold)
-        //        .ToList();
-
-        //    foreach (var mesh in meshesToRemove)
-        //    {
-        //        _sceneMeshes.Remove(mesh);
-        //    }
-        //}
         public void RemoveSmallMeshes(List<IAppMesh> originalMesh, float threshold)
         {
             float largestDimension = 0;
@@ -94,7 +83,6 @@ namespace UnBox3D.Rendering
             }
 
             float percentageThreshold = (threshold / 100) * largestDimension;
-            Debug.WriteLine("The percentage threshold is now " + percentageThreshold);
             foreach (IAppMesh mesh in originalMesh)
             {
                 Vector3 meshDimensions = GetMeshDimensions(mesh.GetG4Mesh());
