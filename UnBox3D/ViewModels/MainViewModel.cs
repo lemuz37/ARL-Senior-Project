@@ -33,6 +33,7 @@ namespace UnBox3D.ViewModels
         private readonly ModelExporter _modelExporter;
         private readonly ICommandHistory _commandHistory;
         private string _importedFilePath; // Global filepath that should be referenced when simplifying
+        private List<IAppMesh> _latestImportedModel; // This is so we can keep track of the original model when playing around with small mesh thresholds.
 
         [ObservableProperty]
         private IAppMesh selectedMesh;
@@ -97,6 +98,8 @@ namespace UnBox3D.ViewModels
                 string filePath = openFileDialog.FileName;
                 _importedFilePath = EnsureImportDirectory(filePath);
                 List<IAppMesh> importedMeshes = _modelImporter.ImportModel(_importedFilePath);
+
+                _latestImportedModel = importedMeshes; // Purpose: Remember the model that was imported so that the user can freely mess with something like size thresholds and go back.
 
                 foreach (var mesh in importedMeshes)
                 {
@@ -884,6 +887,11 @@ namespace UnBox3D.ViewModels
         private void Exit()
         {
             System.Windows.Application.Current.Shutdown();
+        }
+
+        public void ApplyMeshThreshold()
+        {
+            _sceneManager.RemoveSmallMeshes(_latestImportedModel, SmallMeshThreshold);
         }
     }
 }
