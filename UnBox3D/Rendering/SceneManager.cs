@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using UnBox3D.Utils;
+using Microsoft.Windows.Themes;
 
 namespace UnBox3D.Rendering
 {
@@ -13,7 +14,7 @@ namespace UnBox3D.Rendering
         void AddMesh(IAppMesh mesh);
         void DeleteMesh(IAppMesh mesh);
         void ClearScene();
-        void RemoveSmallMeshes(float threshold);
+        void RemoveSmallMeshes(List<IAppMesh> originalMesh, float threshold);
         void ReplaceMesh(IAppMesh oldMesh, IAppMesh newMesh);
         Vector3 GetMeshCenter(DMesh3 mesh);
         Vector3 GetMeshDimensions(DMesh3 mesh);
@@ -68,15 +69,39 @@ namespace UnBox3D.Rendering
             }
         }
 
-        public void RemoveSmallMeshes(float threshold)
+        public void RemoveSmallMeshes(List<IAppMesh> originalMesh, float threshold)
         {
-            var meshesToRemove = _sceneMeshes
-                .Where(mesh => GetMeshSize(mesh.GetG4Mesh()) < threshold)
-                .ToList();
-
-            foreach (var mesh in meshesToRemove)
+            float largestDimension = 0;
+            foreach (IAppMesh mesh in originalMesh)
             {
-                _sceneMeshes.Remove(mesh);
+                Vector3 meshDimensions = GetMeshDimensions(mesh.GetG4Mesh());
+                float localSmallestDimension = MathF.Min(meshDimensions.X, MathF.Min(meshDimensions.Y, meshDimensions.Z)); // We want to get the smallest dimension (X, Y, or Z) of each mesh to compare with the largest dimension
+                if (localSmallestDimension > largestDimension)
+                {
+                    largestDimension = localSmallestDimension;
+                }
+            }
+
+            float percentageThreshold = (threshold / 100) * largestDimension;
+            foreach (IAppMesh mesh in originalMesh)
+            {
+                Vector3 meshDimensions = GetMeshDimensions(mesh.GetG4Mesh());
+                if (meshDimensions.X >= percentageThreshold && meshDimensions.Y >= percentageThreshold && meshDimensions.Z >= percentageThreshold)
+                {
+                    // You went back on the threshold slider, so you add back meshes that are within the threshold
+                    if (!_sceneMeshes.Contains(mesh))
+                    {
+                        AddMesh(mesh);
+                    }
+                }
+                else
+                {
+                    // Since it doesn't meet the threshold, we can remove the mesh from scenemeshes
+                    if (_sceneMeshes.Contains(mesh))
+                    {
+                        DeleteMesh(mesh);
+                    }
+                }
             }
         }
 

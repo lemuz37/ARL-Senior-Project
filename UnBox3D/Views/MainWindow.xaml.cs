@@ -5,6 +5,7 @@ using UnBox3D.Utils;
 using System.Windows.Input;
 using TextBox = System.Windows.Controls.TextBox;
 using UnBox3D.Rendering;
+using UnBox3D.ViewModels;
 
 namespace UnBox3D.Views
 {
@@ -256,7 +257,13 @@ namespace UnBox3D.Views
             if (sender is System.Windows.Controls.Slider slider)
             {
                 Debug.WriteLine(slider.Value);
+                if (DataContext is MainViewModel vm)
+                {
+                    vm.SmallMeshThreshold = (float)slider.Value;
+                    vm.ApplyMeshThreshold();
+                }
             }
+
         }
     }
 }
