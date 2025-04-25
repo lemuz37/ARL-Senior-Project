@@ -610,9 +610,17 @@ namespace UnBox3D.ViewModels
 
             AppMesh cylinder = GeometryGenerator.CreateRotatedCylinder(center, radius, height, 32, Vector3.UnitX);
 
+            var summaryToRemove = Meshes.FirstOrDefault(ms => ms.SourceMesh == mesh);
+            if (summaryToRemove != null)
+            {
+                Meshes.Remove(summaryToRemove);
+            }
+
             _sceneManager.ReplaceMesh(mesh, cylinder);
 
-            await ShowWpfMessageBoxAsync("Replaced Mesh!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
+            Meshes.Add(new MeshSummary(cylinder));
+
+            //await ShowWpfMessageBoxAsync("Replaced Mesh!", "Replace", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         // If you want to implement replace with cylinder by clicking
