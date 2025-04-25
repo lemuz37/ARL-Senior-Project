@@ -153,7 +153,7 @@ namespace UnBox3D.Rendering
 
         public static AppMesh CreateRotatedCylinder(Vector3 center, float radius, float height, int segments, Vector3 direction)
         {
-            Mesh assimpMesh = new Mesh("Cylinder", PrimitiveType.Triangle);
+            Mesh assimpMesh = new Mesh("GeneratedCylinder", PrimitiveType.Triangle);
             DMesh3 g4Mesh = new DMesh3();
             float halfHeight = height * 0.5f;
             List<Vector3> vertices = new List<Vector3>();

@@ -171,15 +171,22 @@ namespace UnBox3D.Rendering
 
             foreach (IAppMesh mesh in originalMeshes)
             {
-                DMesh3 geomMesh = mesh.GetG4Mesh();
-                Vector3 meshCenter = GetMeshCenter(geomMesh);
-                Vector3 meshDimensions = GetMeshDimensions(geomMesh);
+                if (mesh.Name != "GeneratedCylinder")
+                {
+                    DMesh3 geomMesh = mesh.GetG4Mesh();
+                    Vector3 meshCenter = GetMeshCenter(geomMesh);
+                    Vector3 meshDimensions = GetMeshDimensions(geomMesh);
 
-                AppMesh boxMesh = GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z, mesh.Name);
-                boxMeshes.Add(boxMesh);
+                    AppMesh boxMesh = GeometryGenerator.CreateBox(meshCenter, meshDimensions.X, meshDimensions.Y, meshDimensions.Z, mesh.Name);
+                    boxMeshes.Add(boxMesh);
 
-                _sceneMeshes.Add(boxMesh);
-                _sceneMeshes.Remove(mesh);
+                    _sceneMeshes.Add(boxMesh);
+                    _sceneMeshes.Remove(mesh);
+                }
+                else if (mesh.Name == "GeneratedCylinder")
+                {
+                    boxMeshes.Add((AppMesh)mesh);
+                }
             }
 
             return boxMeshes;
