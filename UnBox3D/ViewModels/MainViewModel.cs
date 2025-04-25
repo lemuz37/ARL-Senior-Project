@@ -608,7 +608,7 @@ namespace UnBox3D.ViewModels
             float radius = Math.Max(Math.Min(meshDimensions.X, meshDimensions.Z), meshDimensions.Y) / 2;
             float height = isXAligned ? meshDimensions.X : meshDimensions.Z;
 
-            AppMesh cylinder = GeometryGenerator.CreateCylinder(center, radius, height, 32);
+            AppMesh cylinder = GeometryGenerator.CreateRotatedCylinder(center, radius, height, 32, Vector3.UnitX);
 
             _sceneManager.ReplaceMesh(mesh, cylinder);
 

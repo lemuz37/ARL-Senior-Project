@@ -71,7 +71,7 @@ namespace UnBox3D.Rendering
                 g4Mesh.AppendTriangle(face[0], face[1], face[2]);
             }
 
-            // Normalize accumulated vertex normals and add to Assimp
+            //Normalize accumulated vertex normals and add to Assimp
             foreach (var normal in vertexNormals)
             {
                 var n = normal.Normalized();
@@ -149,6 +149,134 @@ namespace UnBox3D.Rendering
                 g4Mesh.AppendTriangle(segments * 2 + 1, topCurrent, topNext);
             }
             return new AppMesh(g4Mesh, assimpMesh);
+        }
+
+        public static AppMesh CreateRotatedCylinder(Vector3 center, float radius, float height, int segments, Vector3 direction)
+        {
+            Mesh assimpMesh = new Mesh("Cylinder", PrimitiveType.Triangle);
+            DMesh3 g4Mesh = new DMesh3();
+            float halfHeight = height * 0.5f;
+            List<Vector3> vertices = new List<Vector3>();
+
+            // Generate vertices for the cylinder
+            for (int i = 0; i < segments; i++)
+            {
+                float angle = i * ((float)Math.PI * 2 / segments);
+                float x = (float)Math.Cos(angle) * radius;
+                float z = (float)Math.Sin(angle) * radius;
+
+                // Bottom ring
+                vertices.Add(new Vector3(center.X + x, center.Y - halfHeight, center.Z + z));
+                // Top ring
+                vertices.Add(new Vector3(center.X + x, center.Y + halfHeight, center.Z + z));
+            }
+
+            // Bottom and top center points
+            Vector3 bottomCenter = new Vector3(center.X, center.Y - halfHeight, center.Z);
+            Vector3 topCenter = new Vector3(center.X, center.Y + halfHeight, center.Z);
+            vertices.Add(bottomCenter);
+            vertices.Add(topCenter);
+
+            // Add vertices to Assimp mesh
+            //foreach (var v in vertices)
+            //{
+            //    assimpMesh.Vertices.Add(new Assimp.Vector3D(v.X, v.Y, v.Z));
+            //}
+
+            // Add vertices to g4 mesh
+            foreach (var v in vertices)
+            {
+                g4Mesh.AppendVertex(new g4.Vector3d(v.X, v.Y, v.Z));
+            }
+
+
+            Vector3 up = new Vector3(0, 1, 0);
+            if (direction != up)
+            {
+                direction = Vector3.Normalize(direction);
+                OpenTK.Mathematics.Quaternion rotation = OpenTK.Mathematics.Quaternion.FromAxisAngle(Vector3.Cross(up, direction), (float)Math.Acos(Vector3.Dot(up, direction)));
+                //Matrix4 rotationMatrix = Matrix4.CreateFromQuaternion(rotation);
+
+                // ROTATE MESH
+                for (int i = 0; i < g4Mesh.VertexCount; i++)
+                {
+                    // Retrieve the vertex
+                    g4.Vector3d vertex = g4Mesh.GetVertex(i);
+
+                    // Convert the vertex to a Vector4 for transformation (homogeneous coordinates)
+                    Vector4 transformedVertex = new Vector4((float)vertex.x, (float)vertex.y, (float)vertex.z, 1.0f);
+
+                    transformedVertex = Vector4.Transform(transformedVertex, rotation);
+
+                    // Update the vertex with the transformed coordinates
+                    g4Mesh.SetVertex(i, new g4.Vector3d(transformedVertex.X, transformedVertex.Y, transformedVertex.Z));
+                }
+            }
+
+            Vector3 newCenter = Vector3.Zero;
+
+            if (g4Mesh.VertexCount > 0)
+            {
+                Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+                Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
+                for (int i = 0; i < g4Mesh.VertexCount; i++)
+                {
+                    g4.Vector3d vertex = g4Mesh.GetVertex(i);
+                    Vector3 vertexVec = new Vector3((float)vertex.x, (float)vertex.y, (float)vertex.z);
+
+                    // Update min and max
+                    min = Vector3.ComponentMin(min, vertexVec);
+                    max = Vector3.ComponentMax(max, vertexVec);
+                }
+
+                // Calculate the center
+                newCenter = (min + max) * 0.5f;
+            }
+
+            // Adjust the cylinder back to its original center
+            Vector3 translationOffset = center - newCenter;
+            for (int i = 0; i < g4Mesh.VertexCount; i++)
+            {
+                g4.Vector3d vertex = g4Mesh.GetVertex(i);
+                vertex.x += translationOffset.X;
+                vertex.y += translationOffset.Y;
+                vertex.z += translationOffset.Z;
+                g4Mesh.SetVertex(i, vertex);
+                assimpMesh.Vertices.Add(new Assimp.Vector3D((float)vertex.x, (float)vertex.y, (float)vertex.z));
+            }
+
+            // Define cylinder faces (triangles)
+            for (int i = 0; i < segments; i++)
+            {
+                int next = (i + 1) % segments;
+
+                // Side faces (two triangles per segment)
+                int bottomCurrent = i * 2;
+                int topCurrent = bottomCurrent + 1;
+                int bottomNext = next * 2;
+                int topNext = bottomNext + 1;
+
+                // Side triangles
+                assimpMesh.Faces.Add(new Face([bottomCurrent, topCurrent, bottomNext]));
+                assimpMesh.Faces.Add(new Face([bottomNext, topCurrent, topNext]));
+
+                g4Mesh.AppendTriangle(bottomCurrent, topCurrent, bottomNext);
+                g4Mesh.AppendTriangle(bottomNext, topCurrent, topNext);
+
+                // Bottom cap
+                assimpMesh.Faces.Add(new Face([segments * 2, bottomNext, bottomCurrent]));
+                g4Mesh.AppendTriangle(segments * 2, bottomNext, bottomCurrent);
+
+                // Top cap
+                assimpMesh.Faces.Add(new Face([segments * 2 + 1, topCurrent, topNext]));
+                g4Mesh.AppendTriangle(segments * 2 + 1, topCurrent, topNext);
+            }
+
+            AppMesh appMesh = new AppMesh(g4Mesh, assimpMesh);
+            appMesh.SetColor(Colors.Red);
+
+            return appMesh;
         }
     }
 }
