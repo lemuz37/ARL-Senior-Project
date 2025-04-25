@@ -892,6 +892,15 @@ namespace UnBox3D.ViewModels
         public void ApplyMeshThreshold()
         {
             _sceneManager.RemoveSmallMeshes(_latestImportedModel, SmallMeshThreshold);
+            Meshes.Clear();
+
+            var importedMeshes = _sceneManager.GetMeshes();
+
+            foreach (var mesh in importedMeshes)
+            {
+                Meshes.Add(new MeshSummary(mesh));
+            }
+
         }
     }
 }
