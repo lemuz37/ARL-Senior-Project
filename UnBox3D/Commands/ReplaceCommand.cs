@@ -127,7 +127,7 @@ namespace UnBox3D.Commands
 
                 float radius = Math.Max(Math.Min(meshDimensions.X, meshDimensions.Z), meshDimensions.Y) / 2;
                 float height = isXAligned ? meshDimensions.X : meshDimensions.Z;
-                AppMesh replacementMesh = GeometryGenerator.CreateCylinder(meshCenter, radius, height, 32);
+                AppMesh replacementMesh = GeometryGenerator.CreateRotatedCylinder(meshCenter, radius, height, 32, Vector3.UnitY);
 
                 
                 Vector3 color = new Vector3(1.0f, 0.0f, 0.0f); // red color
