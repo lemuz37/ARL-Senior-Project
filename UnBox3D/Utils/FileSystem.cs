@@ -5,7 +5,7 @@ namespace UnBox3D.Utils
     public interface IFileSystem
     {
         // File operations
-        bool DoesFileExists(string filePath);
+        bool DoesFileExist(string filePath);
         void WriteToFile(string filePath, string content);
         string ReadFile(string filePath);
         void AppendToFile(string filePath, string content);
@@ -16,7 +16,7 @@ namespace UnBox3D.Utils
         Stream CreateFile(string filePath);
 
         // Directory operations
-        bool DoesDirectoryExists(string directoryPath);
+        bool DoesDirectoryExist(string directoryPath);
         void CreateDirectory(string directoryPath);
         void DeleteDirectory(string directoryPath, bool recursive);
         IEnumerable<string> GetFilesInDirectory(string directoryPath);
@@ -30,7 +30,7 @@ namespace UnBox3D.Utils
     {
         #region File Operations
 
-        public bool DoesFileExists(string filePath) => File.Exists(filePath);
+        public bool DoesFileExist(string filePath) => File.Exists(filePath);
 
         public void WriteToFile(string filePath, string content)
         {
@@ -39,7 +39,7 @@ namespace UnBox3D.Utils
 
         public string ReadFile(string filePath)
         {
-            if (!DoesFileExists(filePath))
+            if (!DoesFileExist(filePath))
                 throw new FileNotFoundException("File not found", filePath);
 
             return File.ReadAllText(filePath);
@@ -52,13 +52,13 @@ namespace UnBox3D.Utils
 
         public void DeleteFile(string filePath)
         {
-            if (DoesFileExists(filePath))
+            if (DoesFileExist(filePath))
                 File.Delete(filePath);
         }
 
         public long GetFileSize(string filePath)
         {
-            if (!DoesFileExists(filePath))
+            if (!DoesFileExist(filePath))
                 throw new FileNotFoundException("File not found", filePath);
 
             return new FileInfo(filePath).Length;
@@ -66,12 +66,11 @@ namespace UnBox3D.Utils
 
         public void MoveFile(string sourceFilePath, string destinationFilePath)
         {
-            if (!DoesFileExists(sourceFilePath))
+            if (!DoesFileExist(sourceFilePath))
                 throw new FileNotFoundException("Source file not found", sourceFilePath);
 
-            string destinationDirectory = Path.GetDirectoryName(destinationFilePath);
-
-            if (!DoesDirectoryExists(destinationDirectory))
+            string? destinationDirectory = Path.GetDirectoryName(destinationFilePath);
+            if (string.IsNullOrWhiteSpace(destinationDirectory) || !DoesDirectoryExist(destinationDirectory))
                 throw new DirectoryNotFoundException("Destination directory does not exist");
 
             File.Move(sourceFilePath, destinationFilePath);
@@ -91,23 +90,22 @@ namespace UnBox3D.Utils
 
         #region Directory Operations
 
-        public bool DoesDirectoryExists(string directoryPath) => Directory.Exists(directoryPath);
+        public bool DoesDirectoryExist(string directoryPath) => Directory.Exists(directoryPath);
 
         public void CreateDirectory(string directoryPath)
         {
-            if (!DoesDirectoryExists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
+            Directory.CreateDirectory(directoryPath);
         }
 
         public void DeleteDirectory(string directoryPath, bool recursive)
         {
-            if (DoesDirectoryExists(directoryPath))
+            if (DoesDirectoryExist(directoryPath))
                 Directory.Delete(directoryPath, recursive);
         }
 
         public IEnumerable<string> GetFilesInDirectory(string directoryPath)
         {
-            if (!DoesDirectoryExists(directoryPath))
+            if (!DoesDirectoryExist(directoryPath))
                 throw new DirectoryNotFoundException("Directory not found");
 
             return Directory.GetFiles(directoryPath);
@@ -115,7 +113,7 @@ namespace UnBox3D.Utils
 
         public IEnumerable<string> GetDirectoriesInDirectory(string directoryPath)
         {
-            if (!DoesDirectoryExists(directoryPath))
+            if (!DoesDirectoryExist(directoryPath))
                 throw new DirectoryNotFoundException("Directory not found");
 
             return Directory.GetDirectories(directoryPath);
