@@ -1,8 +1,9 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.IO.Compression;
-using System.Diagnostics;
 using System.Windows;
+using WpfMessageBox = System.Windows.MessageBox;
+
 
 namespace UnBox3D.Utils
 {
@@ -16,18 +17,18 @@ namespace UnBox3D.Utils
     public class BlenderInstaller : IBlenderInstaller
     {
         private readonly IFileSystem _fileSystem;
+        private readonly ILogger _logger;
 
         private readonly string BlenderFolder;
         private readonly string BlenderExecutable;
         private readonly string BlenderZipPath;
         private static readonly string BlenderDownloadUrl = "https://download.blender.org/release/Blender4.2/blender-4.2.0-windows-x64.zip";
-        // Quick test URL for invalid URL handling
-        //private static string BlenderDownloadUrl = "https://invalid.url.fake/blender.zip";
         private Task? _blenderInstallTask;
 
-        public BlenderInstaller(IFileSystem fileSystem)
+        public BlenderInstaller(IFileSystem fileSystem, ILogger logger)
         {
             _fileSystem = fileSystem;
+            _logger = logger;
 
             string baseDir = AppDomain.CurrentDomain.BaseDirectory;
             BlenderFolder = _fileSystem.CombinePaths(baseDir, "Blender");
@@ -47,27 +48,27 @@ namespace UnBox3D.Utils
 
         public bool IsBlenderInstalled()
         {
-            return _fileSystem.DoesFileExists(BlenderExecutable);
+            return _fileSystem.DoesFileExist(BlenderExecutable);
         }
 
         private async Task CheckAndInstallBlenderInternal()
         {
-            if (!_fileSystem.DoesDirectoryExists(BlenderFolder) || !_fileSystem.DoesFileExists(BlenderExecutable))
+            if (!_fileSystem.DoesDirectoryExist(BlenderFolder) || !_fileSystem.DoesFileExist(BlenderExecutable))
             {
-                Debug.WriteLine("Blender 4.2 is not installed. Downloading now...");
+                _logger.Info("Blender 4.2 is not installed. Downloading now...");
                 await DownloadAndExtractBlender();
             }
             else
             {
-                Debug.WriteLine("Blender 4.2 is already installed.");
+                _logger.Info("Blender 4.2 is already installed.");
             }
         }
 
         private async Task CheckAndInstallBlenderInternal(IProgress<double>? progress = null)
         {
-            if (!_fileSystem.DoesDirectoryExists(BlenderFolder) || !_fileSystem.DoesFileExists(BlenderExecutable))
+            if (!_fileSystem.DoesDirectoryExist(BlenderFolder) || !_fileSystem.DoesFileExist(BlenderExecutable))
             {
-                Debug.WriteLine("Blender 4.2 is not installed. Downloading now...");
+                _logger.Info("Blender 4.2 is not installed. Downloading now...");
 
                 try
                 {
@@ -75,14 +76,14 @@ namespace UnBox3D.Utils
                 }
                 catch (HttpRequestException ex)
                 {
-                    Debug.WriteLine("Internet connection error: " + ex.Message);
-                    System.Windows.MessageBox.Show("Blender could not be downloaded. Please check your internet connection.",
+                    _logger.Error("Internet connection error: " + ex.Message);
+                    WpfMessageBox.Show("Blender could not be downloaded. Please check your internet connection.",
                                     "Download Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                Debug.WriteLine("Blender 4.2 is already installed.");
+                _logger.Info("Blender 4.2 is already installed.");
                 progress?.Report(1.0);
             }
         }
@@ -96,40 +97,39 @@ namespace UnBox3D.Utils
             byte[] data = await response.Content.ReadAsByteArrayAsync();
             await _fileSystem.WriteAllBytesAsync(BlenderZipPath, data);
 
-            Debug.WriteLine("Download complete. Extracting Blender...");
+            _logger.Info("Download complete. Extracting Blender...");
 
-            if (!_fileSystem.DoesDirectoryExists(BlenderFolder))
+            if (!_fileSystem.DoesDirectoryExist(BlenderFolder))
                 _fileSystem.CreateDirectory(BlenderFolder);
 
             try
             {
                 ZipFile.ExtractToDirectory(BlenderZipPath, BlenderFolder, overwriteFiles: true);
                 _fileSystem.DeleteFile(BlenderZipPath);
-
-                Debug.WriteLine("Blender installation completed.");
+                _logger.Info("Blender installation completed.");
             }
             catch (IOException ioEx)
             {
-                Debug.WriteLine($"IO error during extraction: {ioEx.Message}");
-                System.Windows.MessageBox.Show("Blender archive is currently in use or locked by another process. Please close any applications using it and try again.",
+                _logger.Error($"IO error during extraction: {ioEx.Message}");
+                WpfMessageBox.Show("Blender archive is currently in use or locked by another process. Please close any applications using it and try again.",
                                 "Extraction Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (InvalidDataException dataEx)
             {
-                Debug.WriteLine($"Extraction failed: Invalid or corrupted zip file. {dataEx.Message}");
-                System.Windows.MessageBox.Show("The downloaded Blender archive appears to be corrupted. Please try downloading again.",
+                _logger.Error($"Extraction failed: Invalid or corrupted zip file. {dataEx.Message}");
+                WpfMessageBox.Show("The downloaded Blender archive appears to be corrupted. Please try downloading again.",
                                 "Corrupt Archive", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (UnauthorizedAccessException accessEx)
             {
-                Debug.WriteLine($"Permission issue during extraction: {accessEx.Message}");
-                System.Windows.MessageBox.Show("Access denied while extracting Blender files. Please run the application as administrator.",
+                _logger.Error($"Permission issue during extraction: {accessEx.Message}");
+                WpfMessageBox.Show("Access denied while extracting Blender files. Please run the application as administrator.",
                                 "Permission Denied", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Unexpected error during extraction: {ex.Message}");
-                System.Windows.MessageBox.Show("An unexpected error occurred while extracting Blender. Please try again or contact support.",
+                _logger.Error($"Unexpected error during extraction: {ex.Message}");
+                WpfMessageBox.Show("An unexpected error occurred while extracting Blender. Please try again or contact support.",
                                 "Extraction Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -144,7 +144,6 @@ namespace UnBox3D.Utils
             var downloadedBytes = 0L;
             var buffer = new byte[8192];
 
-            // Step 1: Download and write zip file
             await using (var contentStream = await response.Content.ReadAsStreamAsync())
             await using (var fileStream = _fileSystem.CreateFile(BlenderZipPath))
             {
@@ -153,16 +152,14 @@ namespace UnBox3D.Utils
                 {
                     await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
                     downloadedBytes += bytesRead;
-
                     if (totalBytes > 0)
                         progress?.Report((double)downloadedBytes / totalBytes * 0.8);
                 }
             }
 
-            // Now, fileStream is fully disposed, and the file is closed.
-            Debug.WriteLine("Download complete. Extracting Blender...");
+            _logger.Info("Download complete. Extracting Blender...");
 
-            if (!_fileSystem.DoesDirectoryExists(BlenderFolder))
+            if (!_fileSystem.DoesDirectoryExist(BlenderFolder))
                 _fileSystem.CreateDirectory(BlenderFolder);
 
             progress?.Report(0.85);
@@ -171,30 +168,30 @@ namespace UnBox3D.Utils
                 ZipFile.ExtractToDirectory(BlenderZipPath, BlenderFolder, overwriteFiles: true);
                 _fileSystem.DeleteFile(BlenderZipPath);
                 progress?.Report(1.0);
-                Debug.WriteLine("Blender installation completed.");
+                _logger.Info("Blender installation completed.");
             }
             catch (IOException ioEx)
             {
-                Debug.WriteLine($"IO error during extraction: {ioEx.Message}");
-                System.Windows.MessageBox.Show("Blender archive is currently in use or locked by another process. Please close any applications using it and try again.",
+                _logger.Error($"IO error during extraction: {ioEx.Message}");
+                WpfMessageBox.Show("Blender archive is currently in use or locked by another process. Please close any applications using it and try again.",
                                 "Extraction Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (InvalidDataException dataEx)
             {
-                Debug.WriteLine($"Extraction failed: Invalid or corrupted zip file. {dataEx.Message}");
-                System.Windows.MessageBox.Show("The downloaded Blender archive appears to be corrupted. Please try downloading again.",
+                _logger.Error($"Extraction failed: Invalid or corrupted zip file. {dataEx.Message}");
+                WpfMessageBox.Show("The downloaded Blender archive appears to be corrupted. Please try downloading again.",
                                 "Corrupt Archive", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (UnauthorizedAccessException accessEx)
             {
-                Debug.WriteLine($"Permission issue during extraction: {accessEx.Message}");
-                System.Windows.MessageBox.Show("Access denied while extracting Blender files. Please run the application as administrator.",
+                _logger.Error($"Permission issue during extraction: {accessEx.Message}");
+                WpfMessageBox.Show("Access denied while extracting Blender files. Please run the application as administrator.",
                                 "Permission Denied", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Unexpected error during extraction: {ex.Message}");
-                System.Windows.MessageBox.Show("An unexpected error occurred while extracting Blender. Please try again or contact support.",
+                _logger.Error($"Unexpected error during extraction: {ex.Message}");
+                WpfMessageBox.Show("An unexpected error occurred while extracting Blender. Please try again or contact support.",
                                 "Extraction Failed", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }

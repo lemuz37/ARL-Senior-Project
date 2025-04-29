@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using UnBox3D.Utils;
 
 namespace UnBox3D.Utils
 {
@@ -15,17 +14,13 @@ namespace UnBox3D.Utils
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public bool RunBlenderScript(string inputModelPath, string outputModelPath, string scriptPath, 
+        public bool RunBlenderScript(string inputModelPath, string outputModelPath, string scriptPath,
             string filename, double doc_width, double doc_height, string ext, out string errorMessage)
         {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            Debug.WriteLine("baseDirectory: " + baseDirectory);
-
-            // Fix Blender path construction for publishing
-            string blenderExePath = Path.Combine(baseDirectory, "Blender", "blender-4.2.0-windows-x64", "blender.exe");
-            Debug.WriteLine("blenderExePath: " + blenderExePath);
-
             _logger.Info($"Base Directory: {baseDirectory}");
+
+            string blenderExePath = Path.Combine(baseDirectory, "Blender", "blender-4.2.0-windows-x64", "blender.exe");
             _logger.Info($"Blender Path: {blenderExePath}");
 
             if (!File.Exists(blenderExePath))
@@ -68,7 +63,6 @@ namespace UnBox3D.Utils
             {
                 process.Start();
 
-                // Set a timeout for waiting for Blender to finish
                 if (!process.WaitForExit(30000))
                 {
                     errorMessage = "Process took too long to respond. Terminating...";
@@ -77,7 +71,6 @@ namespace UnBox3D.Utils
                     return false;
                 }
 
-                // Read Blender's output and error streams
                 string output = process.StandardOutput.ReadToEnd();
                 string error = process.StandardError.ReadToEnd();
 
@@ -87,7 +80,6 @@ namespace UnBox3D.Utils
                     _logger.Warn("Blender Errors: " + error);
                 }
 
-                // Extract runtime error message if exists
                 string runtimeErrorMessage = ExtractRuntimeError(error);
 
                 if (string.IsNullOrEmpty(runtimeErrorMessage))
