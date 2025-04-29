@@ -4,3 +4,4 @@ Move: https://icon-icons.com/icon/axis-arrow/138909
 Rotate: https://icon-icons.com/icon/rotate-axis-xy/120494
 Delete: https://icon-icons.com/icon/delete/3657
 Undo: https://icon-icons.com/icon/edit-undo/104472
+Redo: https://icon-icons.com/icon/edit-redo/104350
