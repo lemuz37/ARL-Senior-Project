@@ -61,7 +61,7 @@ namespace UnBox3D.Models
             if (!string.IsNullOrWhiteSpace(colorName))
             {
                 string key = colorName.ToLower().Replace(" ", "");
-                if (Colors.colorMap.TryGetValue(key, out var parsedColor))
+                if (Colors.TryGetColor(key, out var parsedColor))
                 {
                     defaultColor = parsedColor;
                 }
@@ -71,7 +71,6 @@ namespace UnBox3D.Models
                 }
             }
 
-            // Step 1: Convert Assimp meshes into g4 meshes and calculate the total model bounds
             AxisAlignedBox3d modelBounds = AxisAlignedBox3d.Empty;
             List<(DMesh3 dmesh, Mesh assimpMesh)> meshPairs = new();
 
@@ -97,47 +96,11 @@ namespace UnBox3D.Models
                     }
                 }
 
-                modelBounds.Contain(dmesh.CachedBounds);
                 meshPairs.Add((dmesh, mesh));
             }
 
-            // Step 2: Apply global scale based on the largest dimension of the model
-            double maxDim = modelBounds.MaxDim;
-            const double targetSize = 10.0; // Scale model to fit within this size
-            double scaleFactor = (maxDim > targetSize) ? targetSize / maxDim : 1.0;
-
-            if (scaleFactor != 1.0)
-            {
-                Debug.WriteLine($"[ModelImporter] Global scale applied: {scaleFactor:F4} (original size: {maxDim:F2})");
-                _wasScaled = true;
-            }
-            foreach (var (dmesh, _) in meshPairs)
-            {
-                MeshTransforms.Scale(dmesh, scaleFactor);
-            }
-
-            // Step 3: Recalculate bounds post-scale and center the model at the origin
-            AxisAlignedBox3d scaledBounds = AxisAlignedBox3d.Empty;
-            foreach (var (dmesh, _) in meshPairs)
-            {
-                scaledBounds.Contain(dmesh.CachedBounds);
-            }
-
-            g4.Vector3d center = scaledBounds.Center;
-
             foreach (var (dmesh, assimpMesh) in meshPairs)
             {
-                // Translate mesh to center it at origin
-                MeshTransforms.Translate(dmesh, -center);
-
-                // Sync updated vertex positions back into the Assimp mesh
-                for (int vi = 0; vi < dmesh.VertexCount; vi++)
-                {
-                    var v = dmesh.GetVertex(vi);
-                    assimpMesh.Vertices[vi] = new Assimp.Vector3D((float)v.x, (float)v.y, (float)v.z);
-                }
-
-                // Create and color final IAppMesh instance
                 IAppMesh appMesh = new AppMesh(dmesh, assimpMesh);
                 appMesh.SetColor(defaultColor);
                 importedMeshes.Add(appMesh);
