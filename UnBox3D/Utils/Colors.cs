@@ -36,30 +36,17 @@ namespace UnBox3D.Utils
         // Indigo ---> Lime
         // Violet ---> Yellow
         //
-        public static readonly Dictionary<string, Vector3> colorMap = new Dictionary<string, Vector3>()
+        public static readonly Dictionary<string, Vector3> ColorMap = new Dictionary<string, Vector3>()
         {
-            { "red", Red },
-            { "orange", Orange },
-            { "yellow", Yellow },
-            { "green", Green },
-            { "blue", Blue },
-            { "indigo", Indigo },
-            { "violet", Violet },
-            { "brown", Brown },
-            { "cyan", Cyan },
-            { "grey", Grey },
-            { "lime", Lime },
-            { "magenta", Magenta },
-            { "maroon", Maroon },
-            { "navy", Navy },
-            { "olive", Olive },
-            { "pink", Pink },
-            { "purple", Purple },
-            { "silver", Silver },
-            { "teal", Teal },
-            { "white", White },
+            { "red", Red }, { "orange", Orange }, { "yellow", Yellow }, { "green", Green },
+            { "blue", Blue }, { "indigo", Indigo }, { "violet", Violet }, { "brown", Brown },
+            { "cyan", Cyan }, { "grey", Grey }, { "lime", Lime }, { "magenta", Magenta },
+            { "maroon", Maroon }, { "navy", Navy }, { "olive", Olive }, { "pink", Pink },
+            { "purple", Purple }, { "silver", Silver }, { "teal", Teal }, { "white", White },
             { "black", Black }
         };
+        public static bool TryGetColor(string name, out Vector3 color) =>
+            ColorMap.TryGetValue(name.ToLower(), out color);
     }
 
     public static class BackgroundColors
@@ -99,23 +86,16 @@ namespace UnBox3D.Utils
         //    - LightBlue (background)  ---> Red, Magenta, Orange (mesh colors)
         //    - DarkGrey (background)   ---> Red, Orange, Magenta (mesh colors)
         //
-        public static readonly Dictionary<string, Vector4> backgroundColorMap = new Dictionary<string, Vector4>()
+        public static readonly Dictionary<string, Vector4> BackgroundColorMap = new Dictionary<string, Vector4>()
         {
-            { "lightgrey", LightGrey },
-            { "darkgrey", DarkGrey },
-            { "beige", Beige },
-            { "lightblue", LightBlue },
-            { "lightgreen", LightGreen },
-            { "ivory", Ivory },
-            { "lavender", Lavender },
-            { "mistyrose", MistyRose },
-            { "peachpuff", PeachPuff },
-            { "aliceblue", AliceBlue },
-            { "honeydew", Honeydew },
-            { "whitesmoke", WhiteSmoke },
-            { "white", White },
-            { "black", Black },
-            { "transparent", Transparent }
+            { "lightgrey", LightGrey }, { "darkgrey", DarkGrey }, { "beige", Beige },
+            { "lightblue", LightBlue }, { "lightgreen", LightGreen }, { "ivory", Ivory },
+            { "lavender", Lavender }, { "mistyrose", MistyRose }, { "peachpuff", PeachPuff },
+            { "aliceblue", AliceBlue }, { "honeydew", Honeydew }, { "whitesmoke", WhiteSmoke },
+            { "white", White }, { "black", Black }, { "transparent", Transparent }
         };
+
+        public static bool TryGetBackgroundColor(string name, out Vector4 color) =>
+            BackgroundColorMap.TryGetValue(name.ToLower(), out color);
     }
 }
