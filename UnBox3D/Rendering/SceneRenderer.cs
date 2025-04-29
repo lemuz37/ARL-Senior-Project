@@ -32,7 +32,6 @@ namespace UnBox3D.Rendering
 
             if (meshes == null || meshes.Count == 0)
             {
-                _logger.Warn("No meshes available for rendering.");
                 return;
             }
             else
