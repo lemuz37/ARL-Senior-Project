@@ -1,0 +1,58 @@
+﻿<Window x:Class="UnBox3D.Views.SimplifyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Simplify Meshes"
+        Height="550" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="SingleBorderWindow">
+
+    <StackPanel Margin="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+
+        <!-- Remove Small Meshes -->
+        <GroupBox Header="Remove Small Meshes" Margin="0 0 0 15">
+            <StackPanel Margin="10">
+                <TextBlock Text="Specify a threshold to remove meshes smaller than this size." TextWrapping="Wrap"/>
+                <Slider x:Name="ThresholdSlider"
+                        Minimum="0" Maximum="20" Value="2" TickFrequency=".5"
+                        IsSnapToTickEnabled="True" />
+                <TextBlock Text="{Binding ElementName=ThresholdSlider, Path=Value, StringFormat='Threshold: {0}% of largest mesh'}" />
+
+                <Button Content="Remove Small Meshes" Click="RemoveSmallMeshes_Click"
+                        Margin="10" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Replace With Bounding Boxes -->
+        <GroupBox Header="Replace With Bounding Boxes" Margin="0 0 0 15">
+            <StackPanel Margin="10">
+                <TextBlock Text="Replace all remaining meshes with bounding box shapes." TextWrapping="Wrap"/>
+                <Button Content="Replace with Bounding Boxes" Click="ReplaceWithBoundingBoxes_Click"
+                        Margin="10" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Mesh Complexity -->
+        <GroupBox Header="Reduce Mesh Complexity">
+            <StackPanel Margin="10">
+                <TextBlock Text="Drag right to simplify more, left to keep more detail." TextWrapping="Wrap"/>
+                <Slider x:Name="RatioSlider" Minimum="10" Maximum="100" Value="50" TickFrequency="10"
+                        IsSnapToTickEnabled="True" Width="360" Margin="0 5"/>
+                <TextBlock Text="{Binding ElementName=RatioSlider, Path=Value, StringFormat='Reducing by {0}%'}"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="Quality Level:" Margin="10 10 0 2"/>
+                <ComboBox x:Name="QualityComboBox" SelectedIndex="1" Width="220" HorizontalAlignment="Center">
+                    <ComboBoxItem Content="High Quality (Slowest)" />
+                    <ComboBoxItem Content="Moderate Quality (Balanced)" />
+                    <ComboBoxItem Content="Low Quality (Fastest)" />
+                </ComboBox>
+
+                <Button Content="Simplify Meshes" Click="Simplify_Click"
+                        Margin="15 10 0 0" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </GroupBox>
+
+    </StackPanel>
+
+</Window>

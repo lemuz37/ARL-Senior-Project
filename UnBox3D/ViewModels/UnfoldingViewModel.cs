@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using PdfSharpCore.Pdf;
 using UnBox3D.Utils;
 using UnBox3D.Views;
@@ -35,34 +36,43 @@ namespace UnBox3D.ViewModels
         {
             Debug.WriteLine("Input model is coming from: " + inputModelPath);
 
-            var installWindow = new LoadingWindow
+            bool isBlenderInstalled = _blenderInstaller.IsBlenderInstalled();
+            
+            if (!isBlenderInstalled) 
             {
-                StatusHint = "Installing Blender...",
-                Owner = System.Windows.Application.Current.MainWindow,
-                IsProgressIndeterminate = false
-            };
-            installWindow.Show();
+                var installWindow = new LoadingWindow
+                {
+                    StatusHint = "Installing Blender...",
+                    Owner = System.Windows.Application.Current.MainWindow,
+                    IsProgressIndeterminate = false
+                };
+                installWindow.Show();
 
-            var installProgress = new Progress<double>(value =>
-            {
-                installWindow.UpdateProgress(value * 100);
-                installWindow.UpdateStatus($"Installing Blender... {Math.Round(value * 100)}%");
-            });
+                var installProgress = new Progress<double>(value =>
+                {
+                    installWindow.UpdateProgress(value * 100);
+                    installWindow.UpdateStatus($"Installing Blender... {Math.Round(value * 100)}%");
+                });
 
-            await _blenderInstaller.CheckAndInstallBlender(installProgress);
-            installWindow.Close();
+                await _blenderInstaller.CheckAndInstallBlender(installProgress);
+                installWindow.Close();
 
-            if (!_blenderInstaller.IsBlenderInstalled())
-            {
-                throw new InvalidOperationException("Blender is required to unfold models but was not found.");
+                if (!_blenderInstaller.IsBlenderInstalled())
+                {
+                    throw new InvalidOperationException("Blender is required to unfold models but was not found.");
+                }
+                else 
+                {
+                    System.Windows.MessageBox.Show("Blender was installed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
 
             var loadingWindow = new LoadingWindow
-            {
-                StatusHint = "This may take several minutes depending on model complexity",
-                Owner = System.Windows.Application.Current.MainWindow,
-                IsProgressIndeterminate = false
-            };
+                {
+                    StatusHint = "This may take several minutes depending on model complexity",
+                    Owner = System.Windows.Application.Current.MainWindow,
+                    IsProgressIndeterminate = false
+                };
             loadingWindow.Show();
 
             try

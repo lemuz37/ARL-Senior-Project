@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Controls;
-using gs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,17 +16,11 @@ namespace UnBox3D.Utils
 
     public class SettingsManager : ISettingsManager
     {
-        #region Fields
-
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
         private readonly string _settingsFilePath;
         private readonly object _lock = new object();
         private JObject _settings;
-
-        #endregion
-
-        #region Constructor
 
         public SettingsManager(IFileSystem fileSystem, ILogger logger)
         {
@@ -37,12 +29,11 @@ namespace UnBox3D.Utils
 
             string settingsDirectory = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                "UnBox3D",
-                "Settings"
-            );
+                "UnBox3D", "Settings");
+
             _settingsFilePath = Path.Combine(settingsDirectory, "settings.json");
 
-            if (!_fileSystem.DoesDirectoryExists(settingsDirectory))
+            if (!_fileSystem.DoesDirectoryExist(settingsDirectory))
             {
                 _logger.Info($"Settings directory not found. Creating directory: {settingsDirectory}");
                 _fileSystem.CreateDirectory(settingsDirectory);
@@ -51,13 +42,6 @@ namespace UnBox3D.Utils
             LoadSettings();
         }
 
-        #endregion
-
-        #region Settings Loading
-
-        /// <summary>
-        /// Loads settings from the file system, or initializes default settings if none exist.
-        /// </summary>
         private void LoadSettings()
         {
             lock (_lock)
@@ -65,10 +49,9 @@ namespace UnBox3D.Utils
                 try
                 {
                     _logger.Info("Attempting to load settings.");
-                    if (_fileSystem.DoesFileExists(_settingsFilePath))
+                    if (_fileSystem.DoesFileExist(_settingsFilePath))
                     {
                         _logger.Info($"Settings file found. Loading settings from: {_settingsFilePath}");
-                        // Load existing settings from file.
                         var json = _fileSystem.ReadFile(_settingsFilePath);
                         _settings = JsonConvert.DeserializeObject<JObject>(json);
                         _logger.Info("Settings loaded successfully.");
@@ -89,16 +72,6 @@ namespace UnBox3D.Utils
             }
         }
 
-        #endregion
-
-        #region Default Settings
-
-        /// <summary>
-        /// Provides default values for application settings.
-        /// This is the main location for developers to set or update default values for settings used throughout the application.
-        /// Each setting is organized into categories that match the structure of the settings.json file.
-        /// To change a default value, simply modify the corresponding entry in this dictionary.
-        /// </summary>
         private JObject GetDefaultSettings()
         {
             var appSettings = new AppSettings();
@@ -119,7 +92,7 @@ namespace UnBox3D.Utils
 
                 [assimpSettings.GetKey()] = new JObject
                 {
-                    [AssimpSettings.Export] = new JObject(), // Empty object to match the structure
+                    [AssimpSettings.Export] = new JObject(),
                     [AssimpSettings.Import] = new JObject
                     {
                         [AssimpSettings.EnableTriangulation] = assimpSettings.DefaultEnableTriangulation,
@@ -170,75 +143,60 @@ namespace UnBox3D.Utils
             };
         }
 
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Saves the current settings to the settings file.
-        /// </summary>
         public void SaveSettings()
         {
             lock (_lock)
             {
-                var json = JsonConvert.SerializeObject(_settings, Formatting.Indented);
-                _fileSystem.WriteToFile(_settingsFilePath, json);
+                try
+                {
+                    var json = JsonConvert.SerializeObject(_settings, Formatting.Indented);
+                    _fileSystem.WriteToFile(_settingsFilePath, json);
+                    _logger.Info($"Settings saved to {_settingsFilePath}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"Failed to save settings. Error: {ex.Message}");
+                }
             }
         }
 
-        #region GetSetting Methods
-
-        // Get a setting (two levels of nested dictionaries).
         public T? GetSetting<T>(string parentKey, string subSetting)
         {
             lock (_lock)
             {
-                JObject parentDict;
                 if (_settings.ContainsKey(parentKey))
                 {
-                    parentDict = (JObject)_settings[parentKey];
-
+                    var parentDict = (JObject)_settings[parentKey];
                     if (parentDict.ContainsKey(subSetting))
                     {
                         return parentDict[subSetting].ToObject<T>();
                     }
-                    else
-                    {
-                        _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
-                    }
+                    _logger.Warn($"Sub-setting '{subSetting}' not found under '{parentKey}'.");
                 }
                 else
                 {
-                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
+                    _logger.Warn($"Parent key '{parentKey}' not present in settings.");
                 }
 
                 return default;
             }
         }
 
-        // Get a setting (three levels of nested dictionaries).
         public T? GetSetting<T>(string parentKey, string mainSetting, string subSetting)
         {
             lock (_lock)
             {
-                JObject parentDict;
-                JObject mainDict;
                 if (_settings.ContainsKey(parentKey))
                 {
-                    parentDict = (JObject)_settings[parentKey];
-
+                    var parentDict = (JObject)_settings[parentKey];
                     if (parentDict.ContainsKey(mainSetting))
                     {
-                        mainDict = (JObject)parentDict[mainSetting];
-
+                        var mainDict = (JObject)parentDict[mainSetting];
                         if (mainDict.ContainsKey(subSetting))
                         {
                             return mainDict[subSetting].ToObject<T>();
                         }
-                        else
-                        {
-                            _logger.Warn($"Sub-setting '{subSetting}' not found under '{mainSetting}'.");
-                        }
+                        _logger.Warn($"Sub-setting '{subSetting}' not found under '{mainSetting}'.");
                     }
                     else
                     {
@@ -247,32 +205,25 @@ namespace UnBox3D.Utils
                 }
                 else
                 {
-                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
+                    _logger.Warn($"Parent key '{parentKey}' not present in settings.");
                 }
 
                 return default;
             }
         }
 
-        #endregion
-
-        #region SetSetting Methods
-
-        // Update a setting (two levels of nested dictionaries).
         public void SetSetting(string parentKey, string subSetting, object newValue)
         {
             lock (_lock)
             {
                 LoadSettings();
-                JObject parentDict;
                 if (_settings.ContainsKey(parentKey))
                 {
-                    parentDict = (JObject)_settings[parentKey];
-
+                    var parentDict = (JObject)_settings[parentKey];
                     if (parentDict.ContainsKey(subSetting))
                     {
                         parentDict[subSetting] = JToken.FromObject(newValue);
-                        _logger.Info($"Updated {parentKey} -> {subSetting}");
+                        _logger.Info($"Updated setting: {parentKey} -> {subSetting}");
                     }
                     else
                     {
@@ -281,34 +232,28 @@ namespace UnBox3D.Utils
                 }
                 else
                 {
-                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
+                    _logger.Warn($"Parent key '{parentKey}' not present in settings.");
                 }
 
                 SaveSettings();
             }
         }
 
-        // Update a setting (three levels of nested dictionaries).
         public void SetSetting(string parentKey, string mainSetting, string subSetting, object newValue)
         {
             lock (_lock)
             {
                 LoadSettings();
-
-                JObject parentDict;
-                JObject mainDict;
                 if (_settings.ContainsKey(parentKey))
                 {
-                    parentDict = (JObject)_settings[parentKey];
-
+                    var parentDict = (JObject)_settings[parentKey];
                     if (parentDict.ContainsKey(mainSetting))
                     {
-                        mainDict = (JObject)parentDict[mainSetting];
-
+                        var mainDict = (JObject)parentDict[mainSetting];
                         if (mainDict.ContainsKey(subSetting))
                         {
                             mainDict[subSetting] = JToken.FromObject(newValue);
-                            _logger.Info($"Updated {parentKey} -> {mainSetting} -> {subSetting}");
+                            _logger.Info($"Updated setting: {parentKey} -> {mainSetting} -> {subSetting}");
                         }
                         else
                         {
@@ -322,15 +267,11 @@ namespace UnBox3D.Utils
                 }
                 else
                 {
-                    _logger.Warn($"Parent key {parentKey} not present in Settings Dictionary.");
+                    _logger.Warn($"Parent key '{parentKey}' not present in settings.");
                 }
 
                 SaveSettings();
             }
         }
-
-        #endregion
-
-        #endregion
     }
 }

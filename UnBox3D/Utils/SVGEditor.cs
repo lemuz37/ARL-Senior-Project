@@ -2,7 +2,6 @@
 using PdfSharpCore.Pdf;
 using Svg;
 using Svg.Transforms;
-using System.Diagnostics;
 using System.IO;
 using System.Drawing.Imaging;    // For ImageFormat
 /* Values are in pixels
@@ -18,12 +17,16 @@ namespace UnBox3D.Utils
     public class SVGEditor
     {
         private const float MmToPx = 3.779527f;
+        private readonly ILogger _logger;
 
-        public static void ExportSvgPanels(string inputSvgPath, string outputDirectory, string filename, int pageIndex, float panelWidthMm, float panelHeightMm, float marginMm = 0f)
+        public SVGEditor(ILogger logger)
         {
-            Debug.WriteLine($"panelWidthMM: {panelWidthMm} - panelHeightMM: {panelHeightMm}");
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
-            Debug.WriteLine($"Processing Page: {pageIndex} - Filename: {inputSvgPath}");
+        public void ExportSvgPanels(string inputSvgPath, string outputDirectory, string filename, int pageIndex, float panelWidthMm, float panelHeightMm, float marginMm = 0f)
+        {
+            _logger.Info($"Processing Page: {pageIndex} - Filename: {inputSvgPath}");
             SvgDocument svgDocument = SvgDocument.Open(inputSvgPath);
 
             try
@@ -31,12 +34,12 @@ namespace UnBox3D.Utils
                 if (File.Exists(inputSvgPath))
                 {
                     File.Delete(inputSvgPath);
-                    Debug.WriteLine($"Deleted SVG file: {inputSvgPath}");
+                    _logger.Info($"Deleted SVG file: {inputSvgPath}");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Failed to delete {inputSvgPath}: {ex.Message}");
+                _logger.Error($"Failed to delete {inputSvgPath}: {ex.Message}");
             }
 
             float panelWidth = panelWidthMm * MmToPx;
@@ -75,14 +78,14 @@ namespace UnBox3D.Utils
 
                     string outputFilePath = Path.Combine(outputDirectory, $"{filename}_panel_page{pageIndex}_{x}_{y}.svg");
                     panelDoc.Write(outputFilePath);
-                    Debug.WriteLine($"Exported panel to {outputFilePath} with x-offset: {xOffset}, y-offset: {yOffset}");
+                    _logger.Info($"Exported panel to {outputFilePath} with x-offset: {xOffset}, y-offset: {yOffset}");
                 }
             }
         }
 
-        public static bool ExportToPdf(string svgFile, PdfDocument pdf)
+        public bool ExportToPdf(string svgFile, PdfDocument pdf)
         {
-            Debug.WriteLine($"Combining SVG: {svgFile}");
+            _logger.Info($"Combining SVG: {svgFile}");
 
             try
             {
@@ -109,12 +112,12 @@ namespace UnBox3D.Utils
             }
             catch (Svg.Exceptions.SvgMemoryException ex)
             {
-                Debug.WriteLine($"Caught SvgMemoryException: {ex.Message}");
+                _logger.Error($"Caught SvgMemoryException: {ex.Message}");
                 return false;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error processing SVG: {ex.Message}");
+                _logger.Error($"Error processing SVG: {ex.Message}");
                 return false;
             }
         }

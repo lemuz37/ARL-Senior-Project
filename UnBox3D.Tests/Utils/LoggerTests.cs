@@ -24,7 +24,7 @@ namespace UnBox3D.Tests.Utils
         {
             // Arrange
             string logMessage = "Test message";
-            _fileSystemMock.Setup(fs => fs.DoesFileExists(_logFilePath)).Returns(false);
+            _fileSystemMock.Setup(fs => fs.DoesFileExist(_logFilePath)).Returns(false);
 
             // Act
             _logger.Info(logMessage);
@@ -37,7 +37,7 @@ namespace UnBox3D.Tests.Utils
         public void Log_RotatesLogs_WhenFileSizeExceedsLimit()
         {
             // Arrange
-            _fileSystemMock.Setup(fs => fs.DoesFileExists(_logFilePath)).Returns(true);
+            _fileSystemMock.Setup(fs => fs.DoesFileExist(_logFilePath)).Returns(true);
             _fileSystemMock.Setup(fs => fs.GetFileSize(_logFilePath)).Returns(6 * 1024 * 1024); // 6MB
 
             // Act
@@ -51,7 +51,7 @@ namespace UnBox3D.Tests.Utils
         public void Log_CreatesDirectoryIfNotExists()
         {
             // Arrange
-            _fileSystemMock.Setup(fs => fs.DoesFileExists(It.IsAny<string>())).Returns(false);
+            _fileSystemMock.Setup(fs => fs.DoesFileExist(It.IsAny<string>())).Returns(false);
             _fileSystemMock.Setup(fs => fs.CreateDirectory(_logDirectory));
 
             // Act

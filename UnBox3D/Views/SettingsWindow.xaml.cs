@@ -39,7 +39,36 @@ namespace UnBox3D.Views
         private void SettingsWindow_Loaded(object sender, RoutedEventArgs args)
         {
             _logger.Info("SettingsWindow loaded.");
+
+            foreach (var entry in _inputSettingKeys)
+            {
+                string controlName = entry.Key;
+                var (parentKey, subKey) = entry.Value;
+
+                var control = this.FindName(controlName);
+                object? value = null;
+
+                // Check if it's an AssimpSettings key, which requires "Import"
+                if (parentKey == "AssimpSettings")
+                {
+                    value = _settingsManager.GetSetting<object>(parentKey, "Import", subKey);
+                }
+                else
+                {
+                    value = _settingsManager.GetSetting<object>(parentKey, subKey);
+                }
+
+                if (control is TextBox textBox)
+                {
+                    textBox.Text = value?.ToString() ?? string.Empty;
+                }
+                else if (control is CheckBox checkBox)
+                {
+                    checkBox.IsChecked = value as bool? ?? false;
+                }
+            }
         }
+
 
         private void SettingsWindow_Closed(object? sender, EventArgs args)
         {

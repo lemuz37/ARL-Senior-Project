@@ -91,12 +91,14 @@ namespace UnBox3D.Rendering
                 float x = (float)Math.Cos(angle) * radius;
                 float z = (float)Math.Sin(angle) * radius;
 
-                vertices.Add(new Vector3(center.X + x, center.Y - halfHeight, center.Z + z));
-                vertices.Add(new Vector3(center.X + x, center.Y + halfHeight, center.Z + z));
+                vertices.Add(new Vector3(center.X - halfHeight, center.Y + x, center.Z + z)); // start cap
+                vertices.Add(new Vector3(center.X + halfHeight, center.Y + x, center.Z + z)); // end cap
+
             }
 
-            Vector3 bottomCenter = new Vector3(center.X, center.Y - halfHeight, center.Z);
-            Vector3 topCenter = new Vector3(center.X, center.Y + halfHeight, center.Z);
+            Vector3 bottomCenter = new Vector3(center.X - halfHeight, center.Y, center.Z);
+            Vector3 topCenter = new Vector3(center.X + halfHeight, center.Y, center.Z);
+
             vertices.Add(bottomCenter);
             vertices.Add(topCenter);
 

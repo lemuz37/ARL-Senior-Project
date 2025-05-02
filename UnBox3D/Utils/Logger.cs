@@ -3,12 +3,13 @@ using System.IO;
 
 namespace UnBox3D.Utils
 {
-    // Logger interface for logging functionality
     public interface ILogger
     {
         void Info(string message);
         void Warn(string message);
         void Error(string message);
+        void Fatal(string message);
+        void LogException(Exception ex);
     }
 
     public class Logger : ILogger
@@ -43,8 +44,10 @@ namespace UnBox3D.Utils
             _maxArchiveFiles = maxArchiveFiles;
             _logFilePath = Path.Combine(_logDirectory, _logFileName);
 
-            if (!_fileSystem.DoesDirectoryExists(_logDirectory))
+            if (!_fileSystem.DoesDirectoryExist(_logDirectory))
                 _fileSystem.CreateDirectory(_logDirectory);
+
+            Info($"Logger initialized. Writing to: {_logFilePath}");
         }
 
         #endregion
@@ -64,38 +67,45 @@ namespace UnBox3D.Utils
 
         #region Public Logging Methods
 
-        /// <summary>
-        /// Logs a message with the specified log level.
-        /// </summary>
         public void Log(string message, LogLevel level = LogLevel.Info)
         {
-            lock (_lock)
+            try
             {
-                if (_fileSystem.DoesFileExists(_logFilePath) &&
-                    _fileSystem.GetFileSize(_logFilePath) > _maxFileSizeInBytes)
+                lock (_lock)
                 {
-                    RotateLogs();
-                }
+                    if (_fileSystem.DoesFileExist(_logFilePath) &&
+                        _fileSystem.GetFileSize(_logFilePath) > _maxFileSizeInBytes)
+                    {
+                        Info("Rotating log files due to size limit.");
+                        RotateLogs();
+                    }
 
-                string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} " +
-                                  $"[{level.ToString().ToUpper()}] {message}";
-                _fileSystem.WriteToFile(_logFilePath, logEntry);
+                    string logEntry = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} " +
+                                      $"[{level.ToString().ToUpper()}] {message}{Environment.NewLine}";
+
+                    _fileSystem.AppendToFile(_logFilePath, logEntry);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Logging failed: {ex.Message}");
             }
         }
 
         public void Info(string message) => Log(message, LogLevel.Info);
-        public void Debug(string message) => Log(message, LogLevel.Debug);
         public void Warn(string message) => Log(message, LogLevel.Warn);
         public void Error(string message) => Log(message, LogLevel.Error);
         public void Fatal(string message) => Log(message, LogLevel.Fatal);
+
+        public void LogException(Exception ex)
+        {
+            Error($"Exception: {ex.Message}\n{ex.StackTrace}");
+        }
 
         #endregion
 
         #region Private Helper Methods
 
-        /// <summary>
-        /// Rotates the log files when the current log file exceeds the maximum size.
-        /// </summary>
         private void RotateLogs()
         {
             for (int i = _maxArchiveFiles - 1; i >= 0; i--)
@@ -103,10 +113,10 @@ namespace UnBox3D.Utils
                 string oldLogFilePath = Path.Combine(_logDirectory, $"{_logFileName}.{i}");
                 string newLogFilePath = Path.Combine(_logDirectory, $"{_logFileName}.{i + 1}");
 
-                if (_fileSystem.DoesFileExists(newLogFilePath))
+                if (_fileSystem.DoesFileExist(newLogFilePath))
                     _fileSystem.DeleteFile(newLogFilePath);
 
-                if (_fileSystem.DoesFileExists(oldLogFilePath))
+                if (_fileSystem.DoesFileExist(oldLogFilePath))
                     _fileSystem.MoveFile(oldLogFilePath, newLogFilePath);
             }
 

@@ -20,7 +20,7 @@ namespace UnBox3D.Tests.Utils
         public void SettingsManager_ShouldInitializeWithDefaultSettings_WhenSettingsFileDoesNotExist()
         {
             // Arrange
-            _fileSystemMock.Setup(fs => fs.DoesFileExists(It.IsAny<string>())).Returns(false);
+            _fileSystemMock.Setup(fs => fs.DoesFileExist(It.IsAny<string>())).Returns(false);
 
             // Act
             var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);
@@ -37,7 +37,7 @@ namespace UnBox3D.Tests.Utils
         {
             // Arrange
             string existingSettings = @"{ ""AppSettings"": { ""SplashScreenDuration"" : 5.0 } }";
-            _fileSystemMock.Setup(fs => fs.DoesFileExists(It.IsAny<string>())).Returns(true);
+            _fileSystemMock.Setup(fs => fs.DoesFileExist(It.IsAny<string>())).Returns(true);
             _fileSystemMock.Setup(fs => fs.ReadFile(It.IsAny<string>())).Returns(existingSettings);
 
             // Act
@@ -67,7 +67,7 @@ namespace UnBox3D.Tests.Utils
         {
             // Arrange
             string existingSettings = @"{ ""AppSettings"": { ""SplashScreenDuration"" : 5.0 } }";
-            _fileSystemMock.Setup(fs => fs.DoesFileExists(It.IsAny<string>())).Returns(true);
+            _fileSystemMock.Setup(fs => fs.DoesFileExist(It.IsAny<string>())).Returns(true);
             _fileSystemMock.Setup(fs => fs.ReadFile(It.IsAny<string>())).Returns(existingSettings);
 
             var settingsManager = new SettingsManager(_fileSystemMock.Object, _loggerMock.Object);

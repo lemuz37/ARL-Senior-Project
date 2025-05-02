@@ -29,7 +29,7 @@ namespace UnBox3D.Tests.Utils
             var sampleDudSubDirectoryPath2 = Path.Combine(sampleDirectoryPath, "Foo");
 
             /// Action
-            var absentDirectoryResult = _sampleFileSystem.DoesDirectoryExists(sampleDudSubDirectoryPath2);
+            var absentDirectoryResult = _sampleFileSystem.DoesDirectoryExist(sampleDudSubDirectoryPath2);
 
             /// Assert
             Assert.False(absentDirectoryResult);
@@ -42,7 +42,7 @@ namespace UnBox3D.Tests.Utils
             var sampleActualDirectoryPath = Path.Combine(sampleDirectoryPath, "Models");
 
             /// Action
-            var presentDirectoryResult = _sampleFileSystem.DoesDirectoryExists(sampleActualDirectoryPath);
+            var presentDirectoryResult = _sampleFileSystem.DoesDirectoryExist(sampleActualDirectoryPath);
 
             /// Assert
              Assert.True(presentDirectoryResult);
@@ -53,13 +53,13 @@ namespace UnBox3D.Tests.Utils
         {
             /// Arrange
             var sampleDudSubdirectoryPath = Path.Combine(sampleDirectoryPath, "Extra");
-            Assert.False(_sampleFileSystem.DoesDirectoryExists(sampleDudSubdirectoryPath));
+            Assert.False(_sampleFileSystem.DoesDirectoryExist(sampleDudSubdirectoryPath));
 
             /// Action
             _sampleFileSystem.CreateDirectory(sampleDudSubdirectoryPath);
 
             /// Assert
-            Assert.True(_sampleFileSystem.DoesDirectoryExists(sampleDudSubdirectoryPath));
+            Assert.True(_sampleFileSystem.DoesDirectoryExist(sampleDudSubdirectoryPath));
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace UnBox3D.Tests.Utils
             _sampleFileSystem.DeleteDirectory(sampleDudSubdirectoryPath, false);
 
             /// Assert
-            Assert.False(_sampleFileSystem.DoesDirectoryExists(sampleDudSubdirectoryPath));
+            Assert.False(_sampleFileSystem.DoesDirectoryExist(sampleDudSubdirectoryPath));
         }
 
         [Fact]
@@ -83,7 +83,7 @@ namespace UnBox3D.Tests.Utils
             var sampleFakeFilePath = Path.Combine(sampleDirectoryPath, "Foo", "Bar.cs");
 
             /// Action
-            var hasFileResult = _sampleFileSystem.DoesFileExists(sampleFakeFilePath);
+            var hasFileResult = _sampleFileSystem.DoesFileExist(sampleFakeFilePath);
 
             /// Assert
             Assert.False(hasFileResult);
@@ -96,7 +96,7 @@ namespace UnBox3D.Tests.Utils
             var sampleDemoFilePath = Path.Combine(sampleDirectoryPath, "Models", "CommandHistoryTests.cs");
 
             /// Action
-            var hasFileResult = _sampleFileSystem.DoesFileExists(sampleDemoFilePath);
+            var hasFileResult = _sampleFileSystem.DoesFileExist(sampleDemoFilePath);
 
             /// Assert
             Assert.True(hasFileResult);
@@ -112,7 +112,7 @@ namespace UnBox3D.Tests.Utils
             _sampleFileSystem.WriteToFile(sampleDemoFilePath, "Hello World!");
 
             /// Assert
-            var sampleFileCreatedResult = _sampleFileSystem.DoesFileExists(sampleDemoFilePath);
+            var sampleFileCreatedResult = _sampleFileSystem.DoesFileExist(sampleDemoFilePath);
             Assert.True(sampleFileCreatedResult);
         }
 
@@ -156,7 +156,7 @@ namespace UnBox3D.Tests.Utils
             _sampleFileSystem.DeleteFile(sampleDemoFilePath2);
 
             /// Assert
-            Assert.False(_sampleFileSystem.DoesFileExists(sampleDemoFilePath2));
+            Assert.False(_sampleFileSystem.DoesFileExist(sampleDemoFilePath2));
         }
 
         [Fact]
@@ -186,7 +186,7 @@ namespace UnBox3D.Tests.Utils
             _sampleFileSystem.MoveFile(sampleDemoFilePath4, sampleNewFilePath4);
 
             /// Assert
-            Assert.True(_sampleFileSystem.DoesFileExists(sampleNewFilePath4) && !_sampleFileSystem.DoesFileExists(sampleDemoFilePath4));
+            Assert.True(_sampleFileSystem.DoesFileExist(sampleNewFilePath4) && !_sampleFileSystem.DoesFileExist(sampleDemoFilePath4));
         }
 
         [Fact]

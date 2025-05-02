@@ -4,7 +4,6 @@ using UnBox3D.Rendering.OpenGL;
 using UnBox3D.Utils;
 using System.Windows.Input;
 using TextBox = System.Windows.Controls.TextBox;
-using UnBox3D.Rendering;
 using UnBox3D.ViewModels;
 
 namespace UnBox3D.Views
@@ -34,7 +33,6 @@ namespace UnBox3D.Views
             {
                 _logger?.Info("MainWindow loaded. Initializing OpenGL...");
 
-                // Ensure Blender is installed
                 var loadingWindow = new LoadingWindow
                 {
                     StatusHint = "Installing Blender...",
@@ -53,9 +51,9 @@ namespace UnBox3D.Views
 
                 loadingWindow.Close();
 
-                // Attach GLControlHost to WindowsFormsHost
-                openGLHost.Child = (Control)_controlHost;
+                System.Windows.MessageBox.Show("Blender was installed successfully!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
 
+                openGLHost.Child = (Control)_controlHost;
                 _logger?.Info("GLControlHost successfully attached to WindowsFormsHost.");
                 StartUpdateLoop();
             }
@@ -66,6 +64,7 @@ namespace UnBox3D.Views
                 Close();
             }
         }
+
 
         private void MainWindow_Closed(object? sender, EventArgs e)
         {
@@ -82,11 +81,31 @@ namespace UnBox3D.Views
             }
         }
 
+        private void SimplifyMenu_Click(object sender, RoutedEventArgs e)
+        {
+            _logger?.Info("Simplify window opened.");
+
+            if (DataContext is MainViewModel vm)
+            {
+                var simplifyWindow = new SimplifyWindow(vm);
+                simplifyWindow.ShowDialog();
+            }
+        }
+
+        private void ScaleModelMenu_Click(object sender, RoutedEventArgs e)
+        {
+            _logger?.Info("Scale model window opened.");
+
+            if (DataContext is MainViewModel vm)
+            {
+                var scaleWindow = new ScaleModelWindow(vm);
+                scaleWindow.ShowDialog();
+            }
+        }
 
         private void Settings_Click(object? sender, EventArgs e)
         {
-            // click handler for Settings menu item: opens the settings window!
-            // NOTE: maybe refactor the SettingsWindow opening code to store a reusable instance of it in an App instance?
+            _logger?.Info("Settings window opened.");
             var settingsWindow = App.Current.Windows
                 .OfType<SettingsWindow>()
                 .FirstOrDefault();
@@ -100,12 +119,10 @@ namespace UnBox3D.Views
             {
                 _logger?.Warn("Failed to open settings window, found null instance instead.");
             }
-
         }
         #endregion
 
         #region Initialization
-        // Inject dependencies
         public void Initialize(IGLControlHost controlHost, ILogger logger, IBlenderInstaller blenderInstaller)
         {
             _controlHost = controlHost ?? throw new ArgumentNullException(nameof(controlHost));
@@ -117,12 +134,12 @@ namespace UnBox3D.Views
         #region Update Loop
         private async void StartUpdateLoop()
         {
-            bool isRunning = true;
+            _logger?.Info("Starting update/render loop.");
             Stopwatch sw = new Stopwatch();
 
-            while (isRunning)
+            while (true)
             {
-                _controlHost.Render();
+                _controlHost?.Render();
                 await Task.Delay(Math.Max(0, 16 - (int)sw.ElapsedMilliseconds));
             }
         }
@@ -132,7 +149,6 @@ namespace UnBox3D.Views
         {
             var textBox = sender as TextBox;
 
-            // Only allow digits and one decimal
             if (!char.IsDigit(e.Text[0]) && e.Text != ".")
             {
                 e.Handled = true;
@@ -217,7 +233,7 @@ namespace UnBox3D.Views
                 return;
 
             if (float.TryParse(textBox.Text, out float value) &&
-                textBox.DataContext is ViewModels.MainViewModel viewModel)
+                textBox.DataContext is MainViewModel viewModel)
             {
                 if (textBox.Name.Contains("Width"))
                     viewModel.PageWidth = value;
@@ -242,7 +258,7 @@ namespace UnBox3D.Views
             {
                 textBox.Text = "0";
 
-                if (textBox.DataContext is ViewModels.MainViewModel viewModel)
+                if (textBox.DataContext is MainViewModel viewModel)
                 {
                     if (textBox.Name.Contains("Width"))
                         viewModel.PageWidth = 0;
@@ -250,20 +266,6 @@ namespace UnBox3D.Views
                         viewModel.PageHeight = 0;
                 }
             }
-        }
-
-        private void MeshThreshold_ValueChanged(object sender, EventArgs e)
-        { 
-            if (sender is System.Windows.Controls.Slider slider)
-            {
-                Debug.WriteLine(slider.Value);
-                if (DataContext is MainViewModel vm)
-                {
-                    vm.SmallMeshThreshold = (float)slider.Value;
-                    vm.ApplyMeshThreshold();
-                }
-            }
-
         }
     }
 }
